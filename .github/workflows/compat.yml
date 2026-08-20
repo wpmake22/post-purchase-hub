@@ -1,75 +1,62 @@
-name: CI
+name: Compatibility matrix
 
-# Runs on every pull request and every push to main. Kept deliberately small:
-# this repository is private on a plan with a monthly minute allowance, so the
-# full compatibility matrix lives in compat.yml and runs on request instead.
+# The full matrix from docs/SPEC.md Phase 15: PHP 8.1-8.4 x WP 6.5/latest x
+# HPOS on/off. Costly enough that it runs on request only — before a release
+# (M16/M17), after touching order storage, or when a compatibility bug is
+# reported. Everyday coverage is ci.yml's two-leg subset.
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.claude/**'
-  pull_request:
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.claude/**'
   workflow_dispatch:
+    inputs:
+      php:
+        description: 'PHP versions (JSON array)'
+        default: '["8.1","8.2","8.3","8.4"]'
+      wp:
+        description: 'WordPress versions (JSON array)'
+        default: '["6.5","latest"]'
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: compat-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   COMPOSER_NO_INTERACTION: 1
 
 jobs:
-  # One job rather than four: billing rounds up to the minute per job, and these
-  # four checks share the same checkout, Composer install and npm install.
-  static:
-    name: Lint, analyse, unit, build
+  unit:
+    name: Unit / PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ${{ fromJSON( inputs.php ) }}
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.php }}
           coverage: none
           tools: composer:v2
       - uses: ramsey/composer-install@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - run: composer lint
-      - run: composer analyse
       - run: composer test:unit
-      - run: npm ci
-      - run: npm run build
 
-  # Two legs, chosen to cover both order-storage engines and both ends of the
-  # supported PHP range. Every other combination is compat.yml's job.
   integration:
-    name: Integration / PHP ${{ matrix.php }} / HPOS ${{ matrix.hpos }}
+    name: Integration / PHP ${{ matrix.php }} / WP ${{ matrix.wp }} / HPOS ${{ matrix.hpos }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Gated on the cheap job: code that does not lint or type-check is not worth
-    # spending Docker minutes on.
-    needs: static
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - php: '8.1'
-            hpos: 'off'
+        php: ${{ fromJSON( inputs.php ) }}
+        wp: ${{ fromJSON( inputs.wp ) }}
+        hpos: ['on', 'off']
+        exclude:
+          # WordPress 6.5 predates PHP 8.4 support; the pairing is not a supported store configuration.
           - php: '8.4'
-            hpos: 'on'
+            wp: '6.5'
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
@@ -84,12 +71,12 @@ jobs:
           cache: npm
       - run: npm ci
 
-      # The HPOS leg differs only in its lifecycle script, so the leg is a whole generated config.
       - name: Compose the wp-env config for this matrix leg
         run: |
           node -e "
             const fs = require('fs');
             const base = JSON.parse(fs.readFileSync(process.env.BASE, 'utf8'));
+            base.core = JSON.parse(process.env.CORE);
             base.phpVersion = process.env.PHPV;
             fs.writeFileSync('.wp-env.ci.json', JSON.stringify(base, null, 2));
           "
@@ -97,6 +84,7 @@ jobs:
         env:
           PHPV: ${{ matrix.php }}
           BASE: ${{ matrix.hpos == 'on' && '.wp-env.hpos.json' || '.wp-env.json' }}
+          CORE: ${{ matrix.wp == 'latest' && 'null' || format('"https://wordpress.org/wordpress-{0}.zip"', matrix.wp) }}
 
       - name: Start wp-env
         run: npx wp-env start --update --config .wp-env.ci.json
