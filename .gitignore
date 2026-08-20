@@ -1,0 +1,28 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build output — wp-scripts cleans this directory on every build, so nothing here is tracked.
+/assets/build/
+
+# Tooling caches and reports
+.phpcs.cache
+.phpunit.result.cache
+/.phpunit.cache/
+/clover.xml
+/coverage/
+
+# Local environments
+/.wp-env.override.json
+/.wp-env.ci.json
+/wp-env/
+
+# Translations compiled locally
+/languages/*.mo
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
+/.idea/
+/.vscode/

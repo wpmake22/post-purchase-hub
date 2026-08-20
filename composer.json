@@ -1,0 +1,55 @@
+{
+	"name": "themegrill/post-purchase-hub",
+	"description": "Post-Purchase Hub for WooCommerce — order timeline, self-service actions and a merchant request queue.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.1"
+	},
+	"require-dev": {
+		"squizlabs/php_codesniffer": "^3.13",
+		"wp-coding-standards/wpcs": "^3.4",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"woocommerce/woocommerce-sniffs": "^2.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"phpstan/phpstan": "^2.1",
+		"php-stubs/wordpress-stubs": "^6.9",
+		"php-stubs/woocommerce-stubs": "^10.9",
+		"phpunit/phpunit": "^9.6",
+		"yoast/phpunit-polyfills": "^3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"PostPurchaseHub\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"PostPurchaseHub\\Tests\\Unit\\": "tests/unit/",
+			"PostPurchaseHub\\Tests\\Integration\\": "tests/integration/"
+		}
+	},
+	"config": {
+		"platform": {
+			"php": "8.1.0"
+		},
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "phpcs",
+		"lint:fix": "phpcbf",
+		"analyse": "phpstan analyse --memory-limit=1G",
+		"test:unit": "phpunit --configuration phpunit.xml.dist",
+		"test:int": "phpunit --configuration phpunit-integration.xml.dist"
+	},
+	"scripts-descriptions": {
+		"lint": "Run PHP_CodeSniffer against the WordPress-Extra, WordPress-Docs and WooCommerce-Core rulesets.",
+		"lint:fix": "Auto-fix the PHPCS violations that are safely fixable.",
+		"analyse": "Run PHPStan level 6 over src/ with WordPress and WooCommerce stubs.",
+		"test:unit": "Run the unit suite (no WordPress bootstrap).",
+		"test:int": "Run the integration suite (requires wp-env; run once with HPOS on and once off)."
+	}
+}

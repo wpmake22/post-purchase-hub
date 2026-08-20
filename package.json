@@ -1,0 +1,27 @@
+{
+	"name": "post-purchase-hub",
+	"version": "0.1.0",
+	"description": "Build tooling for Post-Purchase Hub for WooCommerce.",
+	"license": "GPL-2.0-or-later",
+	"private": true,
+	"engines": {
+		"node": ">=20"
+	},
+	"scripts": {
+		"build": "wp-scripts build --webpack-src-dir=assets/src --output-path=assets/build",
+		"start": "wp-scripts start --webpack-src-dir=assets/src --output-path=assets/build",
+		"lint:js": "wp-scripts lint-js assets/src",
+		"lint:css": "wp-scripts lint-style \"assets/src/**/*.scss\"",
+		"format": "wp-scripts format assets/src",
+		"packages-update": "wp-scripts packages-update",
+		"env:start": "wp-env start",
+		"env:stop": "wp-env stop",
+		"env:start:hpos": "wp-env start --config .wp-env.hpos.json",
+		"test:int": "wp-env run tests-cli --env-cwd=wp-content/plugins/post-purchase-hub vendor/bin/phpunit --configuration phpunit-integration.xml.dist",
+		"test:int:hpos": "wp-env run tests-cli --config .wp-env.hpos.json --env-cwd=wp-content/plugins/post-purchase-hub vendor/bin/phpunit --configuration phpunit-integration.xml.dist"
+	},
+	"devDependencies": {
+		"@wordpress/env": "^11.13.0",
+		"@wordpress/scripts": "^34.1.0"
+	}
+}
