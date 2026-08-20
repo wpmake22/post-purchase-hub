@@ -4,6 +4,8 @@ You are working on a commercial WordPress plugin that will run on thousands of l
 
 **Authoritative spec:** `docs/SPEC.md`. It defines scope, architecture, database design, security design, UX, milestones and acceptance criteria. If a request conflicts with the spec, say so before acting — do not silently follow either one.
 
+**Edition architecture:** `docs/EDITIONS.md`. This is a single repo producing two distributions. Read it before writing any code that could belong to one edition and not the other.
+
 **Milestone prompts:** `docs/MILESTONE-PROMPTS.md`. Work proceeds one milestone at a time.
 
 ---
@@ -16,6 +18,9 @@ You are working on a commercial WordPress plugin that will run on thousands of l
 | Slug / text domain | `post-purchase-hub` |
 | Function/hook/option prefix | `pph_` |
 | PHP namespace root | `PostPurchaseHub\` (PSR-4 → `src/`) |
+| Free-only namespace | `PostPurchaseHub\Free\` → `free/src/` |
+| Pro-only namespace | `PostPurchaseHub\Pro\` → `pro/src/` |
+| Distributions | `post-purchase-hub-{v}.zip` (WP.org) and `post-purchase-hub-pro-{v}.zip` (store) |
 | Order meta prefix | `_pph_` |
 | DB table prefix | `{$wpdb->prefix}pph_` |
 | REST namespace | `pph/v1` |
@@ -45,6 +50,14 @@ These are not preferences. Violating one is a bug even if tests pass.
 14. **Full template replacement is opt-in.** Additive rendering via Woo hooks is the default and must always work standalone.
 15. **Guest access is off until explicitly enabled** in the setup wizard.
 
+### Edition rules (see `docs/EDITIONS.md`)
+
+16. **Core never references edition code.** No `PostPurchaseHub\Pro\` or `PostPurchaseHub\Free\` anywhere under `src/` — not in code, not in strings, not in docblocks, not in `class_exists()`. CI greps for this and fails the build.
+17. **Core never branches on edition.** No `if ( pph_is_pro() )` in `src/`. Core registers extension points; Pro fills them. If Pro cannot be built on core's public surface, the surface is wrong — say so rather than reaching through it.
+18. **No inline build markers.** Never write `//#if__PREMIUM`-style blocks. Edition code is separated by directory so the free artifact is a strict subset of tested source, never a rewritten one. Wanting a marker means a missing filter.
+19. **Free must be coherent alone.** No dead buttons, no half-features, no error paths that only make sense with Pro installed.
+20. **Never edit `bin/build.php` or `bin/verify-build.php` opportunistically.** If a verification check fails, fix the code it caught. Changing the check to pass is only acceptable as a deliberate, explained decision — raise it and wait.
+
 ---
 
 ## Architecture
@@ -67,7 +80,16 @@ src/
 templates/              logic-free, theme-overridable via yourtheme/post-purchase-hub/
 assets/src → assets/build (@wordpress/scripts)
 tests/unit | tests/integration | tests/e2e | tests/fixtures
+
+free/src|templates|tests    PostPurchaseHub\Free\  — upsell and locked-teaser UI only
+pro/bootstrap.php           entry point, loaded via is_readable() if present
+pro/src|templates|tests     PostPurchaseHub\Pro\   — returns, rules engine, analytics, licensing
+pro/assets/src → build
+bin/build.php               produces both zips
+bin/verify-build.php        inspects the built zips for leakage
 ```
+
+`src/` ships in both editions. The build deletes `pro/` for the free zip and `free/` for the pro zip. Pro attaches at the `pph_loaded` action and extends core only through documented filters, the `ActionRegistry`, interfaces and template overrides.
 
 `Timeline/`, `Actions/` and `Requests/` are separate domains. They communicate through services and never reach into each other's storage.
 
@@ -100,6 +122,14 @@ npm run build          # asset build must succeed
 ```
 
 Integration tests run twice: `HPOS=1` and `HPOS=0`. A milestone touching order data is not done until both pass.
+
+Tests also run twice per edition: core-only, and core plus `pro/`. Pro must not change core behaviour except where a documented filter says it does. Before reporting any milestone that touched packaging, extension points or the plugin bootstrap:
+
+```bash
+npm run build && composer build && composer verify
+```
+
+`verify-build.php` inspects the actual zips rather than the source tree, because a build can pass every static check and still ship the wrong files.
 
 Coverage targets: ≥70% on `Timeline/`, `Actions/`, `Requests/`, `Security/`, `Support/Dates`. No target on `Admin/` or `Frontend/` presentation — use e2e there.
 
@@ -160,3 +190,6 @@ Say what you found, give the options with trade-offs, and wait. Do not pick the 
 - Every theme and page builder styles `myaccount/orders.php` and `view-order.php` differently. This is the single largest source of support tickets for this plugin. Additive-first is not negotiable.
 - Corporate mail scanners pre-fetch URLs in emails. Signed tokens must be idempotent within their TTL, never one-time-burn on GET.
 - Subscription parent/renewal orders and bookable products have different cancel semantics. Hard-excluded in v1.
+- Both zips must contain a folder named exactly `post-purchase-hub/`. A different folder name in the Pro zip means the customer ends up with two copies installed instead of an upgrade.
+- The Pro build needs an `Update URI` header. It shares its slug with a WP.org-hosted plugin, so without one WordPress will silently "update" a paying customer down to the free version. The failure is invisible until someone reports missing features.
+- Composer's optimized classmap is generated per edition inside the build staging directory. A classmap carried over from the full tree points at stripped files and fatals on load.

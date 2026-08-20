@@ -1,0 +1,209 @@
+name: Release
+
+# Fires when you publish a GitHub release. Draft releases do not trigger this —
+# that is deliberate, so you can stage release notes without shipping.
+# Use workflow_dispatch to dry-run the build without publishing anything.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 1.2.0). Dry run — no assets published.'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build & verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            RAW="${{ github.event.release.tag_name }}"
+          else
+            RAW="${{ inputs.version }}"
+          fi
+          VERSION="${RAW#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building $VERSION"
+
+      # Catches the classic release bug: tag says 1.2.0, plugin header still says 1.1.4.
+      - name: Check version consistency
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          HEADER=$(grep -oP '^\s*\*\s*Version:\s*\K.+' post-purchase-hub.php | tr -d '[:space:]')
+          STABLE=$(grep -oP '^Stable tag:\s*\K.+' readme.txt | tr -d '[:space:]')
+
+          FAIL=0
+          [ "$HEADER" = "$VERSION" ] || { echo "::error::Plugin header is $HEADER, expected $VERSION"; FAIL=1; }
+          [ "$STABLE" = "$VERSION" ] || { echo "::error::readme.txt Stable tag is $STABLE, expected $VERSION"; FAIL=1; }
+          exit $FAIL
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: zip, mysqli
+          coverage: none
+          tools: composer:v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --prefer-dist
+          npm ci
+
+      # A release must not ship code that fails the gates. Cheap insurance.
+      - name: Quality gates
+        run: |
+          composer lint
+          composer analyse
+          composer test:unit
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Build both editions
+        run: php bin/build.php --version=${{ steps.version.outputs.version }}
+
+      - name: Verify artifacts
+        run: php bin/verify-build.php --version=${{ steps.version.outputs.version }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugin-zips-${{ steps.version.outputs.version }}
+          path: |
+            dist/*.zip
+            dist/build-manifest.json
+          retention-days: 30
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+  smoke:
+    name: Smoke test the free zip
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: plugin-zips-${{ needs.build.outputs.version }}
+          path: dist
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Installing the built zip, not the source tree. A build that passes static
+      # checks can still fatal on activation because of a stripped class reference.
+      - name: Activate the built free plugin
+        run: |
+          npm ci
+          npx wp-env start
+          npx wp-env run cli wp plugin install /var/www/html/wp-content/uploads/dist/post-purchase-hub-${{ needs.build.outputs.version }}.zip --activate || \
+            npx wp-env run --env-cwd=/var/www/html cli bash -c "wp plugin install \$(ls /var/www/html/*.zip | head -1) --activate"
+        continue-on-error: false
+
+      - name: Assert no fatals and free edition reported
+        run: |
+          npx wp-env run cli wp eval 'echo defined("PPH_EDITION") ? PPH_EDITION : "UNDEFINED";' | tee edition.txt
+          grep -q '^free$' edition.txt || { echo "::error::PPH_EDITION was not 'free' in the built zip"; exit 1; }
+          npx wp-env run cli wp plugin list --status=active --field=name | grep -q post-purchase-hub
+
+  publish:
+    name: Attach to release
+    needs: [build, smoke]
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: plugin-zips-${{ needs.build.outputs.version }}
+          path: dist
+
+      - name: Upload zips as release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+
+  deploy-wporg:
+    name: Deploy free to WordPress.org
+    needs: [build, smoke, publish]
+    if: github.event_name == 'release' && !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    environment: wporg
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rebuild free edition for SVN
+        run: |
+          npm ci && npm run build
+          php bin/build.php --version=${{ needs.build.outputs.version }} --edition=free
+          mkdir -p svn-src
+          unzip -q dist/post-purchase-hub-${{ needs.build.outputs.version }}.zip -d svn-src
+          mv svn-src/post-purchase-hub/* svn-src/ && rmdir svn-src/post-purchase-hub
+
+      # Requires SVN_USERNAME and SVN_PASSWORD in the `wporg` environment.
+      # Gate the environment with a required reviewer so a stray tag cannot ship to WP.org.
+      - name: Deploy to WP.org SVN
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: post-purchase-hub
+          BUILD_DIR: svn-src
+          VERSION: ${{ needs.build.outputs.version }}
+
+  deploy-pro:
+    name: Deploy pro to the store
+    needs: [build, smoke, publish]
+    if: github.event_name == 'release' && !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    environment: store
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: plugin-zips-${{ needs.build.outputs.version }}
+          path: dist
+
+      # TODO: replace with your store's deploy step once the licensing layer is chosen.
+      #
+      #   Freemius — POST the zip to the deploy endpoint with FS_DEV_ID / FS_PLUGIN_ID /
+      #   FS_PUBLIC_KEY / FS_SECRET_KEY. Verify the current endpoint against Freemius'
+      #   API docs before wiring; do not copy an endpoint from memory.
+      #
+      #   EDD Software Licensing — upload the zip to the download's file list via the
+      #   REST API or SFTP, then bump the version on the download post.
+      #
+      #   In-house (recommended in docs/SPEC.md) — upload to your release endpoint and
+      #   update the update-server manifest with version, package URL and changelog.
+      - name: Placeholder
+        run: |
+          echo "::warning::Pro deploy not configured. Zip is attached to the GitHub release."
+          ls -la dist/
