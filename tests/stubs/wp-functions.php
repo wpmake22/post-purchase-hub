@@ -263,6 +263,45 @@ if ( ! function_exists( 'add_action' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_filter' ) ) {
+	/**
+	 * Registers a filter callback.
+	 *
+	 * @param string $hook_name     Hook name.
+	 * @param mixed  $callback      Callback.
+	 * @param int    $priority      Unused; registration order is used instead.
+	 * @param int    $accepted_args Unused.
+	 * @return bool
+	 */
+	function add_filter( $hook_name, $callback, $priority = 10, $accepted_args = 1 ): bool {
+		unset( $priority, $accepted_args );
+
+		FakeWordPress::$filters[ $hook_name ][] = $callback;
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'apply_filters' ) ) {
+	/**
+	 * Applies the registered callbacks to a value.
+	 *
+	 * @since 0.2.0
+	 *
+	 * @param string $hook_name Hook name.
+	 * @param mixed  $value     Value to filter.
+	 * @param mixed  ...$args   Additional arguments.
+	 * @return mixed
+	 */
+	function apply_filters( $hook_name, $value, ...$args ) { // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- A shim, not a hook declaration.
+		foreach ( FakeWordPress::$filters[ $hook_name ] ?? array() as $callback ) {
+			$value = $callback( $value, ...$args );
+		}
+
+		return $value;
+	}
+}
+
 if ( ! function_exists( 'esc_html' ) ) {
 	/**
 	 * Escapes text for HTML output.

@@ -10,10 +10,11 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Install;
 
 /**
- * Prepares the options the plugin needs before it can do anything.
+ * Prepares the options, tables and scheduled work the plugin needs.
  *
  * Runs in a request where the plugin was loaded but not bootstrapped, so it
- * takes no services and touches nothing beyond its own options.
+ * takes no services and touches nothing outside its own options, its own tables
+ * and its own cron hook.
  *
  * @since 0.1.0
  */
@@ -48,6 +49,13 @@ final class Activator {
 	private const SECRET_BYTES = 64;
 
 	/**
+	 * Hook of the single daily maintenance event.
+	 *
+	 * @var string
+	 */
+	public const CLEANUP_HOOK = 'pph_daily_cleanup';
+
+	/**
 	 * Runs on activation. Idempotent: re-activating changes nothing.
 	 *
 	 * @since 0.1.0
@@ -58,6 +66,37 @@ final class Activator {
 		self::install_token_secret();
 
 		add_option( self::SCHEMA_VERSION_OPTION, self::INITIAL_SCHEMA_VERSION, '', false );
+
+		Schema::install();
+
+		// A fresh install has the current shape by construction, so it records the
+		// target version outright. Never lowered: a site that has been on a newer
+		// build keeps its version, or its migrations would run a second time.
+		if ( Migrator::installed_version() < Migrator::TARGET_VERSION ) {
+			update_option( self::SCHEMA_VERSION_OPTION, Migrator::TARGET_VERSION, false );
+		}
+
+		self::schedule_cleanup();
+	}
+
+	/**
+	 * Schedules the daily maintenance event if it is not already scheduled.
+	 *
+	 * One event, idempotent, bailing fast: it sweeps orphaned rows and expired
+	 * rate-limit entries, and closed requests only where the merchant has set a
+	 * retention window.
+	 *
+	 * @since 0.2.0
+	 *
+	 * @return void
+	 */
+	public static function schedule_cleanup(): void {
+		if ( wp_next_scheduled( self::CLEANUP_HOOK ) ) {
+			return;
+		}
+
+		// Off the hour, so the sweep does not land with every other daily task.
+		wp_schedule_event( time() + ( 17 * MINUTE_IN_SECONDS ), 'daily', self::CLEANUP_HOOK );
 	}
 
 	/**

@@ -9,6 +9,11 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub;
 
+use PostPurchaseHub\CLI\CleanupCommand;
+use PostPurchaseHub\Install\Activator;
+use PostPurchaseHub\Install\Migrator;
+use PostPurchaseHub\Requests\RequestRepository;
+use PostPurchaseHub\Requests\RetentionSweeper;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 
@@ -68,6 +73,27 @@ final class Plugin {
 			'cache',
 			static function (): Cache {
 				return new Cache();
+			}
+		);
+
+		$this->set(
+			'migrator',
+			static function ( Plugin $plugin ): Migrator {
+				return new Migrator( $plugin->logger() );
+			}
+		);
+
+		$this->set(
+			'requests',
+			static function (): RequestRepository {
+				return new RequestRepository();
+			}
+		);
+
+		$this->set(
+			'sweeper',
+			static function ( Plugin $plugin ): RetentionSweeper {
+				return new RetentionSweeper( $plugin->logger() );
 			}
 		);
 	}
@@ -143,33 +169,74 @@ final class Plugin {
 	 * Returns the logger.
 	 *
 	 * @since 0.1.0
-	 *
 	 * @return Logger
-	 * @throws \UnexpectedValueException When the registered factory returns something else.
 	 */
 	public function logger(): Logger {
-		$service = $this->get( 'logger' );
-
-		if ( ! $service instanceof Logger ) {
-			throw new \UnexpectedValueException( 'The logger factory must return a Logger.' );
-		}
-
-		return $service;
+		return $this->typed( 'logger', Logger::class );
 	}
 
 	/**
 	 * Returns the cache.
 	 *
 	 * @since 0.1.0
-	 *
 	 * @return Cache
-	 * @throws \UnexpectedValueException When the registered factory returns something else.
 	 */
 	public function cache(): Cache {
-		$service = $this->get( 'cache' );
+		return $this->typed( 'cache', Cache::class );
+	}
 
-		if ( ! $service instanceof Cache ) {
-			throw new \UnexpectedValueException( 'The cache factory must return a Cache.' );
+	/**
+	 * Returns the migration runner.
+	 *
+	 * @since 0.2.0
+	 * @return Migrator
+	 */
+	public function migrator(): Migrator {
+		return $this->typed( 'migrator', Migrator::class );
+	}
+
+	/**
+	 * Returns the request repository.
+	 *
+	 * @since 0.2.0
+	 * @return RequestRepository
+	 */
+	public function requests(): RequestRepository {
+		return $this->typed( 'requests', RequestRepository::class );
+	}
+
+	/**
+	 * Returns the retention sweeper.
+	 *
+	 * @since 0.2.0
+	 * @return RetentionSweeper
+	 */
+	public function sweeper(): RetentionSweeper {
+		return $this->typed( 'sweeper', RetentionSweeper::class );
+	}
+
+	/**
+	 * Resolves a service and asserts what came back.
+	 *
+	 * A factory can be replaced through set(), so the type is checked once here
+	 * rather than assumed in every accessor.
+	 *
+	 * @since 0.2.0
+	 *
+	 * @template T of object
+	 * @param string $id       Service id.
+	 * @param string $expected Expected class name.
+	 * @phpstan-param class-string<T> $expected
+	 * @phpstan-return T
+	 * @return object
+	 * @throws \UnexpectedValueException When the factory returns another type.
+	 */
+	private function typed( string $id, string $expected ): object {
+		$service = $this->get( $id );
+
+		if ( ! $service instanceof $expected ) {
+			// esc_html() per WordPress standards: exception messages can surface in a fatal-error screen.
+			throw new \UnexpectedValueException( esc_html( 'Service ' . $id . ' must be an instance of ' . $expected . '.' ) );
 		}
 
 		return $service;
@@ -179,7 +246,6 @@ final class Plugin {
 	 * Wires the plugin's hooks. Safe to call more than once.
 	 *
 	 * @since 0.1.0
-	 *
 	 * @return void
 	 */
 	public function register(): void {
@@ -190,6 +256,36 @@ final class Plugin {
 		$this->registered = true;
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
+
+		// Priority 20: this method itself runs on plugins_loaded, and the schema
+		// check has to land after every plugin has had its chance to load.
+		add_action( 'plugins_loaded', array( $this, 'check_schema' ), 20 );
+
+		add_action( Activator::CLEANUP_HOOK, array( $this, 'run_cleanup' ) );
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
+		}
+	}
+
+	/**
+	 * Brings the schema up to date when this build is ahead of the site.
+	 *
+	 * @since 0.2.0
+	 * @return void
+	 */
+	public function check_schema(): void {
+		$this->migrator()->maybe_migrate();
+	}
+
+	/**
+	 * Runs the daily retention sweep.
+	 *
+	 * @since 0.2.0
+	 * @return void
+	 */
+	public function run_cleanup(): void {
+		$this->sweeper()->sweep( RetentionSweeper::CRON_BATCHES );
 	}
 
 	/**
@@ -199,7 +295,6 @@ final class Plugin {
 	 * ship inside the plugin and have to be registered explicitly.
 	 *
 	 * @since 0.1.0
-	 *
 	 * @return void
 	 */
 	public function load_textdomain(): void {

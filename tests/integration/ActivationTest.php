@@ -11,6 +11,8 @@ namespace PostPurchaseHub\Tests\Integration;
 
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Deactivator;
+use PostPurchaseHub\Install\Migrator;
+use PostPurchaseHub\Install\Schema;
 use PostPurchaseHub\Support\Cache;
 
 /**
@@ -50,7 +52,40 @@ final class ActivationTest extends \WP_UnitTestCase {
 		$this->assertNotSame( '', $secret );
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Asserting the stored secret decodes to 64 raw bytes.
 		$this->assertSame( 64, strlen( (string) base64_decode( $secret, true ) ) );
-		$this->assertSame( Activator::INITIAL_SCHEMA_VERSION, (int) get_option( Activator::SCHEMA_VERSION_OPTION ) );
+		$this->assertSame( Migrator::TARGET_VERSION, (int) get_option( Activator::SCHEMA_VERSION_OPTION ) );
+	}
+
+	/**
+	 * Activation creates both tables.
+	 *
+	 * @return void
+	 */
+	public function test_activation_creates_the_tables(): void {
+		Activator::activate();
+
+		$this->assertTrue( Schema::table_exists( Schema::requests_table() ) );
+		$this->assertTrue( Schema::table_exists( Schema::request_items_table() ) );
+	}
+
+	/**
+	 * Activation schedules the one daily maintenance event.
+	 *
+	 * @return void
+	 */
+	public function test_activation_schedules_the_daily_sweep(): void {
+		wp_clear_scheduled_hook( Activator::CLEANUP_HOOK );
+
+		Activator::activate();
+
+		$scheduled = wp_next_scheduled( Activator::CLEANUP_HOOK );
+
+		$this->assertNotFalse( $scheduled );
+		$this->assertSame( 'daily', wp_get_schedule( Activator::CLEANUP_HOOK ) );
+
+		// Re-activating must not stack a second event on the same hook.
+		Activator::activate();
+
+		$this->assertSame( $scheduled, wp_next_scheduled( Activator::CLEANUP_HOOK ) );
 	}
 
 	/**
@@ -90,11 +125,11 @@ final class ActivationTest extends \WP_UnitTestCase {
 	 */
 	public function test_reactivation_preserves_an_advanced_schema_version(): void {
 		Activator::activate();
-		update_option( Activator::SCHEMA_VERSION_OPTION, 7, false );
+		update_option( Activator::SCHEMA_VERSION_OPTION, Migrator::TARGET_VERSION + 6, false );
 
 		Activator::activate();
 
-		$this->assertSame( 7, (int) get_option( Activator::SCHEMA_VERSION_OPTION ) );
+		$this->assertSame( Migrator::TARGET_VERSION + 6, (int) get_option( Activator::SCHEMA_VERSION_OPTION ) );
 	}
 
 	/**
@@ -153,7 +188,7 @@ final class ActivationTest extends \WP_UnitTestCase {
 		Deactivator::deactivate();
 
 		$this->assertSame( $secret, (string) get_option( Activator::TOKEN_SECRET_OPTION ) );
-		$this->assertSame( Activator::INITIAL_SCHEMA_VERSION, (int) get_option( Activator::SCHEMA_VERSION_OPTION ) );
+		$this->assertSame( Migrator::TARGET_VERSION, (int) get_option( Activator::SCHEMA_VERSION_OPTION ) );
 	}
 
 	/**

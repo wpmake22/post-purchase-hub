@@ -50,6 +50,13 @@ final class FakeWordPress {
 	public static array $actions = array();
 
 	/**
+	 * Filter callbacks registered through add_filter(): hook => list of callables.
+	 *
+	 * @var array<string, list<callable>>
+	 */
+	public static array $filters = array();
+
+	/**
 	 * Every TTL passed to set_transient(): name => list of seconds.
 	 *
 	 * @var array<string, list<int>>
@@ -68,6 +75,7 @@ final class FakeWordPress {
 		self::$object_cache     = array();
 		self::$options          = array();
 		self::$actions          = array();
+		self::$filters          = array();
 		self::$transient_writes = array();
 	}
 
