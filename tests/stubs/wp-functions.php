@@ -1042,6 +1042,207 @@ if ( ! function_exists( 'admin_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'home_url' ) ) {
+	/**
+	 * Builds a fake site URL.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param string $path Path relative to the site root.
+	 * @return string
+	 */
+	function home_url( $path = '/' ): string {
+		return 'https://example.test/' . ltrim( (string) $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'add_query_arg' ) ) {
+	/**
+	 * Adds or replaces query args on a URL, as WordPress's own does for the
+	 * two-argument (`$key`, `$value`, `$url`) and array-argument forms this
+	 * codebase uses.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param array<string, mixed>|string $key   Query arg name, or an associative array of args.
+	 * @param mixed                       $value Query arg value, or the URL when $key is an array.
+	 * @param string|null                 $url   URL to add args to. Required unless $key is an array.
+	 * @return string
+	 */
+	function add_query_arg( $key, $value = null, $url = null ): string {
+		if ( is_array( $key ) ) {
+			$args = $key;
+			$url  = (string) $value;
+		} else {
+			$args = array( (string) $key => $value );
+			$url  = (string) $url;
+		}
+
+		$separator = false === strpos( $url, '?' ) ? '?' : '&';
+		$query     = array();
+
+		foreach ( $args as $arg_key => $arg_value ) {
+			$query[] = rawurlencode( (string) $arg_key ) . '=' . rawurlencode( (string) $arg_value );
+		}
+
+		return $url . $separator . implode( '&', $query );
+	}
+}
+
+if ( ! function_exists( 'wc_get_page_permalink' ) ) {
+	/**
+	 * Fakes WooCommerce's page-permalink lookup.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param string $page Page id, e.g. 'myaccount'.
+	 * @return string
+	 */
+	function wc_get_page_permalink( $page ): string {
+		return 'https://example.test/' . sanitize_key( (string) $page ) . '/';
+	}
+}
+
+if ( ! function_exists( 'wc_get_endpoint_url' ) ) {
+	/**
+	 * Fakes WooCommerce's account-endpoint URL builder.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param string $endpoint Endpoint slug, e.g. 'view-order'.
+	 * @param string $value    Endpoint value, e.g. the order id.
+	 * @param string $permalink Base permalink the endpoint is appended to.
+	 * @return string
+	 */
+	function wc_get_endpoint_url( $endpoint, $value = '', $permalink = '' ): string {
+		$url = '' === $permalink ? home_url( '/' ) : $permalink;
+
+		return trailingslashit( $url ) . $endpoint . '/' . rawurlencode( (string) $value ) . '/';
+	}
+}
+
+if ( ! function_exists( 'get_locale' ) ) {
+	/**
+	 * The active locale: the top of the switch_to_locale() stack, or the site's.
+	 *
+	 * @since 0.10.0
+	 * @return string
+	 */
+	function get_locale(): string {
+		$top = end( FakeWordPress::$locale_stack );
+
+		return false !== $top ? $top : FakeWordPress::$site_locale;
+	}
+}
+
+if ( ! function_exists( 'get_user_locale' ) ) {
+	/**
+	 * A fake user's own locale, defaulting to the site locale when unseeded.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param int|\WP_User $user_id User id, or 0 for the current user.
+	 * @return string
+	 */
+	function get_user_locale( $user_id = 0 ): string {
+		$id = is_object( $user_id ) ? 0 : (int) $user_id;
+
+		return FakeWordPress::$user_locales[ $id ] ?? FakeWordPress::$site_locale;
+	}
+}
+
+if ( ! function_exists( 'switch_to_locale' ) ) {
+	/**
+	 * Pushes a locale, mirroring WP_Locale_Switcher::switch_to_locale(): a
+	 * no-op that returns false when the target already is the active locale.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param string $locale Locale to switch to.
+	 * @return bool
+	 */
+	function switch_to_locale( $locale ): bool {
+		if ( get_locale() === $locale ) {
+			return false;
+		}
+
+		FakeWordPress::$locale_stack[] = (string) $locale;
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'restore_current_locale' ) ) {
+	/**
+	 * Pops the most recently switched locale.
+	 *
+	 * @since 0.10.0
+	 * @return string|false
+	 */
+	function restore_current_locale() {
+		if ( array() === FakeWordPress::$locale_stack ) {
+			return false;
+		}
+
+		return array_pop( FakeWordPress::$locale_stack );
+	}
+}
+
+if ( ! function_exists( 'wc_get_template' ) ) {
+	/**
+	 * Records a template render rather than including a file — none of the
+	 * real `templates/emails/` files are reachable from the unit suite, and
+	 * rendering them is exercised in the integration suite instead.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param string               $template_name Template name.
+	 * @param array<string, mixed> $args          Arguments passed to the template.
+	 * @param string               $template_path Template path, unused by the shim.
+	 * @param string               $default_path  Default path, unused by the shim.
+	 * @return void
+	 */
+	function wc_get_template( $template_name, $args = array(), $template_path = '', $default_path = '' ): void {
+		unset( $template_path, $default_path );
+
+		FakeWordPress::$rendered_templates[] = array(
+			'name' => (string) $template_name,
+			'args' => $args,
+		);
+	}
+}
+
+if ( ! function_exists( 'wp_parse_url' ) ) {
+	/**
+	 * Thin wrapper matching WordPress's own, close enough for the plain
+	 * https:// URLs this plugin builds.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param string $url       URL to parse.
+	 * @param int    $component PHP_URL_* component, or -1 for all.
+	 * @return mixed
+	 */
+	function wp_parse_url( $url, $component = -1 ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- This shim is what wp_parse_url() delegates to.
+		return parse_url( (string) $url, $component );
+	}
+}
+
+if ( ! function_exists( 'trailingslashit' ) ) {
+	/**
+	 * Appends exactly one trailing slash, as WordPress's own does.
+	 *
+	 * @since 0.10.0
+	 *
+	 * @param string $value Value to slash.
+	 * @return string
+	 */
+	function trailingslashit( $value ): string {
+		return rtrim( (string) $value, '/\\' ) . '/';
+	}
+}
+
 if ( ! function_exists( 'wp_safe_redirect' ) ) {
 	/**
 	 * Records a redirect rather than sending one.

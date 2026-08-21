@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Install;
 
+use PostPurchaseHub\Emails\AdminDigest;
+
 /**
  * Prepares the options, tables and scheduled work the plugin needs.
  *
@@ -77,6 +79,7 @@ final class Activator {
 		}
 
 		self::schedule_cleanup();
+		self::schedule_digest();
 	}
 
 	/**
@@ -97,6 +100,27 @@ final class Activator {
 
 		// Off the hour, so the sweep does not land with every other daily task.
 		wp_schedule_event( time() + ( 17 * MINUTE_IN_SECONDS ), 'daily', self::CLEANUP_HOOK );
+	}
+
+	/**
+	 * Schedules the opt-in admin digest's daily event if not already scheduled.
+	 *
+	 * Scheduled unconditionally at activation, same as the cleanup sweep: the
+	 * digest email itself stays disabled until a merchant opts in
+	 * (`Emails\AdminDigest::init_form_fields()`'s `enabled` default is `no`),
+	 * so an idle event firing daily on a store that never turns it on costs a
+	 * cheap `is_enabled()` check and nothing else.
+	 *
+	 * @since 0.10.0
+	 * @return void
+	 */
+	public static function schedule_digest(): void {
+		if ( wp_next_scheduled( AdminDigest::CRON_HOOK ) ) {
+			return;
+		}
+
+		// A different offset from the cleanup sweep, so the two never contend.
+		wp_schedule_event( time() + ( 37 * MINUTE_IN_SECONDS ), 'daily', AdminDigest::CRON_HOOK );
 	}
 
 	/**

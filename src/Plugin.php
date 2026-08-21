@@ -18,6 +18,8 @@ use PostPurchaseHub\Admin\RequestActionController;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\CLI\BackfillCommand;
 use PostPurchaseHub\CLI\CleanupCommand;
+use PostPurchaseHub\Emails\AdminDigest;
+use PostPurchaseHub\Emails\Mailer;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
@@ -472,6 +474,16 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the mailer that registers this plugin's WC_Email classes.
+	 *
+	 * @since 0.10.0
+	 * @return Mailer
+	 */
+	public function mailer(): Mailer {
+		return $this->typed( 'mailer', Mailer::class );
+	}
+
+	/**
 	 * Resolves a service and asserts what came back.
 	 *
 	 * A factory can be replaced through set(), so the type is checked once here
@@ -518,6 +530,7 @@ final class Plugin {
 		add_action( 'plugins_loaded', array( $this, 'check_schema' ), 20 );
 
 		add_action( Activator::CLEANUP_HOOK, array( $this, 'run_cleanup' ) );
+		add_action( AdminDigest::CRON_HOOK, array( $this, 'run_digest' ) );
 
 		add_action( 'woocommerce_order_status_changed', array( $this, 'record_transition' ), 10, 4 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'resync_eta_on_status_change' ), 10, 4 );
@@ -534,6 +547,11 @@ final class Plugin {
 
 		add_action( 'init', array( $this, 'register_rendering' ), 20 );
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+
+		// Unconditional, unlike register_rendering()'s admin/frontend split:
+		// WooCommerce builds its email registry on every request that might
+		// send mail, including cron and REST ones, neither of which is_admin().
+		$this->mailer()->register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
@@ -767,6 +785,17 @@ final class Plugin {
 	 */
 	public function run_cleanup(): void {
 		$this->sweeper()->sweep( RetentionSweeper::CRON_BATCHES );
+	}
+
+	/**
+	 * Sends the opt-in admin digest, when enabled and there is something to
+	 * report. A no-op on every store that has not turned it on.
+	 *
+	 * @since 0.10.0
+	 * @return void
+	 */
+	public function run_digest(): void {
+		$this->mailer()->admin_digest()->maybe_send();
 	}
 
 	/**

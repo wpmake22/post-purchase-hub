@@ -52,6 +52,10 @@
 				<element value="PostPurchaseHub"/>
 			</property>
 		</properties>
+		<!-- Email templates fire WooCommerce's own documented hooks (header,
+		     order-details, footer) to inherit its rendering. Those are core's
+		     hook names to own, not ours to prefix. -->
+		<exclude-pattern>/templates/emails/*</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.Files.FileName">
@@ -66,9 +70,12 @@
 		<exclude-pattern>/tests/*</exclude-pattern>
 	</rule>
 
-	<!-- Tests invoke existing hooks to exercise them; they declare none, so there is nothing to document. -->
 	<rule ref="WooCommerce.Commenting.CommentHooks">
+		<!-- Tests invoke existing hooks to exercise them; they declare none, so there is nothing to document. -->
 		<exclude-pattern>/tests/*</exclude-pattern>
+		<!-- Email templates invoke WooCommerce's own header/order-details/footer
+		     hooks to inherit its rendering — not new hooks of ours to document. -->
+		<exclude-pattern>/templates/emails/*</exclude-pattern>
 	</rule>
 
 	<!-- Test bootstraps are CLI-only diagnostics; there is no HTML context to escape into. -->

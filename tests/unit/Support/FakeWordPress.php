@@ -219,6 +219,44 @@ final class FakeWordPress {
 	public static int $refund_calls = 0;
 
 	/**
+	 * Locale get_locale() reports when no switch_to_locale() is in effect.
+	 *
+	 * @var string
+	 */
+	public static string $site_locale = 'en_US';
+
+	/**
+	 * User locales the get_user_locale() shim serves, keyed by user id.
+	 *
+	 * @var array<int, string>
+	 */
+	public static array $user_locales = array();
+
+	/**
+	 * Emails recorded by the WC_Email stub's send() rather than delivered.
+	 *
+	 * @var list<array{id: string, to: string, subject: string, message: string}>
+	 */
+	public static array $sent_emails = array();
+
+	/**
+	 * Calls recorded by the wc_get_template() shim, in call order.
+	 *
+	 * @var list<array{name: string, args: array<string, mixed>}>
+	 */
+	public static array $rendered_templates = array();
+
+	/**
+	 * Locales pushed by switch_to_locale(), most recent last — mirrors
+	 * WP_Locale_Switcher's own stack closely enough for AbstractEmail's and
+	 * LocaleResolver's tests: get_locale() reads the top, restore_current_locale()
+	 * pops it.
+	 *
+	 * @var list<string>
+	 */
+	public static array $locale_stack = array();
+
+	/**
 	 * Clears all state between tests.
 	 *
 	 * @since 0.1.0
@@ -254,6 +292,11 @@ final class FakeWordPress {
 		self::$users                     = array();
 		self::$restocked_orders          = array();
 		self::$refund_calls              = 0;
+		self::$site_locale               = 'en_US';
+		self::$user_locales              = array();
+		self::$locale_stack              = array();
+		self::$sent_emails               = array();
+		self::$rendered_templates        = array();
 	}
 
 	/**

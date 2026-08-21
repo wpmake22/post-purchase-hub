@@ -16,6 +16,7 @@ use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
+use PostPurchaseHub\Emails\Mailer;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
@@ -290,6 +291,13 @@ final class Services {
 			'request_action_controller',
 			static function ( Plugin $plugin ): RequestActionController {
 				return new RequestActionController( $plugin->request_service(), $plugin->cancel(), $plugin->logger() );
+			}
+		);
+
+		$plugin->set(
+			'mailer',
+			static function ( Plugin $plugin ): Mailer {
+				return new Mailer( $plugin->requests(), $plugin->tokens() );
 			}
 		);
 	}
