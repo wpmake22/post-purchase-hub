@@ -15,8 +15,6 @@ use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
-use PostPurchaseHub\Admin\RequestDetail;
-use PostPurchaseHub\Admin\RequestListTable;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
@@ -275,23 +273,9 @@ final class Services {
 		);
 
 		$plugin->set(
-			'request_detail',
-			static function ( Plugin $plugin ): RequestDetail {
-				return new RequestDetail( $plugin->requests() );
-			}
-		);
-
-		$plugin->set(
-			'request_list_table',
-			static function ( Plugin $plugin ): RequestListTable {
-				return new RequestListTable( $plugin->requests() );
-			}
-		);
-
-		$plugin->set(
 			'menu',
 			static function ( Plugin $plugin ): Menu {
-				return new Menu( $plugin->requests(), $plugin->request_detail(), $plugin->request_list_table() );
+				return new Menu( $plugin->requests() );
 			}
 		);
 

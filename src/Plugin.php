@@ -15,8 +15,6 @@ use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
-use PostPurchaseHub\Admin\RequestDetail;
-use PostPurchaseHub\Admin\RequestListTable;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\CLI\BackfillCommand;
 use PostPurchaseHub\CLI\CleanupCommand;
@@ -441,26 +439,6 @@ final class Plugin {
 	 */
 	public function request_modal_renderer(): RequestModalRenderer {
 		return $this->typed( 'request_modal_renderer', RequestModalRenderer::class );
-	}
-
-	/**
-	 * Returns the request detail view.
-	 *
-	 * @since 0.9.0
-	 * @return RequestDetail
-	 */
-	public function request_detail(): RequestDetail {
-		return $this->typed( 'request_detail', RequestDetail::class );
-	}
-
-	/**
-	 * Returns the request list table.
-	 *
-	 * @since 0.9.0
-	 * @return RequestListTable
-	 */
-	public function request_list_table(): RequestListTable {
-		return $this->typed( 'request_list_table', RequestListTable::class );
 	}
 
 	/**

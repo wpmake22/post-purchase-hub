@@ -22,6 +22,13 @@ use PostPurchaseHub\Requests\RequestRepository;
  * adds its own submenu item later; registering one now, before that page
  * exists, would be exactly the dead button hard rule 19 forbids.
  *
+ * `RequestDetail` and `RequestListTable` are built here, on demand, inside
+ * render() — never injected and held. `WP_List_Table::__construct()` calls
+ * core's `convert_to_screen()`, which lives in `wp-admin/includes/template.php`
+ * and is not loaded yet at the point `Plugin::register_rendering()` builds
+ * this service (`init`, priority 20): building one any earlier than the
+ * page callback itself firing is a fatal on every admin request.
+ *
  * @since 0.9.0
  */
 final class Menu {
@@ -45,15 +52,9 @@ final class Menu {
 	 *
 	 * @since 0.9.0
 	 *
-	 * @param RequestRepository $requests    Counts pending requests for the menu bubble and serves the list table.
-	 * @param RequestDetail     $detail      Renders one request's detail view.
-	 * @param RequestListTable  $list_table  Renders the paginated queue.
+	 * @param RequestRepository $requests Counts pending requests for the menu bubble and backs both views, built fresh on each request rather than held.
 	 */
-	public function __construct(
-		private RequestRepository $requests,
-		private RequestDetail $detail,
-		private RequestListTable $list_table
-	) {}
+	public function __construct( private RequestRepository $requests ) {}
 
 	/**
 	 * Wires the admin_menu hook.
@@ -133,12 +134,13 @@ final class Menu {
 		$request_id = isset( $_GET['request_id'] ) ? absint( $_GET['request_id'] ) : 0;
 
 		if ( $request_id > 0 ) {
-			$this->detail->render( $request_id );
+			( new RequestDetail( $this->requests ) )->render( $request_id );
 
 			return;
 		}
 
-		$this->list_table->prepare_items();
-		$this->list_table->render_page();
+		$list_table = new RequestListTable( $this->requests );
+		$list_table->prepare_items();
+		$list_table->render_page();
 	}
 }
