@@ -47,6 +47,7 @@ final class TemplateLoader {
 		'partials/order-notes.php',
 		'partials/eta.php',
 		'partials/actions.php',
+		'partials/request-modal.php',
 		'myaccount/orders.php',
 		'myaccount/view-order.php',
 	);

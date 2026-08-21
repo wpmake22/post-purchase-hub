@@ -349,6 +349,25 @@ if ( ! function_exists( '_x' ) ) {
 	}
 }
 
+if ( ! function_exists( '_n' ) ) {
+	/**
+	 * Returns the singular or plural form unchanged; the unit suite loads no translations.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string $single The singular form.
+	 * @param string $plural The plural form.
+	 * @param int    $number Number to compare against, English pluralisation rules.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	function _n( $single, $plural, $number, $domain = 'default' ): string { // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment -- A shim, not a translation call.
+		unset( $domain );
+
+		return 1 === (int) $number ? (string) $single : (string) $plural;
+	}
+}
+
 if ( ! function_exists( 'delete_option' ) ) {
 	/**
 	 * Removes an option row.
@@ -721,6 +740,34 @@ if ( ! function_exists( 'wc_get_page_id' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wc_get_logger' ) ) {
+	/**
+	 * Returns a fake WooCommerce logger that records every call.
+	 *
+	 * @since 0.8.0
+	 * @return WC_Logger_Interface
+	 */
+	function wc_get_logger(): WC_Logger_Interface {
+		return new class() implements WC_Logger_Interface {
+			/**
+			 * Records the call in the shared fake WordPress state.
+			 *
+			 * @param string               $level   Log level.
+			 * @param string               $message Message.
+			 * @param array<string, mixed> $context Additional context.
+			 * @return void
+			 */
+			public function log( $level, $message, $context = array() ) {
+				FakeWordPress::$logged[] = array(
+					'level'   => $level,
+					'message' => $message,
+					'context' => $context,
+				);
+			}
+		};
+	}
+}
+
 if ( ! function_exists( 'get_post_meta' ) ) {
 	/**
 	 * Returns a fake post meta value.
@@ -751,6 +798,194 @@ if ( ! function_exists( 'get_post_field' ) ) {
 	 */
 	function get_post_field( $field, $post_id = 0 ): string {
 		return 'post_content' === $field ? ( FakeWordPress::$post_content[ (int) $post_id ] ?? '' ) : '';
+	}
+}
+
+if ( ! function_exists( 'absint' ) ) {
+	/**
+	 * Casts to a non-negative integer.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param mixed $value Value.
+	 * @return int
+	 */
+	function absint( $value ): int {
+		return abs( (int) $value );
+	}
+}
+
+if ( ! function_exists( 'sanitize_text_field' ) ) {
+	/**
+	 * Strips tags and collapses whitespace, closely enough to sanitize_text_field()
+	 * for the unit suite.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string $value Value.
+	 * @return string
+	 */
+	function sanitize_text_field( $value ): string {
+		$value = wp_strip_all_tags( (string) $value );
+		$value = (string) preg_replace( '/[\r\n\t ]+/', ' ', $value );
+
+		return trim( $value );
+	}
+}
+
+if ( ! function_exists( 'is_user_logged_in' ) ) {
+	/**
+	 * Whether the fake current user is logged in.
+	 *
+	 * @since 0.8.0
+	 * @return bool
+	 */
+	function is_user_logged_in(): bool {
+		return FakeWordPress::$current_user_id > 0;
+	}
+}
+
+if ( ! function_exists( 'wp_unslash' ) ) {
+	/**
+	 * No-op stand-in; the unit suite never feeds this slashed input.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	function wp_unslash( $value ) {
+		return $value;
+	}
+}
+
+if ( ! function_exists( 'register_rest_route' ) ) {
+	/**
+	 * Records a REST route registration.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string               $namespace Route namespace.
+	 * @param string               $route     Route pattern.
+	 * @param array<string, mixed> $args      Route arguments.
+	 * @return bool
+	 */
+	function register_rest_route( $namespace, $route, $args = array() ): bool { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.namespaceFound -- Matches WordPress core's own parameter name.
+		FakeWordPress::$rest_routes[] = array(
+			'namespace' => $namespace,
+			'route'     => $route,
+			'args'      => $args,
+		);
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'wp_enqueue_style' ) ) {
+	/**
+	 * Records a style enqueue.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string             $handle Style handle.
+	 * @param string             $src    Style URL.
+	 * @param array<int, string> $deps   Dependencies.
+	 * @param string|null        $ver    Version.
+	 * @return void
+	 */
+	function wp_enqueue_style( $handle, $src = '', $deps = array(), $ver = false ): void {
+		FakeWordPress::$enqueued_styles[ $handle ] = array(
+			'src'  => $src,
+			'deps' => $deps,
+			'ver'  => $ver,
+		);
+	}
+}
+
+if ( ! function_exists( 'wp_style_add_data' ) ) {
+	/**
+	 * Records a style's extra data.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string $handle Style handle.
+	 * @param string $key    Data key.
+	 * @param mixed  $value  Data value.
+	 * @return bool
+	 */
+	function wp_style_add_data( $handle, $key, $value ): bool {
+		FakeWordPress::$style_data[ $handle ][ $key ] = $value;
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'wp_enqueue_script' ) ) {
+	/**
+	 * Records a script enqueue.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string             $handle    Script handle.
+	 * @param string             $src       Script URL.
+	 * @param array<int, string> $deps      Dependencies.
+	 * @param string|bool|null   $ver       Version.
+	 * @param bool               $in_footer Whether to print in the footer.
+	 * @return void
+	 */
+	function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $in_footer = false ): void {
+		FakeWordPress::$enqueued_scripts[ $handle ] = array(
+			'src'       => $src,
+			'deps'      => $deps,
+			'ver'       => $ver,
+			'in_footer' => $in_footer,
+		);
+	}
+}
+
+if ( ! function_exists( 'wp_localize_script' ) ) {
+	/**
+	 * Records data localised to a script.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string               $handle      Script handle.
+	 * @param string               $object_name JS global name.
+	 * @param array<string, mixed> $data        Data.
+	 * @return bool
+	 */
+	function wp_localize_script( $handle, $object_name, $data ): bool {
+		FakeWordPress::$localized_scripts[ $handle ][ $object_name ] = $data;
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'rest_url' ) ) {
+	/**
+	 * Builds a fake REST URL.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string $path Route path.
+	 * @return string
+	 */
+	function rest_url( $path = '' ): string {
+		return 'https://example.test/wp-json/' . ltrim( (string) $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'wp_create_nonce' ) ) {
+	/**
+	 * Builds a deterministic fake nonce.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param string $action Nonce action.
+	 * @return string
+	 */
+	function wp_create_nonce( $action = -1 ): string {
+		return 'nonce-for-' . (string) $action;
 	}
 }
 
@@ -797,4 +1032,8 @@ if ( ! defined( 'WEEK_IN_SECONDS' ) ) {
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 
 require_once __DIR__ . '/wp-post.php';
+require_once __DIR__ . '/wp-error.php';
+require_once __DIR__ . '/wp-rest-request.php';
+require_once __DIR__ . '/wp-rest-response.php';
+require_once __DIR__ . '/wc-logger.php';
 require_once __DIR__ . '/wc-classes.php';

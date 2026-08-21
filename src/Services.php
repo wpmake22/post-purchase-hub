@@ -10,20 +10,25 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub;
 
 use PostPurchaseHub\Actions\ActionRegistry;
+use PostPurchaseHub\Actions\Cancel;
 use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
 use PostPurchaseHub\Frontend\Renderer;
+use PostPurchaseHub\Frontend\RequestModalRenderer;
 use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Migrator;
 use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
+use PostPurchaseHub\Requests\PendingCancellationBranch;
 use PostPurchaseHub\Requests\RequestRepository;
+use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Rest\RequestsController;
 use PostPurchaseHub\Security\OwnershipResolver;
 use PostPurchaseHub\Security\RateLimiter;
 use PostPurchaseHub\Security\TokenService;
@@ -135,9 +140,21 @@ final class Services {
 		);
 
 		$plugin->set(
+			'pending_cancellation_branch',
+			static function ( Plugin $plugin ): PendingCancellationBranch {
+				return new PendingCancellationBranch( $plugin->requests() );
+			}
+		);
+
+		$plugin->set(
 			'renderer',
 			static function ( Plugin $plugin ): Renderer {
-				return new Renderer( $plugin->timeline_builder(), $plugin->templates(), $plugin->estimated_delivery() );
+				return new Renderer(
+					$plugin->timeline_builder(),
+					$plugin->templates(),
+					$plugin->estimated_delivery(),
+					$plugin->pending_cancellation_branch()
+				);
 			}
 		);
 
@@ -215,6 +232,40 @@ final class Services {
 			'actions_renderer',
 			static function ( Plugin $plugin ): ActionsRenderer {
 				return new ActionsRenderer( $plugin->action_registry(), $plugin->templates() );
+			}
+		);
+
+		$plugin->set(
+			'request_service',
+			static function ( Plugin $plugin ): RequestService {
+				return new RequestService( $plugin->requests() );
+			}
+		);
+
+		$plugin->set(
+			'cancel',
+			static function ( Plugin $plugin ): Cancel {
+				return new Cancel( $plugin->eligibility_resolver(), $plugin->request_service() );
+			}
+		);
+
+		$plugin->set(
+			'requests_controller',
+			static function ( Plugin $plugin ): RequestsController {
+				return new RequestsController(
+					$plugin->ownership_resolver(),
+					$plugin->rate_limiter(),
+					$plugin->request_service(),
+					$plugin->cancel(),
+					$plugin->logger()
+				);
+			}
+		);
+
+		$plugin->set(
+			'request_modal_renderer',
+			static function ( Plugin $plugin ): RequestModalRenderer {
+				return new RequestModalRenderer( $plugin->templates(), $plugin->assets() );
 			}
 		);
 	}

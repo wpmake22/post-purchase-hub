@@ -7,7 +7,7 @@
  * @package PostPurchaseHub
  * @version 0.4.0
  *
- * @var array{order_id: int, status: string, historical: bool, notice: string, stages: array<int, array<string, string>>, branch: array<string, string>|null, current_label: string} $timeline Prepared by Frontend\TimelineView.
+ * @var array{order_id: int, status: string, historical: bool, notice: string, stages: array<int, array<string, string>>, branch: array<string, string>|null, branch_note: string, current_label: string} $timeline Prepared by Frontend\TimelineView.
  */
 
 declare( strict_types = 1 );
@@ -66,7 +66,9 @@ $pph_heading_id = 'pph-timeline-heading-' . (int) $timeline['order_id'];
 			class="pph-timeline__branch pph-timeline__branch--<?php echo esc_attr( $timeline['branch']['key'] ); ?>"
 			data-pph-branch="<?php echo esc_attr( $timeline['branch']['key'] ); ?>"
 		>
-			<strong class="pph-timeline__branch-label"><?php echo esc_html( $timeline['branch']['label'] ); ?></strong>
+			<strong class="pph-timeline__branch-label" data-pph-branch-label>
+				<?php echo esc_html( $timeline['branch']['label'] ); ?>
+			</strong>
 
 			<?php if ( '' !== $timeline['branch']['datetime'] ) : ?>
 				<time
@@ -76,6 +78,12 @@ $pph_heading_id = 'pph-timeline-heading-' . (int) $timeline['order_id'];
 				>
 					<?php echo esc_html( $timeline['branch']['date_label'] ); ?>
 				</time>
+			<?php endif; ?>
+
+			<?php if ( '' !== $timeline['branch_note'] ) : ?>
+				<span class="pph-timeline__branch-note" data-pph-branch-note>
+					<?php echo esc_html( $timeline['branch_note'] ); ?>
+				</span>
 			<?php endif; ?>
 		</p>
 	<?php endif; ?>

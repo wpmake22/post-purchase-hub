@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub;
 
 use PostPurchaseHub\Actions\ActionRegistry;
+use PostPurchaseHub\Actions\Cancel;
 use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\CLI\BackfillCommand;
@@ -18,14 +19,18 @@ use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
 use PostPurchaseHub\Frontend\Renderer;
+use PostPurchaseHub\Frontend\RequestModalRenderer;
 use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
+use PostPurchaseHub\Requests\PendingCancellationBranch;
 use PostPurchaseHub\Requests\RequestRepository;
+use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Rest\RequestsController;
 use PostPurchaseHub\Security\OwnershipResolver;
 use PostPurchaseHub\Security\RateLimiter;
 use PostPurchaseHub\Security\TokenService;
@@ -383,6 +388,56 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the pending-cancellation branch overlay.
+	 *
+	 * @since 0.8.0
+	 * @return PendingCancellationBranch
+	 */
+	public function pending_cancellation_branch(): PendingCancellationBranch {
+		return $this->typed( 'pending_cancellation_branch', PendingCancellationBranch::class );
+	}
+
+	/**
+	 * Returns the request lifecycle service.
+	 *
+	 * @since 0.8.0
+	 * @return RequestService
+	 */
+	public function request_service(): RequestService {
+		return $this->typed( 'request_service', RequestService::class );
+	}
+
+	/**
+	 * Returns the cancellation-request action.
+	 *
+	 * @since 0.8.0
+	 * @return Cancel
+	 */
+	public function cancel(): Cancel {
+		return $this->typed( 'cancel', Cancel::class );
+	}
+
+	/**
+	 * Returns the requests REST controller.
+	 *
+	 * @since 0.8.0
+	 * @return RequestsController
+	 */
+	public function requests_controller(): RequestsController {
+		return $this->typed( 'requests_controller', RequestsController::class );
+	}
+
+	/**
+	 * Returns the request-modal renderer.
+	 *
+	 * @since 0.8.0
+	 * @return RequestModalRenderer
+	 */
+	public function request_modal_renderer(): RequestModalRenderer {
+		return $this->typed( 'request_modal_renderer', RequestModalRenderer::class );
+	}
+
+	/**
 	 * Resolves a service and asserts what came back.
 	 *
 	 * A factory can be replaced through set(), so the type is checked once here
@@ -443,11 +498,17 @@ final class Plugin {
 		add_action( 'woocommerce_update_order_item', array( $this, 'resync_eta_for_shipping_item' ), 10, 2 );
 
 		add_action( 'init', array( $this, 'register_rendering' ), 20 );
+		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
 			\WP_CLI::add_command( 'pph backfill-timeline', new BackfillCommand( $this->transition_recorder(), $this->stage_map() ) );
 		}
+
+		// Core's own actions fill the registry before pph_loaded fires, so
+		// anything hooking that action — Pro, a filter-driven extension — sees
+		// core's actions already registered rather than racing them.
+		$this->cancel()->register( $this->action_registry() );
 
 		/**
 		 * Fires once core has wired itself, with the service container.
@@ -603,6 +664,17 @@ final class Plugin {
 
 		$this->assets()->register();
 		$this->template_replacer()->register();
+		$this->request_modal_renderer()->register();
+	}
+
+	/**
+	 * Registers this plugin's REST routes.
+	 *
+	 * @since 0.8.0
+	 * @return void
+	 */
+	public function register_rest_routes(): void {
+		$this->requests_controller()->register_routes();
 	}
 
 	/**

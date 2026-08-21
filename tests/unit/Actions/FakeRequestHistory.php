@@ -35,9 +35,10 @@ final class FakeRequestHistory implements RequestHistory {
 	 * @param int    $order_id   Order id.
 	 * @param string $type       Request type.
 	 * @param string $created_at UTC `Y-m-d H:i:s` creation time.
+	 * @param string $status     One of Request::statuses().
 	 * @return void
 	 */
-	public function add( int $order_id, string $type, string $created_at ): void {
+	public function add( int $order_id, string $type, string $created_at, string $status = Request::STATUS_PENDING ): void {
 		$key = $order_id . ':' . $type;
 
 		$this->requests[ $key ][] = Request::from_row(
@@ -45,7 +46,7 @@ final class FakeRequestHistory implements RequestHistory {
 				'id'         => count( $this->requests[ $key ] ?? array() ) + 1,
 				'order_id'   => $order_id,
 				'type'       => $type,
-				'status'     => Request::STATUS_PENDING,
+				'status'     => $status,
 				'source'     => Request::SOURCE_ACCOUNT,
 				'created_at' => $created_at,
 				'updated_at' => $created_at,
@@ -79,5 +80,26 @@ final class FakeRequestHistory implements RequestHistory {
 		$list = $this->requests[ $order_id . ':' . $type ] ?? array();
 
 		return array() === $list ? null : $list[ array_key_last( $list ) ];
+	}
+
+	/**
+	 * The most recently added fake request still pending, for an order and type.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param int    $order_id Order id.
+	 * @param string $type     Request type.
+	 * @return Request|null
+	 */
+	public function pending_for_order( int $order_id, string $type ): ?Request {
+		$list = array_reverse( $this->requests[ $order_id . ':' . $type ] ?? array() );
+
+		foreach ( $list as $request ) {
+			if ( Request::STATUS_PENDING === $request->status ) {
+				return $request;
+			}
+		}
+
+		return null;
 	}
 }

@@ -12,6 +12,8 @@ namespace PostPurchaseHub\Tests\Unit\Frontend;
 use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
+use PostPurchaseHub\Requests\PendingCancellationBranch;
+use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
@@ -56,7 +58,8 @@ final class RendererTest extends TestCase {
 		$this->renderer = new Renderer(
 			new TimelineBuilder( $stages, new TransitionRecorder( $stages, new Logger() ) ),
 			new TemplateLoader( new Logger() ),
-			new EstimatedDelivery( new NullTrackingAvailability(), new Logger() )
+			new EstimatedDelivery( new NullTrackingAvailability(), new Logger() ),
+			new PendingCancellationBranch( new RequestRepository() )
 		);
 	}
 

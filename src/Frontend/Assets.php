@@ -9,13 +9,17 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Rest\RequestsController;
+
 /**
- * Loads this plugin's stylesheet on the pages that render it, and nowhere else.
+ * Loads this plugin's stylesheet and request-modal script on the pages that
+ * render them, and nowhere else.
  *
  * A plugin that ships one global stylesheet is a plugin that slows down every
  * product page on the store to style four of them, so the scope is decided per
- * request and the default is "no". The build manifest supplies the version, so
- * a deployed change busts caches without anyone remembering to bump a constant.
+ * request and the default is "no". Each build manifest supplies its own
+ * version and dependencies, so a deployed change busts caches without anyone
+ * remembering to bump a constant.
  *
  * @since 0.4.0
  */
@@ -27,6 +31,13 @@ final class Assets {
 	 * @var string
 	 */
 	public const STYLE_HANDLE = 'pph-frontend';
+
+	/**
+	 * Request-modal script handle.
+	 *
+	 * @var string
+	 */
+	public const SCRIPT_HANDLE = 'pph-requests';
 
 	/**
 	 * Build directory, relative to the plugin root.
@@ -46,7 +57,7 @@ final class Assets {
 	}
 
 	/**
-	 * Enqueues the stylesheet when this request will render something.
+	 * Enqueues the stylesheet and script when this request will render something.
 	 *
 	 * @since 0.4.0
 	 * @return void
@@ -56,14 +67,35 @@ final class Assets {
 			return;
 		}
 
+		$style = $this->manifest( 'index.asset.php' );
+
 		wp_enqueue_style(
 			self::STYLE_HANDLE,
 			PPH_PLUGIN_URL . self::BUILD_PATH . 'index.css',
 			array(),
-			$this->version()
+			$style['version']
 		);
 
 		wp_style_add_data( self::STYLE_HANDLE, 'rtl', 'replace' );
+
+		$script = $this->manifest( 'requests.asset.php' );
+
+		wp_enqueue_script(
+			self::SCRIPT_HANDLE,
+			PPH_PLUGIN_URL . self::BUILD_PATH . 'requests.js',
+			$script['dependencies'],
+			$script['version'],
+			true
+		);
+
+		wp_localize_script(
+			self::SCRIPT_HANDLE,
+			'pphRequests',
+			array(
+				'restUrl' => rest_url( RequestsController::NAMESPACE . RequestsController::ROUTE ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+			)
+		);
 	}
 
 	/**
@@ -121,24 +153,32 @@ final class Assets {
 	}
 
 	/**
-	 * The build's version string.
+	 * Reads one build manifest's version and dependencies.
 	 *
 	 * @since 0.4.0
-	 * @return string
+	 *
+	 * @param string $filename Manifest filename, relative to the build directory.
+	 * @return array{version: string, dependencies: string[]}
 	 */
-	private function version(): string {
-		$manifest = PPH_PLUGIN_DIR . self::BUILD_PATH . 'index.asset.php';
+	private function manifest( string $filename ): array {
+		$path = PPH_PLUGIN_DIR . self::BUILD_PATH . $filename;
 
-		if ( is_readable( $manifest ) ) {
-			$asset = include $manifest;
+		if ( is_readable( $path ) ) {
+			$asset = include $path;
 
-			if ( is_array( $asset ) && isset( $asset['version'] ) && is_string( $asset['version'] ) ) {
-				return $asset['version'];
+			if ( is_array( $asset ) ) {
+				return array(
+					'version'      => isset( $asset['version'] ) && is_string( $asset['version'] ) ? $asset['version'] : PPH_VERSION,
+					'dependencies' => isset( $asset['dependencies'] ) && is_array( $asset['dependencies'] ) ? $asset['dependencies'] : array(),
+				);
 			}
 		}
 
 		// A build that did not produce a manifest is a packaging fault, not a
-		// reason to serve an unversioned stylesheet forever.
-		return PPH_VERSION;
+		// reason to serve an unversioned, dependency-less asset forever.
+		return array(
+			'version'      => PPH_VERSION,
+			'dependencies' => array(),
+		);
 	}
 }

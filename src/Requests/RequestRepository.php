@@ -190,6 +190,27 @@ final class RequestRepository implements RequestHistory {
 	}
 
 	/**
+	 * The pending request of one type raised against an order, if any.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param int    $order_id Order id.
+	 * @param string $type     Request type.
+	 * @return Request|null
+	 */
+	public function pending_for_order( int $order_id, string $type ): ?Request {
+		$requests = $this->find_by_order(
+			$order_id,
+			array(
+				'type'   => $type,
+				'status' => Request::STATUS_PENDING,
+			)
+		);
+
+		return $requests[0] ?? null;
+	}
+
+	/**
 	 * Updates a request.
 	 *
 	 * @since 0.2.0

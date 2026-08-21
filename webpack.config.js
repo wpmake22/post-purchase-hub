@@ -27,6 +27,13 @@ const core = {
 	entry: {
 		...blockEntries,
 		index: path.resolve( process.cwd(), 'assets', 'src', 'index.js' ),
+		requests: path.resolve(
+			process.cwd(),
+			'assets',
+			'src',
+			'js',
+			'requests.js'
+		),
 	},
 	output: {
 		...defaultConfig.output,
@@ -46,7 +53,13 @@ const pro = {
 	...defaultConfig,
 	name: 'pro',
 	entry: {
-		index: path.resolve( process.cwd(), 'pro', 'assets', 'src', 'index.js' ),
+		index: path.resolve(
+			process.cwd(),
+			'pro',
+			'assets',
+			'src',
+			'index.js'
+		),
 	},
 	output: {
 		...defaultConfig.output,

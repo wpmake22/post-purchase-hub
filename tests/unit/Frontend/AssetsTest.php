@@ -185,4 +185,50 @@ final class AssetsTest extends TestCase {
 
 		$this->assertFalse( $this->assets->is_required() );
 	}
+
+	/**
+	 * On a required page, both the stylesheet and the request-modal script enqueue.
+	 *
+	 * @return void
+	 */
+	public function test_enqueue_loads_the_style_and_the_script_where_required(): void {
+		FakeWordPress::$is_account_page = true;
+		FakeWordPress::$endpoints       = array( 'orders' );
+
+		$this->assets->enqueue();
+
+		$this->assertArrayHasKey( Assets::STYLE_HANDLE, FakeWordPress::$enqueued_styles );
+		$this->assertArrayHasKey( Assets::SCRIPT_HANDLE, FakeWordPress::$enqueued_scripts );
+	}
+
+	/**
+	 * The script is localised with a REST URL and a nonce.
+	 *
+	 * @return void
+	 */
+	public function test_enqueue_localises_the_rest_url_and_nonce(): void {
+		FakeWordPress::$is_account_page = true;
+		FakeWordPress::$endpoints       = array( 'orders' );
+
+		$this->assets->enqueue();
+
+		$data = FakeWordPress::$localized_scripts[ Assets::SCRIPT_HANDLE ]['pphRequests'];
+
+		$this->assertStringContainsString( 'pph/v1/requests', $data['restUrl'] );
+		$this->assertNotSame( '', $data['nonce'] );
+	}
+
+	/**
+	 * Nothing enqueues where the assets are not required.
+	 *
+	 * @return void
+	 */
+	public function test_enqueue_loads_nothing_where_not_required(): void {
+		FakeWordPress::$post = $this->post( 'Just some content.' );
+
+		$this->assets->enqueue();
+
+		$this->assertSame( array(), FakeWordPress::$enqueued_styles );
+		$this->assertSame( array(), FakeWordPress::$enqueued_scripts );
+	}
 }

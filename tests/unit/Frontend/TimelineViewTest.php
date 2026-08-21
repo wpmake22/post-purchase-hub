@@ -176,4 +176,65 @@ final class TimelineViewTest extends TestCase {
 
 		$this->assertSame( 'Sun', $view['stages'][0]['date_label'] );
 	}
+
+	/**
+	 * With no real branch, a pending-cancellation overlay becomes the branch
+	 * shown, including the note a real branch never carries.
+	 *
+	 * @return void
+	 */
+	public function test_a_pending_cancellation_overlay_becomes_the_branch_when_there_is_none(): void {
+		$view = TimelineView::present(
+			$this->timeline( array( array( StageMap::CONFIRMED, TimelineStage::STATE_CURRENT, '2026-03-01 09:00:00' ) ) ),
+			array(
+				'label'         => 'Cancellation requested',
+				'timestamp_utc' => '2026-03-02 10:00:00',
+				'note'          => 'We usually respond within 1 day.',
+			)
+		);
+
+		$this->assertNotNull( $view['branch'] );
+		$this->assertSame( 'cancellation_requested', $view['branch']['key'] );
+		$this->assertSame( 'Cancellation requested', $view['branch']['label'] );
+		$this->assertSame( TimelineStage::STATE_CURRENT, $view['branch']['state'] );
+		$this->assertSame( 'We usually respond within 1 day.', $view['branch_note'] );
+		$this->assertNotNull( $view['current'] );
+		$this->assertSame( 'cancellation_requested', $view['current']['key'] );
+	}
+
+	/**
+	 * A real branch always wins: an order genuinely cancelled or refunded
+	 * does not also show a still-pending request.
+	 *
+	 * @return void
+	 */
+	public function test_a_real_branch_is_not_overridden_by_the_pending_overlay(): void {
+		$branch = new TimelineStage( StageMap::CANCELLED, 'Cancelled', TimelineStage::STATE_CURRENT, '2026-03-03 12:00:00', 'cancelled' );
+
+		$view = TimelineView::present(
+			$this->timeline( array( array( StageMap::PLACED, TimelineStage::STATE_COMPLETE, '2026-03-01 09:00:00' ) ), $branch ),
+			array(
+				'label'         => 'Cancellation requested',
+				'timestamp_utc' => '2026-03-02 10:00:00',
+				'note'          => 'We usually respond within 1 day.',
+			)
+		);
+
+		$this->assertSame( StageMap::CANCELLED, $view['branch']['key'] );
+		$this->assertSame( '', $view['branch_note'], 'A real branch carries no pending-request note.' );
+	}
+
+	/**
+	 * With no overlay supplied, branch_note stays empty and nothing about
+	 * existing callers changes.
+	 *
+	 * @return void
+	 */
+	public function test_branch_note_is_empty_with_no_overlay(): void {
+		$view = TimelineView::present(
+			$this->timeline( array( array( StageMap::PLACED, TimelineStage::STATE_CURRENT, '2026-03-01 09:00:00' ) ) )
+		);
+
+		$this->assertSame( '', $view['branch_note'] );
+	}
 }

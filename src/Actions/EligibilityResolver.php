@@ -24,6 +24,15 @@ namespace PostPurchaseHub\Actions;
  * on it" — that is `Security\OwnershipResolver`'s question, asked separately,
  * before this one.
  *
+ * The cap and cooldown checks query stored request history by
+ * `Requests\Request` type, not by the action id `resolve()` was called with:
+ * an action's id (its identity in `ActionRegistry`, e.g. `cancel` — chosen to
+ * collide with WooCommerce core's own list-action key) and the type its rows
+ * are stored under (e.g. `Request::TYPE_CANCELLATION`) are not guaranteed to
+ * be the same string. `EligibilityRule::$history_type` says which; when it is
+ * null, the action id is used as a fallback that is only correct when the two
+ * happen to match.
+ *
  * @since 0.7.0
  */
 final class EligibilityResolver {
@@ -110,14 +119,16 @@ final class EligibilityResolver {
 			);
 		}
 
-		if ( null !== $rule->per_order_cap && $this->history->count_for_order( $order->get_id(), $action_id ) >= $rule->per_order_cap ) {
+		$history_type = $rule->history_type ?? $action_id;
+
+		if ( null !== $rule->per_order_cap && $this->history->count_for_order( $order->get_id(), $history_type ) >= $rule->per_order_cap ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_REQUEST_CAP_REACHED,
 				__( 'This order has already reached the limit of requests for this action.', 'post-purchase-hub' )
 			);
 		}
 
-		$cooldown_result = $this->check_cooldown( $action_id, $order, $rule );
+		$cooldown_result = $this->check_cooldown( $history_type, $order, $rule );
 
 		if ( null !== $cooldown_result ) {
 			return $cooldown_result;
@@ -195,21 +206,21 @@ final class EligibilityResolver {
 	}
 
 	/**
-	 * Checks the cooldown since the last request of this action's type.
+	 * Checks the cooldown since the last request of this action's history type.
 	 *
 	 * @since 0.7.0
 	 *
-	 * @param string          $action_id Action id, scoping the history lookup.
-	 * @param \WC_Order       $order     Order to evaluate.
-	 * @param EligibilityRule $rule      Rule carrying the cooldown length.
+	 * @param string          $history_type Request type scoping the history lookup — see EligibilityRule::$history_type.
+	 * @param \WC_Order       $order        Order to evaluate.
+	 * @param EligibilityRule $rule         Rule carrying the cooldown length.
 	 * @return EligibilityResult|null Null when no cooldown applies or it has elapsed.
 	 */
-	private function check_cooldown( string $action_id, \WC_Order $order, EligibilityRule $rule ): ?EligibilityResult {
+	private function check_cooldown( string $history_type, \WC_Order $order, EligibilityRule $rule ): ?EligibilityResult {
 		if ( null === $rule->cooldown_seconds ) {
 			return null;
 		}
 
-		$last = $this->history->most_recent_for_order( $order->get_id(), $action_id );
+		$last = $this->history->most_recent_for_order( $order->get_id(), $history_type );
 
 		if ( null === $last ) {
 			return null;

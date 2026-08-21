@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Requests\PendingCancellationBranch;
 use PostPurchaseHub\Timeline\EstimatedDelivery;
 use PostPurchaseHub\Timeline\TimelineBuilder;
 
@@ -77,6 +78,13 @@ final class Renderer {
 	private EstimatedDelivery $eta;
 
 	/**
+	 * Pending-cancellation branch overlay.
+	 *
+	 * @var PendingCancellationBranch
+	 */
+	private PendingCancellationBranch $pending_cancellation;
+
+	/**
 	 * Order ids whose detail timeline has already been drawn this request.
 	 *
 	 * @var array<int, bool>
@@ -88,14 +96,16 @@ final class Renderer {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @param TimelineBuilder   $builder   Timeline builder.
-	 * @param TemplateLoader    $templates Template loader.
-	 * @param EstimatedDelivery $eta       Estimated-delivery calculator.
+	 * @param TimelineBuilder           $builder              Timeline builder.
+	 * @param TemplateLoader            $templates            Template loader.
+	 * @param EstimatedDelivery         $eta                  Estimated-delivery calculator.
+	 * @param PendingCancellationBranch $pending_cancellation Pending-cancellation branch overlay, detail page only.
 	 */
-	public function __construct( TimelineBuilder $builder, TemplateLoader $templates, EstimatedDelivery $eta ) {
-		$this->builder   = $builder;
-		$this->templates = $templates;
-		$this->eta       = $eta;
+	public function __construct( TimelineBuilder $builder, TemplateLoader $templates, EstimatedDelivery $eta, PendingCancellationBranch $pending_cancellation ) {
+		$this->builder              = $builder;
+		$this->templates            = $templates;
+		$this->eta                  = $eta;
+		$this->pending_cancellation = $pending_cancellation;
 	}
 
 	/**
@@ -226,7 +236,12 @@ final class Renderer {
 	public function render_timeline( \WC_Order $order ): void {
 		$this->templates->render(
 			'partials/timeline.php',
-			array( 'timeline' => TimelineView::present( $this->builder->build( $order ) ) )
+			array(
+				'timeline' => TimelineView::present(
+					$this->builder->build( $order ),
+					$this->pending_cancellation->for_order( $order )
+				),
+			)
 		);
 
 		$this->templates->render(

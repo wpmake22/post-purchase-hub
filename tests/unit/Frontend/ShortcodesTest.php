@@ -13,6 +13,8 @@ use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
+use PostPurchaseHub\Requests\PendingCancellationBranch;
+use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
@@ -57,7 +59,8 @@ final class ShortcodesTest extends TestCase {
 			new Renderer(
 				new TimelineBuilder( $stages, new TransitionRecorder( $stages, new Logger() ) ),
 				new TemplateLoader( new Logger() ),
-				new EstimatedDelivery( new NullTrackingAvailability(), new Logger() )
+				new EstimatedDelivery( new NullTrackingAvailability(), new Logger() ),
+				new PendingCancellationBranch( new RequestRepository() )
 			)
 		);
 	}

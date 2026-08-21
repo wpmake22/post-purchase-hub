@@ -330,6 +330,63 @@ final class EligibilityResolverTest extends TestCase {
 	}
 
 	/**
+	 * When a rule names an explicit history_type, the cap and cooldown checks
+	 * query by that — not by the action id resolve() was called with. An
+	 * action's registry id and its stored request type are not guaranteed to
+	 * be the same string (Actions\Cancel is exactly this case: id `cancel`,
+	 * type `cancellation`), and a resolver that queried by action id here
+	 * would silently never find any prior request at all.
+	 *
+	 * @return void
+	 */
+	public function test_history_type_overrides_the_action_id_for_cooldown(): void {
+		$history = new FakeRequestHistory();
+		$history->add( 1, 'a_different_stored_type', gmdate( 'Y-m-d H:i:s', time() - 60 ) );
+
+		$rule = new EligibilityRule( cooldown_seconds: HOUR_IN_SECONDS, history_type: 'a_different_stored_type' );
+
+		// Resolved under an action id that does not match the stored type at
+		// all — only history_type should matter.
+		$result = ( new EligibilityResolver( $history ) )->resolve( 'an_unrelated_action_id', new \WC_Order( 1, 'pending' ), $rule );
+
+		$this->assertFalse( $result->eligible );
+		$this->assertSame( EligibilityResult::REASON_COOLDOWN_ACTIVE, $result->reason_code );
+	}
+
+	/**
+	 * The same override applies to the per-order cap.
+	 *
+	 * @return void
+	 */
+	public function test_history_type_overrides_the_action_id_for_the_cap(): void {
+		$history = new FakeRequestHistory();
+		$history->add( 1, 'a_different_stored_type', gmdate( 'Y-m-d H:i:s', time() - 100 ) );
+
+		$rule = new EligibilityRule( per_order_cap: 1, history_type: 'a_different_stored_type' );
+
+		$result = ( new EligibilityResolver( $history ) )->resolve( 'an_unrelated_action_id', new \WC_Order( 1, 'pending' ), $rule );
+
+		$this->assertFalse( $result->eligible );
+		$this->assertSame( EligibilityResult::REASON_REQUEST_CAP_REACHED, $result->reason_code );
+	}
+
+	/**
+	 * With no history_type set, the action id is the fallback — the behaviour
+	 * every case above this one already relies on.
+	 *
+	 * @return void
+	 */
+	public function test_history_type_defaults_to_the_action_id(): void {
+		$history = new FakeRequestHistory();
+		$history->add( 1, 'cancel', gmdate( 'Y-m-d H:i:s', time() - 60 ) );
+
+		$rule   = new EligibilityRule( cooldown_seconds: HOUR_IN_SECONDS );
+		$result = ( new EligibilityResolver( $history ) )->resolve( 'cancel', new \WC_Order( 1, 'pending' ), $rule );
+
+		$this->assertFalse( $result->eligible );
+	}
+
+	/**
 	 * An order with no prior request of this type is never denied by the
 	 * cooldown check.
 	 *

@@ -31,28 +31,71 @@ final class TimelineView {
 	/**
 	 * Builds the display array for one timeline.
 	 *
+	 * `$pending_cancellation` overlays a "Cancellation requested" branch when
+	 * the order has not itself branched — set only on the single-order detail
+	 * view (see `Requests\PendingCancellationBranch`), never on a list, where
+	 * finding it out would cost a query per row. A real branch always wins:
+	 * an order that has actually been cancelled or refunded does not also
+	 * show a still-pending request.
+	 *
 	 * @since 0.4.0
 	 *
-	 * @param Timeline $timeline Built timeline.
-	 * @return array{order_id: int, status: string, historical: bool, notice: string, stages: array<int, array{key: string, label: string, state: string, state_label: string, datetime: string, date_label: string}>, branch: array{key: string, label: string, state: string, state_label: string, datetime: string, date_label: string}|null, current: array{key: string, label: string, state: string, state_label: string, datetime: string, date_label: string}|null}
+	 * @param Timeline                                                       $timeline              Built timeline.
+	 * @param array{label: string, timestamp_utc: string, note: string}|null $pending_cancellation Pending-cancellation overlay, or null.
+	 * @return array{order_id: int, status: string, historical: bool, notice: string, stages: array<int, array{key: string, label: string, state: string, state_label: string, datetime: string, date_label: string}>, branch: array{key: string, label: string, state: string, state_label: string, datetime: string, date_label: string}|null, branch_note: string, current: array{key: string, label: string, state: string, state_label: string, datetime: string, date_label: string}|null}
 	 */
-	public static function present( Timeline $timeline ): array {
+	public static function present( Timeline $timeline, ?array $pending_cancellation = null ): array {
 		$stages = array();
 
 		foreach ( $timeline->stages as $stage ) {
 			$stages[] = self::stage( $stage );
 		}
 
-		$current = $timeline->current();
+		$branch      = null === $timeline->branch ? null : self::stage( $timeline->branch );
+		$branch_note = '';
+
+		if ( null === $branch && null !== $pending_cancellation ) {
+			$branch      = self::pending_cancellation_branch( $pending_cancellation );
+			$branch_note = $pending_cancellation['note'];
+		}
+
+		if ( null !== $branch ) {
+			$current = $branch;
+		} else {
+			$current_stage = $timeline->current();
+			$current       = null === $current_stage ? null : self::stage( $current_stage );
+		}
 
 		return array(
-			'order_id'   => $timeline->order_id,
-			'status'     => $timeline->status,
-			'historical' => $timeline->historical,
-			'notice'     => $timeline->historical ? self::notice() : '',
-			'stages'     => $stages,
-			'branch'     => null === $timeline->branch ? null : self::stage( $timeline->branch ),
-			'current'    => null === $current ? null : self::stage( $current ),
+			'order_id'    => $timeline->order_id,
+			'status'      => $timeline->status,
+			'historical'  => $timeline->historical,
+			'notice'      => $timeline->historical ? self::notice() : '',
+			'stages'      => $stages,
+			'branch'      => $branch,
+			'branch_note' => $branch_note,
+			'current'     => $current,
+		);
+	}
+
+	/**
+	 * Builds the display array for the pending-cancellation branch overlay.
+	 *
+	 * @since 0.8.0
+	 *
+	 * @param array{label: string, timestamp_utc: string, note: string} $pending Overlay data.
+	 * @return array{key: string, label: string, state: string, state_label: string, datetime: string, date_label: string}
+	 */
+	private static function pending_cancellation_branch( array $pending ): array {
+		$timestamp = self::timestamp( $pending['timestamp_utc'] );
+
+		return array(
+			'key'         => 'cancellation_requested',
+			'label'       => $pending['label'],
+			'state'       => TimelineStage::STATE_CURRENT,
+			'state_label' => self::state_label( TimelineStage::STATE_CURRENT ),
+			'datetime'    => null === $timestamp ? '' : gmdate( 'c', $timestamp ),
+			'date_label'  => null === $timestamp ? '' : (string) wp_date( self::format(), $timestamp ),
 		);
 	}
 

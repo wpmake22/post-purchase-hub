@@ -36,8 +36,9 @@ final class EligibilityRule {
 	 * @param string[]      $excluded_payment_methods Payment gateway ids the action is never eligible for.
 	 * @param string[]      $excluded_order_types     Values of `WC_Order::get_type()` the action is never eligible for.
 	 * @param string[]      $excluded_product_types   Product types that, present on any line item, exclude the whole order.
-	 * @param int|null      $per_order_cap            Maximum number of requests of this action's type an order may accumulate, ever. Null: no cap.
-	 * @param int|null      $cooldown_seconds         Minimum seconds since the last request of this action's type on this order. Null: no cooldown.
+	 * @param int|null      $per_order_cap            Maximum number of requests an order may accumulate under `$history_type`, ever. Null: no cap.
+	 * @param int|null      $cooldown_seconds         Minimum seconds since the last request under `$history_type` on this order. Null: no cooldown.
+	 * @param string|null   $history_type             `Requests\Request` type the cap and cooldown checks query against, e.g. `Request::TYPE_CANCELLATION`. Null: use the action id passed to `resolve()` — correct only when an action's id and its stored request type happen to be the same string.
 	 */
 	public function __construct(
 		public readonly ?array $allowed_statuses = null,
@@ -47,6 +48,7 @@ final class EligibilityRule {
 		public readonly array $excluded_order_types = array(),
 		public readonly array $excluded_product_types = array(),
 		public readonly ?int $per_order_cap = null,
-		public readonly ?int $cooldown_seconds = null
+		public readonly ?int $cooldown_seconds = null,
+		public readonly ?string $history_type = null
 	) {}
 }

@@ -134,6 +134,48 @@ final class FakeWordPress {
 	public static array $current_user_capabilities = array();
 
 	/**
+	 * REST routes recorded by the register_rest_route() shim.
+	 *
+	 * @var list<array{namespace: string, route: string, args: array<string, mixed>}>
+	 */
+	public static array $rest_routes = array();
+
+	/**
+	 * Styles recorded by the wp_enqueue_style() shim, keyed by handle.
+	 *
+	 * @var array<string, array{src: string, deps: array<int, string>, ver: mixed}>
+	 */
+	public static array $enqueued_styles = array();
+
+	/**
+	 * Extra style data recorded by the wp_style_add_data() shim, keyed by handle.
+	 *
+	 * @var array<string, array<string, mixed>>
+	 */
+	public static array $style_data = array();
+
+	/**
+	 * Scripts recorded by the wp_enqueue_script() shim, keyed by handle.
+	 *
+	 * @var array<string, array{src: string, deps: array<int, string>, ver: mixed, in_footer: bool}>
+	 */
+	public static array $enqueued_scripts = array();
+
+	/**
+	 * Data recorded by the wp_localize_script() shim: handle => object name => data.
+	 *
+	 * @var array<string, array<string, array<string, mixed>>>
+	 */
+	public static array $localized_scripts = array();
+
+	/**
+	 * Calls recorded by the wc_get_logger() shim's fake logger.
+	 *
+	 * @var list<array{level: string, message: string, context: array<string, mixed>}>
+	 */
+	public static array $logged = array();
+
+	/**
 	 * Clears all state between tests.
 	 *
 	 * @since 0.1.0
@@ -157,6 +199,12 @@ final class FakeWordPress {
 		self::$post_meta                 = array();
 		self::$post_content              = array();
 		self::$current_user_capabilities = array();
+		self::$rest_routes               = array();
+		self::$enqueued_styles           = array();
+		self::$style_data                = array();
+		self::$enqueued_scripts          = array();
+		self::$localized_scripts         = array();
+		self::$logged                    = array();
 	}
 
 	/**
