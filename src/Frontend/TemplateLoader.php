@@ -50,6 +50,8 @@ final class TemplateLoader {
 		'partials/request-modal.php',
 		'myaccount/orders.php',
 		'myaccount/view-order.php',
+		'myaccount/guest-order.php',
+		'lookup/form.php',
 	);
 
 	/**

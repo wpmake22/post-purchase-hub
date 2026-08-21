@@ -31,13 +31,21 @@ final class Sanitizer {
 	public const NOTE_MAX_LENGTH = 2000;
 
 	/**
-	 * Lower-cases an email and folds out dots from its local part.
+	 * Lower-cases an email and folds dots and `+` tags out of its local part.
 	 *
 	 * Not full RFC validation — this exists so two spellings of the same
 	 * mailbox hash identically for rate limiting, not to judge whether the
 	 * address is well-formed. Only the local part is touched: a dot is
 	 * structural in the domain and folding it there would merge unrelated
 	 * hosts.
+	 *
+	 * `+` tags fold for the same reason dots do, and it is not cosmetic: an
+	 * attacker who gets a fresh per-address budget for every
+	 * `mailbox+1@example.com` spelling has no per-email rate limit at all
+	 * (docs/MILESTONE-PROMPTS.md M11's email-alias bypass test). Over-folding
+	 * a provider that treats `+` literally costs that mailbox a shared
+	 * counter and nothing else — link emails go to the address stored on the
+	 * order either way, never to a submitted one.
 	 *
 	 * @since 0.6.0
 	 *
@@ -50,13 +58,28 @@ final class Sanitizer {
 		$at = strrpos( $email, '@' );
 
 		if ( false === $at ) {
-			return str_replace( '.', '', $email );
+			return self::fold_local( $email );
 		}
 
-		$local  = str_replace( '.', '', substr( $email, 0, $at ) );
-		$domain = substr( $email, $at );
+		return self::fold_local( substr( $email, 0, $at ) ) . substr( $email, $at );
+	}
 
-		return $local . $domain;
+	/**
+	 * Folds the alias spellings out of an email's local part.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string $local Local part, already lower-cased.
+	 * @return string
+	 */
+	private static function fold_local( string $local ): string {
+		$plus = strpos( $local, '+' );
+
+		if ( false !== $plus ) {
+			$local = substr( $local, 0, $plus );
+		}
+
+		return str_replace( '.', '', $local );
 	}
 
 	/**

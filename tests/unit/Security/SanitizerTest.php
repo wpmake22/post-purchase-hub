@@ -57,12 +57,36 @@ final class SanitizerTest extends TestCase {
 	}
 
 	/**
-	 * Every alias spelling of one mailbox hashes identically.
+	 * A `+` tag is folded out, so plus-addressing is not an unlimited supply of
+	 * fresh per-address rate-limit budgets.
+	 *
+	 * @return void
+	 */
+	public function test_normalise_email_folds_a_plus_tag_out_of_the_local_part(): void {
+		$this->assertSame( 'janedoe@example.com', Sanitizer::normalise_email( 'jane.doe+winter-sale@example.com' ) );
+		$this->assertSame( 'janedoe@example.com', Sanitizer::normalise_email( 'janedoe+1@example.com' ) );
+	}
+
+	/**
+	 * A `+` in the domain is structural and is left where it is.
+	 *
+	 * @return void
+	 */
+	public function test_normalise_email_leaves_a_plus_in_the_domain_alone(): void {
+		$this->assertSame( 'jane@ex+ample.com', Sanitizer::normalise_email( 'jane@ex+ample.com' ) );
+	}
+
+	/**
+	 * Every alias spelling of one mailbox hashes to one value, which is what
+	 * gives it one rate-limit budget rather than an unlimited supply of them.
 	 *
 	 * @return void
 	 */
 	public function test_hash_email_is_stable_across_alias_spellings(): void {
 		$canonical = Sanitizer::hash_email( 'jane.doe@example.com' );
+
+		$this->assertSame( $canonical, Sanitizer::hash_email( 'jane.doe+1@example.com' ) );
+		$this->assertSame( $canonical, Sanitizer::hash_email( 'JaneDoe+anything@Example.com' ) );
 
 		$this->assertSame( $canonical, Sanitizer::hash_email( 'JaneDoe@Example.com' ) );
 		$this->assertSame( $canonical, Sanitizer::hash_email( 'j.a.n.e.d.o.e@example.com' ) );

@@ -23,6 +23,9 @@ use PostPurchaseHub\Emails\Mailer;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
+use PostPurchaseHub\Frontend\GuestContext;
+use PostPurchaseHub\Frontend\GuestOrderView;
+use PostPurchaseHub\Frontend\LookupForm;
 use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\RequestModalRenderer;
 use PostPurchaseHub\Frontend\Shortcodes;
@@ -30,13 +33,18 @@ use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
+use PostPurchaseHub\Integrations\Compat\PageCache;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\PendingCancellationBranch;
 use PostPurchaseHub\Requests\Request;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\RequestsController;
+use PostPurchaseHub\Security\GuestAccess;
+use PostPurchaseHub\Security\GuestLookupService;
+use PostPurchaseHub\Security\OrderLookup;
 use PostPurchaseHub\Security\OwnershipResolver;
 use PostPurchaseHub\Security\RateLimiter;
 use PostPurchaseHub\Security\TokenService;
@@ -484,6 +492,86 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the guest-lookup on/off gate.
+	 *
+	 * @since 0.11.0
+	 * @return GuestAccess
+	 */
+	public function guest_access(): GuestAccess {
+		return $this->typed( 'guest_access', GuestAccess::class );
+	}
+
+	/**
+	 * Returns the order-number and billing-email matcher.
+	 *
+	 * @since 0.11.0
+	 * @return OrderLookup
+	 */
+	public function order_lookup(): OrderLookup {
+		return $this->typed( 'order_lookup', OrderLookup::class );
+	}
+
+	/**
+	 * Returns the guest-lookup flow every lookup surface shares.
+	 *
+	 * @since 0.11.0
+	 * @return GuestLookupService
+	 */
+	public function guest_lookup_service(): GuestLookupService {
+		return $this->typed( 'guest_lookup_service', GuestLookupService::class );
+	}
+
+	/**
+	 * Returns the lookup REST controller.
+	 *
+	 * @since 0.11.0
+	 * @return LookupController
+	 */
+	public function lookup_controller(): LookupController {
+		return $this->typed( 'lookup_controller', LookupController::class );
+	}
+
+	/**
+	 * Returns the guest-lookup form.
+	 *
+	 * @since 0.11.0
+	 * @return LookupForm
+	 */
+	public function lookup_form(): LookupForm {
+		return $this->typed( 'lookup_form', LookupForm::class );
+	}
+
+	/**
+	 * Returns the signed-token to cookie-context exchange.
+	 *
+	 * @since 0.11.0
+	 * @return GuestContext
+	 */
+	public function guest_context(): GuestContext {
+		return $this->typed( 'guest_context', GuestContext::class );
+	}
+
+	/**
+	 * Returns the guest order view.
+	 *
+	 * @since 0.11.0
+	 * @return GuestOrderView
+	 */
+	public function guest_order_view(): GuestOrderView {
+		return $this->typed( 'guest_order_view', GuestOrderView::class );
+	}
+
+	/**
+	 * Returns the page-cache compatibility layer.
+	 *
+	 * @since 0.11.0
+	 * @return PageCache
+	 */
+	public function page_cache(): PageCache {
+		return $this->typed( 'page_cache', PageCache::class );
+	}
+
+	/**
 	 * Resolves a service and asserts what came back.
 	 *
 	 * A factory can be replaced through set(), so the type is checked once here
@@ -547,6 +635,12 @@ final class Plugin {
 
 		add_action( 'init', array( $this, 'register_rendering' ), 20 );
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+
+		// Not inside register_rendering()'s frontend branch: a guest who
+		// exchanged their token on a page view then acts on the order over
+		// REST, where is_admin() is false but template_redirect never fires, so
+		// the identity filter has to be live in every context.
+		$this->guest_context()->register();
 
 		// Unconditional, unlike register_rendering()'s admin/frontend split:
 		// WooCommerce builds its email registry on every request that might
@@ -752,6 +846,7 @@ final class Plugin {
 		$this->shortcodes()->register();
 		$this->renderer()->register();
 		$this->actions_renderer()->register();
+		$this->lookup_form()->register();
 
 		if ( is_admin() ) {
 			$this->conflict_scanner()->register();
@@ -765,6 +860,8 @@ final class Plugin {
 		$this->assets()->register();
 		$this->template_replacer()->register();
 		$this->request_modal_renderer()->register();
+		$this->guest_order_view()->register();
+		$this->page_cache()->register();
 	}
 
 	/**
@@ -775,6 +872,7 @@ final class Plugin {
 	 */
 	public function register_rest_routes(): void {
 		$this->requests_controller()->register_routes();
+		$this->lookup_controller()->register_routes();
 	}
 
 	/**

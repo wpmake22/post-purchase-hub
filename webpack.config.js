@@ -34,6 +34,13 @@ const core = {
 			'js',
 			'requests.js'
 		),
+		lookup: path.resolve(
+			process.cwd(),
+			'assets',
+			'src',
+			'js',
+			'lookup.js'
+		),
 	},
 	output: {
 		...defaultConfig.output,

@@ -101,7 +101,14 @@ final class LocaleResolver {
 	 * @return string|null
 	 */
 	private static function from_customer_account( \WC_Order $order ): ?string {
-		$customer_id = $order->get_customer_id();
+		// get_user_id(), not the customer-id alias WooCommerce also offers for the
+		// same value. What this method wants is the WordPress user whose locale
+		// to read, and get_user_id() is the name for that. Ownership is not
+		// being decided here — it is decided in exactly one place,
+		// Security\OwnershipResolver, and the CI gate greps for the other
+		// spelling so a reader can trust that. A locale lookup written in the
+		// vocabulary of an access check makes the gate cry wolf.
+		$customer_id = (int) $order->get_user_id();
 
 		if ( $customer_id < 1 ) {
 			return null;

@@ -42,7 +42,7 @@
 			bottom: -0.35em;
 			width: 2px;
 			transform: translateX(-50%);
-			background: currentColor;
+			background: currentcolor;
 			opacity: 0.25;
 		}
 	}
@@ -51,7 +51,7 @@
 		width: 0.75em;
 		height: 0.75em;
 		margin-top: 0.25em;
-		border: 2px solid currentColor;
+		border: 2px solid currentcolor;
 		border-radius: 50%;
 		position: relative;
 		justify-self: center;
@@ -59,7 +59,7 @@
 
 	&__stage--complete &__marker,
 	&__stage--current &__marker {
-		background: currentColor;
+		background: currentcolor;
 	}
 
 	&__stage--pending &__marker {
@@ -95,7 +95,7 @@
 	&__branch {
 		margin: 0 0 0.5em;
 		padding: 0.75em 1em;
-		border-left: 3px solid currentColor;
+		border-left: 3px solid currentcolor;
 	}
 
 	&__branch-label {
@@ -149,6 +149,7 @@
 }
 
 .pph-orders {
+
 	&__empty {
 		margin: 1em 0;
 	}
@@ -163,7 +164,39 @@
 	}
 }
 
+/*
+ * Guest lookup. Deliberately restrained: the form sits on a page the merchant
+ * built, so it inherits the theme's own `input-text` and `button` classes and
+ * only lays itself out.
+ */
+.pph-lookup {
+	margin: 0 0 1.5em;
+
+	&__notice {
+		border-left: 4px solid currentcolor;
+		margin: 0 0 1em;
+		padding: 0.75em 1em;
+	}
+
+	&__notice--error {
+		color: #8a1f11;
+	}
+
+	&__field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25em;
+		margin: 0 0 1em;
+	}
+
+	&__input {
+		max-width: 24em;
+		width: 100%;
+	}
+}
+
 @media (max-width: 480px) {
+
 	.pph-timeline__stage {
 		grid-template-columns: 1.25em 1fr;
 	}
@@ -176,6 +209,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.pph-timeline * {
 		transition: none !important;
 	}

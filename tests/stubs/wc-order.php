@@ -122,6 +122,13 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public int $status_transitions = 0;
 
 		/**
+		 * Customer-facing order number, when it differs from the id.
+		 *
+		 * @var string
+		 */
+		public string $order_number = '';
+
+		/**
 		 * Constructor.
 		 *
 		 * @param int    $id     Order id.
@@ -138,6 +145,19 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		 * @return int
 		 */
 		public function get_customer_id(): int {
+			return $this->customer_id;
+		}
+
+		/**
+		 * Returns the WordPress user this order belongs to, 0 for a guest.
+		 *
+		 * Core's own alias for the same value, carried here because a caller
+		 * that wants the *user* — to read their locale, say — says so with this
+		 * name rather than in the vocabulary of an access check.
+		 *
+		 * @return int
+		 */
+		public function get_user_id(): int {
 			return $this->customer_id;
 		}
 
@@ -322,10 +342,25 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		/**
 		 * Returns the customer-facing order number.
 		 *
+		 * Defaults to the id, as core does when no numbering plugin filters
+		 * `woocommerce_order_number`. Settable so tests can build the store
+		 * that matters most to guest lookup: one where the number a customer
+		 * was given is not the id an attacker can count up to.
+		 *
 		 * @return string
 		 */
 		public function get_order_number(): string {
-			return (string) $this->id;
+			return '' !== $this->order_number ? $this->order_number : (string) $this->id;
+		}
+
+		/**
+		 * Sets a customer-facing order number distinct from the id.
+		 *
+		 * @param string $order_number Order number.
+		 * @return void
+		 */
+		public function set_order_number( string $order_number ): void {
+			$this->order_number = $order_number;
 		}
 
 		/**

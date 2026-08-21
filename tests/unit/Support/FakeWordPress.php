@@ -78,6 +78,27 @@ final class FakeWordPress {
 	public static bool $is_account_page = false;
 
 	/**
+	 * Whether is_ssl() should report a TLS request.
+	 *
+	 * @var bool
+	 */
+	public static bool $is_ssl = false;
+
+	/**
+	 * Query vars the get_query_var() shim serves.
+	 *
+	 * @var array<string, mixed>
+	 */
+	public static array $query_vars = array();
+
+	/**
+	 * Shortcodes recorded by the add_shortcode() shim, keyed by tag.
+	 *
+	 * @var array<string, mixed>
+	 */
+	public static array $shortcodes = array();
+
+	/**
 	 * WooCommerce endpoints is_wc_endpoint_url() should report as current.
 	 *
 	 * @var list<string>
@@ -273,6 +294,9 @@ final class FakeWordPress {
 		self::$orders                    = array();
 		self::$theme_templates           = array();
 		self::$is_account_page           = false;
+		self::$is_ssl                    = false;
+		self::$query_vars                = array();
+		self::$shortcodes                = array();
 		self::$endpoints                 = array();
 		self::$post                      = null;
 		self::$current_user_id           = 0;

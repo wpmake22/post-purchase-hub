@@ -322,7 +322,7 @@ final class EstimatedDeliveryTest extends TestCase {
 	}
 
 	/**
-	 * sync() persists a range that for_order() then reads back unchanged.
+	 * Sync persists a range that for_order() then reads back unchanged.
 	 *
 	 * @return void
 	 */

@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pph/order-lookup",
+	"title": "Order lookup",
+	"category": "woocommerce",
+	"icon": "search",
+	"description": "Lets a customer without an account ask for a secure link to one of their orders.",
+	"textdomain": "post-purchase-hub",
+	"supports": {
+		"html": false,
+		"align": [ "wide" ]
+	},
+	"editorScript": "file:./index.js"
+}

@@ -20,19 +20,27 @@ use PostPurchaseHub\Emails\Mailer;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
+use PostPurchaseHub\Frontend\GuestContext;
+use PostPurchaseHub\Frontend\GuestOrderView;
+use PostPurchaseHub\Frontend\LookupForm;
 use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\RequestModalRenderer;
 use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Migrator;
+use PostPurchaseHub\Integrations\Compat\PageCache;
 use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\PendingCancellationBranch;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\RequestsController;
+use PostPurchaseHub\Security\GuestAccess;
+use PostPurchaseHub\Security\GuestLookupService;
+use PostPurchaseHub\Security\OrderLookup;
 use PostPurchaseHub\Security\OwnershipResolver;
 use PostPurchaseHub\Security\RateLimiter;
 use PostPurchaseHub\Security\TokenService;
@@ -179,7 +187,7 @@ final class Services {
 		$plugin->set(
 			'blocks',
 			static function ( Plugin $plugin ): Blocks {
-				return new Blocks( $plugin->shortcodes() );
+				return new Blocks( $plugin->shortcodes(), $plugin->lookup_form() );
 			}
 		);
 
@@ -298,6 +306,67 @@ final class Services {
 			'mailer',
 			static function ( Plugin $plugin ): Mailer {
 				return new Mailer( $plugin->requests(), $plugin->tokens() );
+			}
+		);
+
+		$plugin->set(
+			'guest_access',
+			static function (): GuestAccess {
+				return new GuestAccess();
+			}
+		);
+
+		$plugin->set(
+			'order_lookup',
+			static function (): OrderLookup {
+				return new OrderLookup();
+			}
+		);
+
+		$plugin->set(
+			'guest_lookup_service',
+			static function ( Plugin $plugin ): GuestLookupService {
+				return new GuestLookupService(
+					$plugin->guest_access(),
+					$plugin->order_lookup(),
+					$plugin->rate_limiter(),
+					$plugin->logger()
+				);
+			}
+		);
+
+		$plugin->set(
+			'lookup_controller',
+			static function ( Plugin $plugin ): LookupController {
+				return new LookupController( $plugin->guest_access(), $plugin->guest_lookup_service() );
+			}
+		);
+
+		$plugin->set(
+			'lookup_form',
+			static function ( Plugin $plugin ): LookupForm {
+				return new LookupForm( $plugin->guest_access(), $plugin->guest_lookup_service(), $plugin->templates() );
+			}
+		);
+
+		$plugin->set(
+			'guest_context',
+			static function ( Plugin $plugin ): GuestContext {
+				return new GuestContext( $plugin->tokens(), $plugin->cache(), $plugin->logger() );
+			}
+		);
+
+		$plugin->set(
+			'guest_order_view',
+			static function ( Plugin $plugin ): GuestOrderView {
+				return new GuestOrderView( $plugin->ownership_resolver(), $plugin->templates() );
+			}
+		);
+
+		$plugin->set(
+			'page_cache',
+			static function (): PageCache {
+				return new PageCache();
 			}
 		);
 	}

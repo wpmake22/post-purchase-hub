@@ -1212,6 +1212,187 @@ if ( ! function_exists( 'wc_get_template' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_query_var' ) ) {
+	/**
+	 * Returns a query var the shim was told about.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string $query_var     Query var name.
+	 * @param mixed  $default_value Returned when it is not set.
+	 * @return mixed
+	 */
+	function get_query_var( $query_var, $default_value = '' ) {
+		return FakeWordPress::$query_vars[ (string) $query_var ] ?? $default_value;
+	}
+}
+
+if ( ! function_exists( 'wc_get_order_status_name' ) ) {
+	/**
+	 * Returns a human label for an order status.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string $status Unprefixed status.
+	 * @return string
+	 */
+	function wc_get_order_status_name( $status ): string {
+		return ucfirst( str_replace( array( 'wc-', '-', '_' ), array( '', ' ', ' ' ), (string) $status ) );
+	}
+}
+
+if ( ! function_exists( 'wc_format_datetime' ) ) {
+	/**
+	 * Formats an order date.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param mixed  $date   Date object.
+	 * @param string $format Date format.
+	 * @return string
+	 */
+	function wc_format_datetime( $date, $format = '' ): string {
+		unset( $format );
+
+		return $date instanceof WC_DateTime ? $date->format( 'F j, Y' ) : '';
+	}
+}
+
+if ( ! function_exists( 'wp_json_encode' ) ) {
+	/**
+	 * Encodes a value as JSON.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param mixed $data Value to encode.
+	 * @return string|false
+	 */
+	function wp_json_encode( $data ) {
+		return json_encode( $data ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This shim is what wp_json_encode() stands in for.
+	}
+}
+
+if ( ! function_exists( 'esc_url_raw' ) ) {
+	/**
+	 * Strips what a URL cannot contain, without entity-encoding it.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string $url Candidate URL or path.
+	 * @return string
+	 */
+	function esc_url_raw( $url ): string {
+		return (string) preg_replace( '/[^A-Za-z0-9\-._~:\/?#\[\]@!$&\'()*+,;=%]/', '', (string) $url );
+	}
+}
+
+if ( ! function_exists( 'is_wp_error' ) ) {
+	/**
+	 * Whether a value is a WP_Error.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param mixed $thing Value to test.
+	 * @return bool
+	 */
+	function is_wp_error( $thing ): bool {
+		return $thing instanceof WP_Error;
+	}
+}
+
+if ( ! function_exists( 'sanitize_email' ) ) {
+	/**
+	 * Strips everything an email address cannot contain.
+	 *
+	 * Not core's implementation, which validates structurally; this keeps the
+	 * characters a mailbox may legally use and drops the rest, which is all the
+	 * classes under test depend on.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string $email Candidate address.
+	 * @return string
+	 */
+	function sanitize_email( $email ): string {
+		return (string) preg_replace( '/[^A-Za-z0-9!#$%&\'*+\/=?^_`{|}~.@-]/', '', trim( (string) $email ) );
+	}
+}
+
+if ( ! function_exists( 'is_email' ) ) {
+	/**
+	 * Whether a string is shaped like an email address.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string $email Candidate address.
+	 * @return string|false The address when plausible, false otherwise.
+	 */
+	function is_email( $email ) {
+		$email = (string) $email;
+
+		return 1 === preg_match( '/^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$/', $email ) ? $email : false;
+	}
+}
+
+if ( ! function_exists( 'is_ssl' ) ) {
+	/**
+	 * Whether the request arrived over TLS.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @return bool
+	 */
+	function is_ssl(): bool {
+		return FakeWordPress::$is_ssl;
+	}
+}
+
+if ( ! function_exists( 'remove_query_arg' ) ) {
+	/**
+	 * Removes query arguments from a URL.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string|string[] $key Argument name, or names.
+	 * @param string          $url URL to strip them from.
+	 * @return string
+	 */
+	function remove_query_arg( $key, $url = '' ): string {
+		$url   = (string) $url;
+		$parts = explode( '?', $url, 2 );
+
+		if ( ! isset( $parts[1] ) || '' === $parts[1] ) {
+			return $parts[0];
+		}
+
+		$keys = is_array( $key ) ? $key : array( $key );
+		$args = array();
+
+		parse_str( $parts[1], $args );
+
+		foreach ( $keys as $name ) {
+			unset( $args[ (string) $name ] );
+		}
+
+		return array() === $args ? $parts[0] : $parts[0] . '?' . http_build_query( $args );
+	}
+}
+
+if ( ! function_exists( 'add_shortcode' ) ) {
+	/**
+	 * Records a registered shortcode.
+	 *
+	 * @since 0.11.0
+	 *
+	 * @param string   $tag      Shortcode tag.
+	 * @param callable $callback Render callback.
+	 * @return void
+	 */
+	function add_shortcode( $tag, $callback ): void {
+		FakeWordPress::$shortcodes[ (string) $tag ] = $callback;
+	}
+}
+
 if ( ! function_exists( 'wp_parse_url' ) ) {
 	/**
 	 * Thin wrapper matching WordPress's own, close enough for the plain

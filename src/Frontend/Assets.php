@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\RequestsController;
 
 /**
@@ -38,6 +39,13 @@ final class Assets {
 	 * @var string
 	 */
 	public const SCRIPT_HANDLE = 'pph-requests';
+
+	/**
+	 * Guest-lookup script handle.
+	 *
+	 * @var string
+	 */
+	public const LOOKUP_HANDLE = 'pph-lookup';
 
 	/**
 	 * Build directory, relative to the plugin root.
@@ -96,6 +104,45 @@ final class Assets {
 				'nonce'   => wp_create_nonce( 'wp_rest' ),
 			)
 		);
+
+		$this->enqueue_lookup();
+	}
+
+	/**
+	 * Enqueues the lookup enhancement, on the pages that carry the form.
+	 *
+	 * Kept separate from the script above, and off by default, because the
+	 * lookup form lives on one page a store may not even have while the request
+	 * modal lives on the account pages. No REST nonce is localised: the lookup
+	 * route deliberately takes none (see Rest\LookupController), and a nonce
+	 * baked into a cacheable page would go stale anyway.
+	 *
+	 * @since 0.11.0
+	 * @return void
+	 */
+	private function enqueue_lookup(): void {
+		if ( ! $this->post_embeds_lookup() ) {
+			return;
+		}
+
+		$script = $this->manifest( 'lookup.asset.php' );
+
+		wp_enqueue_script(
+			self::LOOKUP_HANDLE,
+			PPH_PLUGIN_URL . self::BUILD_PATH . 'lookup.js',
+			$script['dependencies'],
+			$script['version'],
+			true
+		);
+
+		wp_localize_script(
+			self::LOOKUP_HANDLE,
+			'pphLookup',
+			array(
+				'restUrl'      => rest_url( LookupController::NAMESPACE . LookupController::ROUTE ),
+				'errorMessage' => __( 'That could not be submitted. Please check your connection and try again.', 'post-purchase-hub' ),
+			)
+		);
 	}
 
 	/**
@@ -111,9 +158,10 @@ final class Assets {
 		 * Filters whether this plugin's frontend assets load on this request.
 		 *
 		 * The default covers the My Account order endpoints and any post whose
-		 * content embeds the shortcode or the block. A surface rendered somewhere
-		 * else — a custom page template, a widget, the guest lookup page — has to
-		 * say so here, because guessing would mean loading everywhere.
+		 * content embeds one of this plugin's shortcodes or blocks. A surface
+		 * rendered somewhere else — a custom page template, a widget, a lookup
+		 * form moved into a theme file — has to say so here, because guessing
+		 * would mean loading everywhere.
 		 *
 		 * @since 0.4.0
 		 *
@@ -149,7 +197,25 @@ final class Assets {
 			return false;
 		}
 
-		return has_shortcode( $post->post_content, Shortcodes::TAG ) || has_block( Blocks::NAME, $post );
+		return has_shortcode( $post->post_content, Shortcodes::TAG )
+			|| has_block( Blocks::NAME, $post )
+			|| $this->post_embeds_lookup();
+	}
+
+	/**
+	 * Whether the queried post embeds the lookup form.
+	 *
+	 * @since 0.11.0
+	 * @return bool
+	 */
+	private function post_embeds_lookup(): bool {
+		$post = get_post();
+
+		if ( ! $post instanceof \WP_Post ) {
+			return false;
+		}
+
+		return has_shortcode( $post->post_content, LookupForm::TAG ) || has_block( Blocks::LOOKUP_NAME, $post );
 	}
 
 	/**
