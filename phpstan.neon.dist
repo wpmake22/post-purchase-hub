@@ -3,6 +3,8 @@ parameters:
 	phpVersion: 80100
 	paths:
 		- src
+		- free
+		- pro
 		- post-purchase-hub.php
 	scanFiles:
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
@@ -10,3 +12,8 @@ parameters:
 		- vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
 		- tests/stubs/wp-constants.php
 	treatPhpDocTypesAsCertain: false
+	# bin/build.php rewrites this constant when it stages each zip, so its value
+	# in source is not its value in either distribution. Without this, PHPStan
+	# folds it to the literal and calls the Pro branch unreachable.
+	dynamicConstantNames:
+		- PPH_EDITION

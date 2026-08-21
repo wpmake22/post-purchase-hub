@@ -4,6 +4,10 @@
 
 # Build output — wp-scripts cleans this directory on every build, so nothing here is tracked.
 /assets/build/
+/pro/assets/build/
+
+# Release artifacts
+/dist/
 
 # Tooling caches and reports
 .phpcs.cache

@@ -75,12 +75,12 @@ if ( is_file( $free_zip ) ) {
 	check( 'no dev config', ! has_any_suffix( $files, array( 'phpcs.xml.dist', 'phpstan.neon.dist', 'package.json', 'composer.lock', 'CLAUDE.md' ) ) );
 
 	// Headers.
-	$main = zip_read( $free_zip, SLUG . '/' . MAIN_FILE );
+	$main = read_zip_entry( $free_zip, SLUG . '/' . MAIN_FILE );
 	check( "Version header is {$version}", header_value( $main, 'Version' ) === $version );
 	check( 'edition constant is free', (bool) preg_match( "/define\(\s*'PPH_EDITION'\s*,\s*'free'\s*\)/", $main ) );
 	check( 'no Update URI header', ! preg_match( '/^\s*\*\s*Update URI:/m', $main ) );
 
-	$readme = zip_read( $free_zip, SLUG . '/readme.txt' );
+	$readme = read_zip_entry( $free_zip, SLUG . '/readme.txt' );
 	check( "Stable tag is {$version}", trim( (string) ( preg_match( '/^Stable tag:\s*(.+)$/m', $readme, $m ) ? $m[1] : '' ) ) === $version );
 	check( 'readme declares limitations', stripos( $readme, 'does not' ) !== false );
 } else {
@@ -105,7 +105,7 @@ if ( is_file( $pro_zip ) ) {
 	check( 'no free/ upsell directory', ! has_prefix( $files, SLUG . '/free/' ) );
 	check( 'no readme.txt', ! in_array( SLUG . '/readme.txt', $files, true ) );
 
-	$main = zip_read( $pro_zip, SLUG . '/' . MAIN_FILE );
+	$main = read_zip_entry( $pro_zip, SLUG . '/' . MAIN_FILE );
 	check( "Version header is {$version}", header_value( $main, 'Version' ) === $version );
 	check( 'edition constant is pro', (bool) preg_match( "/define\(\s*'PPH_EDITION'\s*,\s*'pro'\s*\)/", $main ) );
 
@@ -208,7 +208,7 @@ function zip_entries( string $zip ): array {
  * @param string $entry Entry name.
  * @return string
  */
-function zip_read( string $zip, string $entry ): string {
+function read_zip_entry( string $zip, string $entry ): string {
 	$archive = new ZipArchive();
 
 	if ( true !== $archive->open( $zip ) ) {

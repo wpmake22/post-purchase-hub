@@ -47,9 +47,50 @@ jobs:
           node-version: 20
           cache: npm
 
+      # The edition boundary, checked before anything slower. A core file that
+      # names an edition namespace or asks which edition it is running in has
+      # already broken the architecture, and no later test would notice.
+      - name: Edition boundary
+        run: |
+          FAIL=0
+
+          # One-or-more backslashes: `use PostPurchaseHub\Pro\X` in code and
+          # 'PostPurchaseHub\\Pro\\X' inside a string are both leaks, and a
+          # pattern that only matched one of them would be a gate in name only.
+          if grep -rnE 'PostPurchaseHub\\+(Pro|Free)\\+' src/ post-purchase-hub.php; then
+            echo "::error::Core references an edition namespace. Core registers extension points; editions fill them."
+            FAIL=1
+          fi
+
+          if grep -rn 'pph_is_pro' src/; then
+            echo "::error::Core branches on edition. If Pro cannot be built on core's public surface, the surface is wrong."
+            FAIL=1
+          fi
+
+          if grep -rnE '#if__(PREMIUM|FREE)' src/ free/ pro/; then
+            echo "::error::Inline build marker found. Editions are separated by directory, never by marker."
+            FAIL=1
+          fi
+
+          exit $FAIL
+
       - run: composer lint
       - run: composer analyse
-      - run: composer test:unit
+
+      # Twice: core alone, then core with pro/ present. Pro must not change core
+      # behaviour except where a documented filter says it does, and the free
+      # artifact is core alone — so core alone is what has to pass first.
+      - name: Unit suite, core only
+        run: |
+          mv pro /tmp/pro-edition
+          composer dump-autoload --quiet
+          composer test:unit
+          mv /tmp/pro-edition pro
+          composer dump-autoload --quiet
+
+      - name: Unit suite, core plus pro
+        run: composer test:unit
+
       - run: npm ci
       - run: npm run build
 

@@ -7,13 +7,13 @@
 		are procedural CLI tools that never enter either zip, so WPCS's global
 		prefix, escaping and i18n rules do not apply to them.
 
-		PHPCS errors on a path that does not exist, so these cannot be declared
-		ahead of the milestone that creates them: M01A must add free/ and pro/
-		here.
+		Both edition directories ship too, so both are checked here.
 	-->
 	<file>post-purchase-hub.php</file>
 	<file>uninstall.php</file>
 	<file>src</file>
+	<file>free</file>
+	<file>pro</file>
 	<file>templates</file>
 	<file>tests</file>
 
@@ -57,6 +57,8 @@
 	<rule ref="WordPress.Files.FileName">
 		<!-- PSR-4 class files are StudlyCaps by design; the hyphenated-lowercase rule applies to the rest. -->
 		<exclude-pattern>/src/*</exclude-pattern>
+		<exclude-pattern>/free/src/*</exclude-pattern>
+		<exclude-pattern>/pro/src/*</exclude-pattern>
 		<exclude-pattern>/tests/*</exclude-pattern>
 	</rule>
 

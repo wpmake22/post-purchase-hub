@@ -350,6 +350,19 @@ final class Plugin {
 			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
 			\WP_CLI::add_command( 'pph backfill-timeline', new BackfillCommand( $this->transition_recorder(), $this->stage_map() ) );
 		}
+
+		/**
+		 * Fires once core has wired itself, with the service container.
+		 *
+		 * The single entry point for edition code and the earliest moment at
+		 * which every service and every extension point exists. Core registers
+		 * the points; whatever attaches here fills them.
+		 *
+		 * @since 0.5.0
+		 *
+		 * @param Plugin $plugin The service container.
+		 */
+		do_action( 'pph_loaded', $this );
 	}
 
 	/**

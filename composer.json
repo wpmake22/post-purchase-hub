@@ -21,13 +21,17 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"PostPurchaseHub\\": "src/"
+			"PostPurchaseHub\\": "src/",
+			"PostPurchaseHub\\Free\\": "free/src/",
+			"PostPurchaseHub\\Pro\\": "pro/src/"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
 			"PostPurchaseHub\\Tests\\Unit\\": "tests/unit/",
-			"PostPurchaseHub\\Tests\\Integration\\": "tests/integration/"
+			"PostPurchaseHub\\Tests\\Integration\\": "tests/integration/",
+			"PostPurchaseHub\\Free\\Tests\\": "free/tests/",
+			"PostPurchaseHub\\Pro\\Tests\\": "pro/tests/"
 		}
 	},
 	"config": {
@@ -44,13 +48,26 @@
 		"lint:fix": "phpcbf",
 		"analyse": "phpstan analyse --memory-limit=1G",
 		"test:unit": "phpunit --configuration phpunit.xml.dist",
-		"test:int": "phpunit --configuration phpunit-integration.xml.dist"
+		"test:int": "phpunit --configuration phpunit-integration.xml.dist",
+		"build": "php bin/build.php",
+		"build:free": "php bin/build.php --edition=free",
+		"build:pro": "php bin/build.php --edition=pro",
+		"verify": "php bin/verify-build.php",
+		"release": [
+			"@build",
+			"@verify"
+		]
 	},
 	"scripts-descriptions": {
 		"lint": "Run PHP_CodeSniffer against the WordPress-Extra, WordPress-Docs and WooCommerce-Core rulesets.",
 		"lint:fix": "Auto-fix the PHPCS violations that are safely fixable.",
 		"analyse": "Run PHPStan level 6 over src/ with WordPress and WooCommerce stubs.",
 		"test:unit": "Run the unit suite (no WordPress bootstrap).",
-		"test:int": "Run the integration suite (requires wp-env; run once with HPOS on and once off)."
+		"test:int": "Run the integration suite (requires wp-env; run once with HPOS on and once off).",
+		"build": "Build both distribution zips into dist/.",
+		"build:free": "Build the WordPress.org zip only.",
+		"build:pro": "Build the store zip only.",
+		"verify": "Inspect the built zips for edition leakage and packaging faults.",
+		"release": "Build both zips and verify them."
 	}
 }

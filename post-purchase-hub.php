@@ -41,6 +41,13 @@ define( 'PPH_MINIMUM_PHP', '8.1' );
 define( 'PPH_MINIMUM_WP', '6.5' );
 define( 'PPH_MINIMUM_WC', '10.9' );
 
+/*
+ * Rewritten by bin/build.php when it stages each zip. The source value is
+ * 'free' so a checkout behaves like the distribution most people run, and so a
+ * mistake here fails open into the smaller feature set rather than the larger.
+ */
+define( 'PPH_EDITION', 'free' );
+
 if ( is_readable( PPH_PLUGIN_DIR . 'vendor/autoload.php' ) ) {
 	require_once PPH_PLUGIN_DIR . 'vendor/autoload.php';
 }
@@ -85,7 +92,49 @@ function pph_bootstrap(): void {
 	// Registered here rather than at file load so an unsupported site declares nothing at all.
 	add_action( 'before_woocommerce_init', 'pph_declare_hpos_compatibility' );
 
+	// Before register(), which is what fires `pph_loaded`: an edition that
+	// attaches after that hook has already fired would never run.
+	pph_load_edition();
+
 	PostPurchaseHub\Plugin::instance()->register();
+}
+
+/**
+ * Loads whichever edition bootstrap survived the build.
+ *
+ * The two distributions are one source tree with a directory removed, so which
+ * one is installed is a question about the filesystem rather than about a
+ * constant. Both files are optional and neither is named in any type
+ * declaration, which is what keeps a stripped directory from being a fatal.
+ *
+ * @since 0.5.0
+ *
+ * @return void
+ */
+function pph_load_edition(): void {
+	foreach ( array( 'pro/bootstrap.php', 'free/bootstrap.php' ) as $pph_bootstrap ) {
+		$pph_path = PPH_PLUGIN_DIR . $pph_bootstrap;
+
+		if ( is_readable( $pph_path ) ) {
+			require_once $pph_path;
+		}
+	}
+}
+
+/**
+ * Whether this install is the Pro distribution.
+ *
+ * For edition code and for third parties. Nothing under `src/` may call it:
+ * core registers extension points and the editions fill them, so a core file
+ * asking which edition it is in is a sign the extension point is missing. CI
+ * greps for that.
+ *
+ * @since 0.5.0
+ *
+ * @return bool
+ */
+function pph_is_pro(): bool {
+	return defined( 'PPH_EDITION' ) && 'pro' === PPH_EDITION;
 }
 
 /**
