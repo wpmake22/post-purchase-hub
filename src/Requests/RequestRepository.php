@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Requests;
 
+use PostPurchaseHub\Actions\RequestHistory;
 use PostPurchaseHub\Install\Schema;
 
 /**
@@ -30,9 +31,13 @@ use PostPurchaseHub\Install\Schema;
  * per docs/SPEC.md Phase 8, a request_id from a request body is never trusted on
  * its own.
  *
+ * Implements Actions\RequestHistory so EligibilityResolver's cap and cooldown
+ * checks have a real backing store in production, without depending on this
+ * concrete class directly — see that interface for why.
+ *
  * @since 0.2.0
  */
-final class RequestRepository {
+final class RequestRepository implements RequestHistory {
 
 	/**
 	 * Columns read back for a request, in table order.
@@ -145,6 +150,43 @@ final class RequestRepository {
 			1,
 			RequestQuery::MAX_PER_PAGE
 		);
+	}
+
+	/**
+	 * Counts every request of one type raised against an order, any status.
+	 *
+	 * @since 0.7.0
+	 *
+	 * @param int    $order_id Order id.
+	 * @param string $type     Request type.
+	 * @return int
+	 */
+	public function count_for_order( int $order_id, string $type ): int {
+		if ( $order_id < 1 ) {
+			return 0;
+		}
+
+		return $this->count(
+			array(
+				'order_id' => $order_id,
+				'type'     => $type,
+			)
+		);
+	}
+
+	/**
+	 * The most recent request of one type raised against an order, if any.
+	 *
+	 * @since 0.7.0
+	 *
+	 * @param int    $order_id Order id.
+	 * @param string $type     Request type.
+	 * @return Request|null
+	 */
+	public function most_recent_for_order( int $order_id, string $type ): ?Request {
+		$requests = $this->find_by_order( $order_id, array( 'type' => $type ) );
+
+		return $requests[0] ?? null;
 	}
 
 	/**

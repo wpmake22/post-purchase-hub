@@ -9,7 +9,10 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub;
 
+use PostPurchaseHub\Actions\ActionRegistry;
+use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
+use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
 use PostPurchaseHub\Frontend\Renderer;
@@ -191,6 +194,27 @@ final class Services {
 			'ownership_resolver',
 			static function ( Plugin $plugin ): OwnershipResolver {
 				return new OwnershipResolver( $plugin->tokens() );
+			}
+		);
+
+		$plugin->set(
+			'action_registry',
+			static function (): ActionRegistry {
+				return new ActionRegistry();
+			}
+		);
+
+		$plugin->set(
+			'eligibility_resolver',
+			static function ( Plugin $plugin ): EligibilityResolver {
+				return new EligibilityResolver( $plugin->requests() );
+			}
+		);
+
+		$plugin->set(
+			'actions_renderer',
+			static function ( Plugin $plugin ): ActionsRenderer {
+				return new ActionsRenderer( $plugin->action_registry(), $plugin->templates() );
 			}
 		);
 	}

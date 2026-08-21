@@ -9,9 +9,12 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub;
 
+use PostPurchaseHub\Actions\ActionRegistry;
+use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\CLI\BackfillCommand;
 use PostPurchaseHub\CLI\CleanupCommand;
+use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
 use PostPurchaseHub\Frontend\Renderer;
@@ -350,6 +353,36 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the action registry.
+	 *
+	 * @since 0.7.0
+	 * @return ActionRegistry
+	 */
+	public function action_registry(): ActionRegistry {
+		return $this->typed( 'action_registry', ActionRegistry::class );
+	}
+
+	/**
+	 * Returns the eligibility resolver.
+	 *
+	 * @since 0.7.0
+	 * @return EligibilityResolver
+	 */
+	public function eligibility_resolver(): EligibilityResolver {
+		return $this->typed( 'eligibility_resolver', EligibilityResolver::class );
+	}
+
+	/**
+	 * Returns the actions renderer.
+	 *
+	 * @since 0.7.0
+	 * @return ActionsRenderer
+	 */
+	public function actions_renderer(): ActionsRenderer {
+		return $this->typed( 'actions_renderer', ActionsRenderer::class );
+	}
+
+	/**
 	 * Resolves a service and asserts what came back.
 	 *
 	 * A factory can be replaced through set(), so the type is checked once here
@@ -560,6 +593,7 @@ final class Plugin {
 		$this->blocks()->register();
 		$this->shortcodes()->register();
 		$this->renderer()->register();
+		$this->actions_renderer()->register();
 
 		if ( is_admin() ) {
 			$this->conflict_scanner()->register();

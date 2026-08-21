@@ -87,6 +87,27 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		private string $billing_email = '';
 
 		/**
+		 * Value get_type() returns, e.g. `shop_order` or `shop_subscription`.
+		 *
+		 * @var string
+		 */
+		private string $type = 'shop_order';
+
+		/**
+		 * Payment gateway id.
+		 *
+		 * @var string
+		 */
+		private string $payment_method = '';
+
+		/**
+		 * Line items get_items() returns.
+		 *
+		 * @var array<int|string, object>
+		 */
+		private array $items = array();
+
+		/**
 		 * Constructor.
 		 *
 		 * @param int    $id     Order id.
@@ -152,6 +173,63 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		 */
 		public function set_billing_email( string $billing_email ): void {
 			$this->billing_email = $billing_email;
+		}
+
+		/**
+		 * Returns the order type, e.g. `shop_order` or `shop_subscription`.
+		 *
+		 * @return string
+		 */
+		public function get_type(): string {
+			return $this->type;
+		}
+
+		/**
+		 * Sets the order type.
+		 *
+		 * @param string $type Order type.
+		 * @return void
+		 */
+		public function set_type( string $type ): void {
+			$this->type = $type;
+		}
+
+		/**
+		 * Returns the payment gateway id.
+		 *
+		 * @return string
+		 */
+		public function get_payment_method(): string {
+			return $this->payment_method;
+		}
+
+		/**
+		 * Sets the payment gateway id.
+		 *
+		 * @param string $payment_method Payment gateway id.
+		 * @return void
+		 */
+		public function set_payment_method( string $payment_method ): void {
+			$this->payment_method = $payment_method;
+		}
+
+		/**
+		 * Returns the order's line items, keyed by item id as WooCommerce does.
+		 *
+		 * @return array<int|string, object>
+		 */
+		public function get_items(): array {
+			return $this->items;
+		}
+
+		/**
+		 * Sets the order's line items.
+		 *
+		 * @param array<int|string, object> $items Line items.
+		 * @return void
+		 */
+		public function set_items( array $items ): void {
+			$this->items = $items;
 		}
 
 		/**

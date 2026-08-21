@@ -671,6 +671,23 @@ if ( ! function_exists( 'esc_html_e' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_attr_e' ) ) {
+	/**
+	 * Echoes an escaped translated string for an attribute context.
+	 *
+	 * @since 0.7.0
+	 *
+	 * @param string $text   Text.
+	 * @param string $domain Text domain.
+	 * @return void
+	 */
+	function esc_attr_e( $text, $domain = 'default' ): void { // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment -- A shim, not a translation call.
+		unset( $domain );
+
+		echo htmlspecialchars( (string) $text, ENT_QUOTES ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped on the line above.
+	}
+}
+
 if ( ! function_exists( 'do_action' ) ) {
 	/**
 	 * Runs the callbacks registered for an action.
