@@ -18,22 +18,26 @@ use PostPurchaseHub\Integrations\Compat\HardExclusions;
  * it. Core's `order_again` empties the cart, writes whatever lines still
  * resolve straight into it, silently drops the rest, and mutates the cart on a
  * GET. This action keeps core's semantics — the same eligible statuses, read
- * from core's own `woocommerce_valid_order_statuses_for_order_again` filter,
- * and the same cart API underneath (`WooCommerceCart`) — and changes only the
- * three things that make it trustworthy:
+ * from core's own filter via `ReorderOptions`, and the same cart API
+ * underneath (`WooCommerceCart`) — and changes only the three things that make
+ * it trustworthy:
  *
  * 1. Nothing is mutated until the customer has seen the reconciliation summary
  *    and confirmed it, over POST (CLAUDE.md hard rule 4).
- * 2. A line that cannot be bought again says which of the four reasons applies
+ * 2. A line that cannot be bought again says which reason applies
  *    (`ReorderPlanner`), rather than vanishing.
  * 3. A non-empty cart is merged into by default rather than emptied, and the
  *    customer is offered the choice either way.
  *
- * Ownership is not decided here — `Security\OwnershipResolver` decides it,
- * once, before any caller reaches this class. What is decided here is whether
- * the *order* qualifies, plus the one visitor-shaped condition core also
- * imposes: reorder needs an account, because a cart belongs to a session and
- * v1 does not open a cart-bearing session for a token-bearing guest.
+ * Eligibility here has two independent dimensions, deliberately named and
+ * asked separately, because they fail for unrelated reasons: `order_eligibility()`
+ * is about the order (status, type, product types) and `visitor_eligibility()`
+ * is about the request (v1 carts need an account). `check()` composes them and
+ * is the single gate every caller uses — the render path, the summary screen
+ * and the REST route alike, so none of them can enforce a different rule.
+ *
+ * Ownership is not one of those dimensions: `Security\OwnershipResolver`
+ * decides it, once, before any caller reaches this class.
  *
  * @since 0.12.0
  */
@@ -54,31 +58,7 @@ final class Reorder {
 	public const QUERY_ARG = 'pph_reorder';
 
 	/**
-	 * Add to whatever is already in the cart.
-	 *
-	 * @var string
-	 */
-	public const MODE_MERGE = 'merge';
-
-	/**
-	 * Empty the cart first.
-	 *
-	 * @var string
-	 */
-	public const MODE_REPLACE = 'replace';
-
-	/**
-	 * Lines validated per attempt when nothing overrides it.
-	 *
-	 * Bounded because docs/SPEC.md Phase 4 requires it: each validated line
-	 * costs a product load, and a wholesale order can carry hundreds.
-	 *
-	 * @var int
-	 */
-	public const DEFAULT_ITEM_CAP = 50;
-
-	/**
-	 * Denial code for a visitor with no account.
+	 * Denial code for a request that cannot hold a cart.
 	 *
 	 * @var string
 	 */
@@ -152,12 +132,52 @@ final class Reorder {
 	/**
 	 * Whether this order may be reordered by whoever is asking.
 	 *
+	 * Both dimensions, cheapest first. The single gate: nothing decides
+	 * reorder eligibility anywhere else, in any layer.
+	 *
 	 * @since 0.12.0
 	 *
 	 * @param \WC_Order $order Order to evaluate.
 	 * @return EligibilityResult
 	 */
 	public function check( \WC_Order $order ): EligibilityResult {
+		$visitor = self::visitor_eligibility();
+
+		if ( ! $visitor->eligible ) {
+			return $visitor;
+		}
+
+		return $this->order_eligibility( $order );
+	}
+
+	/**
+	 * Whether the order itself qualifies, ignoring who is asking.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param \WC_Order $order Order to evaluate.
+	 * @return EligibilityResult
+	 */
+	public function order_eligibility( \WC_Order $order ): EligibilityResult {
+		return $this->eligibility->resolve( self::ID, $order, $this->rule() );
+	}
+
+	/**
+	 * Whether this request can hold a cart at all, ignoring which order it is
+	 * about.
+	 *
+	 * A cart belongs to a session, and v1 does not open a cart-bearing session
+	 * for a token-bearing guest — the same condition core's own `order_again`
+	 * imposes. It lives here, in the action, rather than in the template or
+	 * the controller, because a guest holding a valid signed link reaches the
+	 * REST route too: a rule enforced only where a button is drawn is not
+	 * enforced.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @return EligibilityResult
+	 */
+	public static function visitor_eligibility(): EligibilityResult {
 		if ( ! is_user_logged_in() ) {
 			return EligibilityResult::denied(
 				self::REASON_LOGIN_REQUIRED,
@@ -165,7 +185,7 @@ final class Reorder {
 			);
 		}
 
-		return $this->eligibility->resolve( self::ID, $order, $this->rule() );
+		return EligibilityResult::allowed();
 	}
 
 	/**
@@ -177,27 +197,7 @@ final class Reorder {
 	 * @return ReorderPlan
 	 */
 	public function preview( \WC_Order $order ): ReorderPlan {
-		return $this->planner->plan( $order, self::item_cap() );
-	}
-
-	/**
-	 * How many lines the cart currently holds, for the merge-or-replace choice.
-	 *
-	 * @since 0.12.0
-	 * @return int
-	 */
-	public function cart_item_count(): int {
-		return $this->cart->item_count();
-	}
-
-	/**
-	 * The URL of the cart page.
-	 *
-	 * @since 0.12.0
-	 * @return string
-	 */
-	public function cart_url(): string {
-		return $this->cart->url();
+		return $this->planner->plan( $order, ReorderOptions::item_cap() );
 	}
 
 	/**
@@ -210,7 +210,7 @@ final class Reorder {
 	 * @since 0.12.0
 	 *
 	 * @param \WC_Order $order Order to reorder from.
-	 * @param string    $mode  One of MODE_MERGE or MODE_REPLACE.
+	 * @param string    $mode  One of ReorderOptions::modes().
 	 * @return ReorderOutcome
 	 * @throws IneligibleActionException When the order is not eligible, or nothing on it can be bought.
 	 */
@@ -236,9 +236,9 @@ final class Reorder {
 			throw new IneligibleActionException( $denied );
 		}
 
-		$mode = self::normalise_mode( $mode );
+		$mode = ReorderOptions::normalise_mode( $mode );
 
-		if ( self::MODE_REPLACE === $mode ) {
+		if ( ReorderOptions::MODE_REPLACE === $mode ) {
 			$this->cart->clear();
 		}
 
@@ -292,108 +292,6 @@ final class Reorder {
 	}
 
 	/**
-	 * The modes a cart may be updated under.
-	 *
-	 * @since 0.12.0
-	 *
-	 * @return string[]
-	 */
-	public static function modes(): array {
-		return array( self::MODE_MERGE, self::MODE_REPLACE );
-	}
-
-	/**
-	 * The mode used when the customer expresses no preference.
-	 *
-	 * Merge, unlike core's `order_again`, which empties the cart
-	 * unconditionally. A customer who was mid-shop when they clicked this did
-	 * not ask to lose that, and the alternative is offered in the same screen
-	 * — but a store selling configured or single-item baskets may reasonably
-	 * disagree, hence the filter.
-	 *
-	 * @since 0.12.0
-	 * @return string
-	 */
-	public static function default_mode(): string {
-		/**
-		 * Filters the cart mode a reorder uses when the customer picks neither.
-		 *
-		 * @since 0.12.0
-		 *
-		 * @param string $mode One of Reorder::modes().
-		 */
-		return self::normalise_mode( (string) apply_filters( 'pph_reorder_default_mode', self::MODE_MERGE ) );
-	}
-
-	/**
-	 * Coerces a candidate mode to one this action accepts.
-	 *
-	 * @since 0.12.0
-	 *
-	 * @param string $mode Candidate mode.
-	 * @return string
-	 */
-	public static function normalise_mode( string $mode ): string {
-		return in_array( $mode, array( self::MODE_MERGE, self::MODE_REPLACE ), true ) ? $mode : self::MODE_MERGE;
-	}
-
-	/**
-	 * How many lines one attempt validates.
-	 *
-	 * @since 0.12.0
-	 * @return int
-	 */
-	public static function item_cap(): int {
-		/**
-		 * Filters the number of order lines one reorder attempt validates.
-		 *
-		 * @since 0.12.0
-		 *
-		 * @param int $cap Maximum lines per attempt.
-		 */
-		$cap = (int) apply_filters( 'pph_reorder_item_cap', self::DEFAULT_ITEM_CAP );
-
-		return max( 1, $cap );
-	}
-
-	/**
-	 * The order statuses reorder applies to.
-	 *
-	 * Core's own filter is read first, so a store that has already widened
-	 * `order_again` does not have to widen this separately and cannot end up
-	 * with the two disagreeing. The second filter exists for the opposite
-	 * case: widening this plugin's reconciled reorder without also changing
-	 * core's unreconciled one everywhere else.
-	 *
-	 * @since 0.12.0
-	 *
-	 * @return string[]
-	 */
-	public static function allowed_statuses(): array {
-		/** This filter is documented in WooCommerce: includes/wc-template-functions.php */
-		$statuses = (array) apply_filters( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Deliberately reads WooCommerce's own filter rather than declaring one, so this action and core agree on which statuses reorder applies to.
-
-		/**
-		 * Filters the order statuses this plugin's reorder action applies to.
-		 *
-		 * @since 0.12.0
-		 *
-		 * @param string[] $statuses Unprefixed order statuses.
-		 */
-		$statuses = (array) apply_filters( 'pph_reorder_allowed_statuses', array_values( $statuses ) );
-
-		$clean = array();
-
-		foreach ( $statuses as $status ) {
-			if ( is_string( $status ) && '' !== $status ) {
-				$clean[] = str_replace( 'wc-', '', $status );
-			}
-		}
-
-		return array() !== $clean ? $clean : array( 'completed' );
-	}
-
-	/**
 	 * This action's eligibility rule.
 	 *
 	 * No per-order cap and no cooldown: reorder stores nothing, so there is no
@@ -407,7 +305,7 @@ final class Reorder {
 	 */
 	private function rule(): EligibilityRule {
 		return new EligibilityRule(
-			allowed_statuses: self::allowed_statuses(),
+			allowed_statuses: ReorderOptions::allowed_statuses(),
 			excluded_order_types: HardExclusions::order_types(),
 			excluded_product_types: HardExclusions::product_types()
 		);

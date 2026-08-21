@@ -9,8 +9,10 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Actions\CartGateway;
 use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Actions\ReorderLine;
+use PostPurchaseHub\Actions\ReorderOptions;
 use PostPurchaseHub\Actions\ReorderPlan;
 use PostPurchaseHub\Security\Sanitizer;
 
@@ -87,9 +89,14 @@ final class ReorderView {
 	 * @since 0.12.0
 	 *
 	 * @param Reorder        $reorder   The action this screen belongs to.
+	 * @param CartGateway    $cart      Read only here, for the merge-or-replace choice.
 	 * @param TemplateLoader $templates Template loader.
 	 */
-	public function __construct( private Reorder $reorder, private TemplateLoader $templates ) {}
+	public function __construct(
+		private Reorder $reorder,
+		private CartGateway $cart,
+		private TemplateLoader $templates
+	) {}
 
 	/**
 	 * Wires both hooks.
@@ -212,9 +219,9 @@ final class ReorderView {
 		return array(
 			'order_id'      => $order->get_id(),
 			'lines'         => $lines,
-			'cart_items'    => $this->reorder->cart_item_count(),
+			'cart_items'    => $this->cart->item_count(),
 			'can_confirm'   => $plan->has_addable(),
-			'default_mode'  => Reorder::default_mode(),
+			'default_mode'  => ReorderOptions::default_mode(),
 			'merge_label'   => __( 'Add these to my current cart', 'post-purchase-hub' ),
 			'replace_label' => __( 'Replace what is in my cart', 'post-purchase-hub' ),
 			'confirm_label' => __( 'Add to cart', 'post-purchase-hub' ),

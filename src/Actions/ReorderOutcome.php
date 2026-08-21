@@ -27,7 +27,7 @@ final class ReorderOutcome {
 	 *
 	 * @since 0.12.0
 	 *
-	 * @param string $mode     Mode the cart was updated under, one of Reorder::MODES.
+	 * @param string $mode     Mode the cart was updated under, one of ReorderOptions::modes().
 	 * @param array  $added    Lines the cart accepted.
 	 * @param array  $rejected Lines the cart refused at add time.
 	 *

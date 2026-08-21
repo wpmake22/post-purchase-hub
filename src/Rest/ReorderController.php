@@ -9,9 +9,11 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Rest;
 
+use PostPurchaseHub\Actions\CartGateway;
 use PostPurchaseHub\Actions\IneligibleActionException;
 use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Actions\ReorderLine;
+use PostPurchaseHub\Actions\ReorderOptions;
 use PostPurchaseHub\Actions\ReorderOutcome;
 use PostPurchaseHub\Security\AccessDeniedException;
 use PostPurchaseHub\Security\OwnershipResolver;
@@ -100,12 +102,14 @@ final class ReorderController {
 	 * @param OwnershipResolver $ownership    The one ownership choke point.
 	 * @param RateLimiter       $rate_limiter Abuse throttling.
 	 * @param Reorder           $reorder      The action this route executes.
+	 * @param CartGateway       $cart         Read only here, to tell the client where the cart is and what is in it.
 	 * @param Logger            $logger       Logs every denial under the reference the customer sees.
 	 */
 	public function __construct(
 		private OwnershipResolver $ownership,
 		private RateLimiter $rate_limiter,
 		private Reorder $reorder,
+		private CartGateway $cart,
 		private Logger $logger
 	) {}
 
@@ -147,13 +151,13 @@ final class ReorderController {
 			'mode'     => array(
 				'required'          => false,
 				'type'              => 'string',
-				'default'           => Reorder::MODE_MERGE,
-				'enum'              => Reorder::modes(),
+				'default'           => ReorderOptions::MODE_MERGE,
+				'enum'              => ReorderOptions::modes(),
 				'sanitize_callback' => static function ( $value ): string {
-					return Reorder::normalise_mode( is_scalar( $value ) ? (string) $value : '' );
+					return ReorderOptions::normalise_mode( is_scalar( $value ) ? (string) $value : '' );
 				},
 				'validate_callback' => static function ( $value ): bool {
-					return is_scalar( $value ) && in_array( (string) $value, Reorder::modes(), true );
+					return is_scalar( $value ) && in_array( (string) $value, ReorderOptions::modes(), true );
 				},
 			),
 		);
@@ -254,8 +258,8 @@ final class ReorderController {
 			'rejected'       => array_map( array( $this, 'line_shape' ), $outcome->rejected ),
 			'added_count'    => $outcome->added_count(),
 			'rejected_count' => count( $outcome->rejected ),
-			'cart_url'       => $this->reorder->cart_url(),
-			'cart_items'     => $this->reorder->cart_item_count(),
+			'cart_url'       => $this->cart->url(),
+			'cart_items'     => $this->cart->item_count(),
 		);
 	}
 

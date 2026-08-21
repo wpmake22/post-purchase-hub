@@ -12,6 +12,7 @@ namespace PostPurchaseHub\Tests\Unit\Rest;
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Actions\Reorder;
+use PostPurchaseHub\Actions\ReorderOptions;
 use PostPurchaseHub\Actions\ReorderPlanner;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Rest\ReorderController;
@@ -83,6 +84,7 @@ final class ReorderControllerTest extends TestCase {
 			new OwnershipResolver( new TokenService() ),
 			$this->rate_limiter,
 			$reorder,
+			$this->cart,
 			new Logger()
 		);
 	}
@@ -127,7 +129,7 @@ final class ReorderControllerTest extends TestCase {
 	 * @param string $mode     Cart mode.
 	 * @return \WP_REST_Request
 	 */
-	private function request( int $order_id, string $mode = Reorder::MODE_MERGE ): \WP_REST_Request {
+	private function request( int $order_id, string $mode = ReorderOptions::MODE_MERGE ): \WP_REST_Request {
 		return new \WP_REST_Request(
 			array(
 				'order_id' => $order_id,
@@ -177,7 +179,7 @@ final class ReorderControllerTest extends TestCase {
 
 		$this->assertTrue( $mode['validate_callback']( 'replace' ) );
 		$this->assertFalse( $mode['validate_callback']( 'obliterate' ) );
-		$this->assertSame( Reorder::MODE_MERGE, $mode['sanitize_callback']( 'obliterate' ) );
+		$this->assertSame( ReorderOptions::MODE_MERGE, $mode['sanitize_callback']( 'obliterate' ) );
 	}
 
 	// -----------------------------------------------------------------
@@ -300,7 +302,7 @@ final class ReorderControllerTest extends TestCase {
 
 		$data = $response->get_data();
 
-		$this->assertSame( Reorder::MODE_MERGE, $data['mode'] );
+		$this->assertSame( ReorderOptions::MODE_MERGE, $data['mode'] );
 		$this->assertSame( 1, $data['added_count'] );
 		$this->assertSame( 0, $data['rejected_count'] );
 		$this->assertSame( 'https://example.test/cart/', $data['cart_url'] );
@@ -342,7 +344,7 @@ final class ReorderControllerTest extends TestCase {
 			$item->get_product()->set_max_purchase_quantity( 0 );
 		}
 
-		$request = $this->request( 26, Reorder::MODE_REPLACE );
+		$request = $this->request( 26, ReorderOptions::MODE_REPLACE );
 		$this->controller->authorise( $request );
 
 		$denied = $this->controller->confirm( $request );

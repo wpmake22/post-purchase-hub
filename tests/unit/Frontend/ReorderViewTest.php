@@ -66,7 +66,7 @@ final class ReorderViewTest extends TestCase {
 			$this->cart
 		);
 
-		$this->view = new ReorderView( $reorder, new TemplateLoader( new Logger() ) );
+		$this->view = new ReorderView( $reorder, $this->cart, new TemplateLoader( new Logger() ) );
 	}
 
 	/**
@@ -242,6 +242,7 @@ final class ReorderViewTest extends TestCase {
 		$this->cart->existing = 2;
 		$fresh                = new ReorderView(
 			new Reorder( new EligibilityResolver( new FakeRequestHistory() ), new ReorderPlanner(), $this->cart ),
+			$this->cart,
 			new TemplateLoader( new Logger() )
 		);
 

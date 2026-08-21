@@ -12,6 +12,7 @@ namespace PostPurchaseHub\Tests\Integration;
 use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Actions\IneligibleActionException;
 use PostPurchaseHub\Actions\Reorder;
+use PostPurchaseHub\Actions\ReorderOptions;
 use PostPurchaseHub\Actions\ReorderLine;
 use PostPurchaseHub\Actions\ReorderPlanner;
 use PostPurchaseHub\Actions\WooCommerceCart;
@@ -205,7 +206,7 @@ final class ReorderTest extends \WP_UnitTestCase {
 		$order->add_product( $this->product( 'Espresso beans', '12.00', 10 ), 2 );
 		$order = $this->complete( $order );
 
-		$outcome = $this->reorder->execute( $order, Reorder::MODE_MERGE );
+		$outcome = $this->reorder->execute( $order, ReorderOptions::MODE_MERGE );
 
 		$this->assertSame( 1, $outcome->added_count() );
 		$this->assertCount( 2, WC()->cart->get_cart() );
@@ -225,7 +226,7 @@ final class ReorderTest extends \WP_UnitTestCase {
 		$order->add_product( $this->product( 'Espresso beans', '12.00', 10 ), 2 );
 		$order = $this->complete( $order );
 
-		$this->reorder->execute( $order, Reorder::MODE_REPLACE );
+		$this->reorder->execute( $order, ReorderOptions::MODE_REPLACE );
 
 		$cart = WC()->cart->get_cart();
 
@@ -249,7 +250,7 @@ final class ReorderTest extends \WP_UnitTestCase {
 
 		$this->assertSame( ReorderLine::OUTCOME_QUANTITY_REDUCED, $plan->lines[0]->outcome );
 
-		$this->reorder->execute( $order, Reorder::MODE_MERGE );
+		$this->reorder->execute( $order, ReorderOptions::MODE_MERGE );
 
 		$cart = WC()->cart->get_cart();
 
@@ -289,7 +290,7 @@ final class ReorderTest extends \WP_UnitTestCase {
 
 		$this->assertSame( ReorderLine::OUTCOME_ADDED, $plan->lines[0]->outcome );
 
-		$this->reorder->execute( $order, Reorder::MODE_MERGE );
+		$this->reorder->execute( $order, ReorderOptions::MODE_MERGE );
 
 		$cart = WC()->cart->get_cart();
 
@@ -316,7 +317,7 @@ final class ReorderTest extends \WP_UnitTestCase {
 		$this->expectException( IneligibleActionException::class );
 
 		try {
-			$this->reorder->execute( $order, Reorder::MODE_REPLACE );
+			$this->reorder->execute( $order, ReorderOptions::MODE_REPLACE );
 		} finally {
 			$this->assertCount( 1, WC()->cart->get_cart() );
 		}

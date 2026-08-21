@@ -15,6 +15,7 @@ use PostPurchaseHub\Actions\EligibilityResolver;
 use PostPurchaseHub\Actions\EligibilityResult;
 use PostPurchaseHub\Actions\IneligibleActionException;
 use PostPurchaseHub\Actions\Reorder;
+use PostPurchaseHub\Actions\ReorderOptions;
 use PostPurchaseHub\Actions\ReorderLine;
 use PostPurchaseHub\Actions\ReorderPlanner;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
@@ -30,6 +31,7 @@ require_once dirname( __DIR__, 2 ) . '/stubs/wp-functions.php';
  * @since 0.12.0
  *
  * @covers \PostPurchaseHub\Actions\Reorder
+ * @covers \PostPurchaseHub\Actions\ReorderOptions
  * @covers \PostPurchaseHub\Actions\ReorderPlanner
  * @covers \PostPurchaseHub\Actions\ReorderLine
  * @covers \PostPurchaseHub\Actions\ReorderPlan
@@ -156,6 +158,29 @@ final class ReorderTest extends TestCase {
 
 		$this->assertFalse( $result->eligible );
 		$this->assertSame( Reorder::REASON_LOGIN_REQUIRED, $result->reason_code );
+	}
+
+	/**
+	 * The order dimension answers about the order alone: a logged-out request
+	 * does not make a completed order ineligible, it makes the request
+	 * ineligible. Keeping the two separable is what stops one of them being
+	 * quietly enforced in only one layer.
+	 *
+	 * @return void
+	 */
+	public function test_the_two_eligibility_dimensions_are_independent(): void {
+		FakeWordPress::$current_user_id = 0;
+
+		$order = $this->order();
+
+		$this->assertTrue( $this->reorder->order_eligibility( $order )->eligible );
+		$this->assertFalse( Reorder::visitor_eligibility()->eligible );
+		$this->assertSame( Reorder::REASON_LOGIN_REQUIRED, $this->reorder->check( $order )->reason_code );
+
+		FakeWordPress::$current_user_id = 7;
+
+		$this->assertTrue( Reorder::visitor_eligibility()->eligible );
+		$this->assertFalse( $this->reorder->order_eligibility( $this->order( 'processing' ) )->eligible );
 	}
 
 	/**
@@ -521,9 +546,9 @@ final class ReorderTest extends TestCase {
 			)
 		);
 
-		$outcome = $this->reorder->execute( $order, Reorder::MODE_MERGE );
+		$outcome = $this->reorder->execute( $order, ReorderOptions::MODE_MERGE );
 
-		$this->assertSame( Reorder::MODE_MERGE, $outcome->mode );
+		$this->assertSame( ReorderOptions::MODE_MERGE, $outcome->mode );
 		$this->assertSame( 1, $outcome->added_count() );
 		$this->assertSame( 2, $outcome->quantity_added() );
 		$this->assertSame( 0, $this->cart->clears );
@@ -540,7 +565,7 @@ final class ReorderTest extends TestCase {
 		$order = $this->order();
 		$order->set_items( array( $this->line( $this->product( 141 ), 141 ) ) );
 
-		$this->reorder->execute( $order, Reorder::MODE_REPLACE );
+		$this->reorder->execute( $order, ReorderOptions::MODE_REPLACE );
 
 		$this->assertSame( 1, $this->cart->clears );
 		$this->assertCount( 1, $this->cart->added );
@@ -558,7 +583,7 @@ final class ReorderTest extends TestCase {
 
 		$outcome = $this->reorder->execute( $order, 'obliterate' );
 
-		$this->assertSame( Reorder::MODE_MERGE, $outcome->mode );
+		$this->assertSame( ReorderOptions::MODE_MERGE, $outcome->mode );
 		$this->assertSame( 0, $this->cart->clears );
 	}
 
@@ -580,7 +605,7 @@ final class ReorderTest extends TestCase {
 		);
 
 		try {
-			$this->reorder->execute( $order, Reorder::MODE_REPLACE );
+			$this->reorder->execute( $order, ReorderOptions::MODE_REPLACE );
 			$this->fail( 'Expected an IneligibleActionException.' );
 		} catch ( IneligibleActionException $e ) {
 			$this->assertSame( Reorder::REASON_NOTHING_AVAILABLE, $e->result->reason_code );
@@ -602,7 +627,7 @@ final class ReorderTest extends TestCase {
 		$order->set_items( array( $this->line( $this->product( 171 ), 171 ) ) );
 
 		try {
-			$this->reorder->execute( $order, Reorder::MODE_MERGE );
+			$this->reorder->execute( $order, ReorderOptions::MODE_MERGE );
 			$this->fail( 'Expected an IneligibleActionException.' );
 		} catch ( IneligibleActionException $e ) {
 			$this->assertSame( EligibilityResult::REASON_STATUS_NOT_ELIGIBLE, $e->result->reason_code );
@@ -628,7 +653,7 @@ final class ReorderTest extends TestCase {
 
 		$this->cart->refuse = array( 182 );
 
-		$outcome = $this->reorder->execute( $order, Reorder::MODE_MERGE );
+		$outcome = $this->reorder->execute( $order, ReorderOptions::MODE_MERGE );
 
 		$this->assertSame( 1, $outcome->added_count() );
 		$this->assertCount( 1, $outcome->rejected );
@@ -653,7 +678,7 @@ final class ReorderTest extends TestCase {
 			}
 		);
 
-		$this->reorder->execute( $order, Reorder::MODE_MERGE );
+		$this->reorder->execute( $order, ReorderOptions::MODE_MERGE );
 
 		$this->assertSame( 1, $seen );
 	}
@@ -668,11 +693,11 @@ final class ReorderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_default_mode_is_merge_and_filterable(): void {
-		$this->assertSame( Reorder::MODE_MERGE, Reorder::default_mode() );
+		$this->assertSame( ReorderOptions::MODE_MERGE, ReorderOptions::default_mode() );
 
-		add_filter( 'pph_reorder_default_mode', static fn (): string => Reorder::MODE_REPLACE );
+		add_filter( 'pph_reorder_default_mode', static fn (): string => ReorderOptions::MODE_REPLACE );
 
-		$this->assertSame( Reorder::MODE_REPLACE, Reorder::default_mode() );
+		$this->assertSame( ReorderOptions::MODE_REPLACE, ReorderOptions::default_mode() );
 	}
 
 	/**
@@ -684,7 +709,7 @@ final class ReorderTest extends TestCase {
 	public function test_a_nonsense_default_mode_falls_back_to_merge(): void {
 		add_filter( 'pph_reorder_default_mode', static fn (): string => 'nonsense' );
 
-		$this->assertSame( Reorder::MODE_MERGE, Reorder::default_mode() );
+		$this->assertSame( ReorderOptions::MODE_MERGE, ReorderOptions::default_mode() );
 	}
 
 	/**
@@ -695,7 +720,7 @@ final class ReorderTest extends TestCase {
 	public function test_the_item_cap_cannot_be_zero(): void {
 		add_filter( 'pph_reorder_item_cap', static fn (): int => 0 );
 
-		$this->assertSame( 1, Reorder::item_cap() );
+		$this->assertSame( 1, ReorderOptions::item_cap() );
 	}
 
 	/**
@@ -707,7 +732,7 @@ final class ReorderTest extends TestCase {
 	public function test_status_filters_are_normalised(): void {
 		add_filter( 'pph_reorder_allowed_statuses', static fn (): array => array( 'wc-completed' ) );
 
-		$this->assertSame( array( 'completed' ), Reorder::allowed_statuses() );
+		$this->assertSame( array( 'completed' ), ReorderOptions::allowed_statuses() );
 	}
 
 	/**
@@ -719,7 +744,7 @@ final class ReorderTest extends TestCase {
 	public function test_an_empty_status_list_falls_back(): void {
 		add_filter( 'pph_reorder_allowed_statuses', static fn (): array => array() );
 
-		$this->assertSame( array( 'completed' ), Reorder::allowed_statuses() );
+		$this->assertSame( array( 'completed' ), ReorderOptions::allowed_statuses() );
 	}
 
 	/**

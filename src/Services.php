@@ -295,6 +295,7 @@ final class Services {
 					$plugin->ownership_resolver(),
 					$plugin->rate_limiter(),
 					$plugin->reorder(),
+					$plugin->cart(),
 					$plugin->logger()
 				);
 			}
@@ -303,7 +304,7 @@ final class Services {
 		$plugin->set(
 			'reorder_view',
 			static function ( Plugin $plugin ): ReorderView {
-				return new ReorderView( $plugin->reorder(), $plugin->templates() );
+				return new ReorderView( $plugin->reorder(), $plugin->cart(), $plugin->templates() );
 			}
 		);
 
