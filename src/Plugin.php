@@ -13,6 +13,9 @@ use PostPurchaseHub\Actions\ActionRegistry;
 use PostPurchaseHub\Actions\Cancel;
 use PostPurchaseHub\Actions\CartGateway;
 use PostPurchaseHub\Actions\EligibilityResolver;
+use PostPurchaseHub\Actions\Help;
+use PostPurchaseHub\Actions\HelpContextBuilder;
+use PostPurchaseHub\Actions\Invoice;
 use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Actions\ReorderPlanner;
 use PostPurchaseHub\Admin\Menu;
@@ -28,6 +31,7 @@ use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
 use PostPurchaseHub\Frontend\GuestContext;
 use PostPurchaseHub\Frontend\GuestOrderView;
+use PostPurchaseHub\Frontend\HelpView;
 use PostPurchaseHub\Frontend\LookupForm;
 use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\ReorderView;
@@ -38,12 +42,14 @@ use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
 use PostPurchaseHub\Integrations\Compat\PageCache;
+use PostPurchaseHub\Integrations\Invoices\Detector;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\PendingCancellationBranch;
 use PostPurchaseHub\Requests\Request;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Rest\HelpController;
 use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
@@ -487,6 +493,66 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the invoice-plugin detector.
+	 *
+	 * @since 0.13.0
+	 * @return Detector
+	 */
+	public function invoice_detector(): Detector {
+		return $this->typed( 'invoice_detector', Detector::class );
+	}
+
+	/**
+	 * Returns the invoice-access action.
+	 *
+	 * @since 0.13.0
+	 * @return Invoice
+	 */
+	public function invoice(): Invoice {
+		return $this->typed( 'invoice', Invoice::class );
+	}
+
+	/**
+	 * Returns the help-context builder.
+	 *
+	 * @since 0.13.0
+	 * @return HelpContextBuilder
+	 */
+	public function help_context_builder(): HelpContextBuilder {
+		return $this->typed( 'help_context_builder', HelpContextBuilder::class );
+	}
+
+	/**
+	 * Returns the contextual help action.
+	 *
+	 * @since 0.13.0
+	 * @return Help
+	 */
+	public function help(): Help {
+		return $this->typed( 'help', Help::class );
+	}
+
+	/**
+	 * Returns the help REST controller.
+	 *
+	 * @since 0.13.0
+	 * @return HelpController
+	 */
+	public function help_controller(): HelpController {
+		return $this->typed( 'help_controller', HelpController::class );
+	}
+
+	/**
+	 * Returns the help form's view.
+	 *
+	 * @since 0.13.0
+	 * @return HelpView
+	 */
+	public function help_view(): HelpView {
+		return $this->typed( 'help_view', HelpView::class );
+	}
+
+	/**
 	 * Returns the requests REST controller.
 	 *
 	 * @since 0.8.0
@@ -672,6 +738,13 @@ final class Plugin {
 		// check has to land after every plugin has had its chance to load.
 		add_action( 'plugins_loaded', array( $this, 'check_schema' ), 20 );
 
+		// A store's invoice plugin can only start or stop existing when a plugin
+		// is activated or deactivated, which is also the only moment the
+		// cached detection can be wrong. Both hooks are admin-only, so this
+		// costs nothing on a storefront request.
+		add_action( 'activated_plugin', array( $this, 'forget_invoice_detection' ) );
+		add_action( 'deactivated_plugin', array( $this, 'forget_invoice_detection' ) );
+
 		add_action( Activator::CLEANUP_HOOK, array( $this, 'run_cleanup' ) );
 		add_action( AdminDigest::CRON_HOOK, array( $this, 'run_digest' ) );
 
@@ -712,6 +785,8 @@ final class Plugin {
 		// core's actions already registered rather than racing them.
 		$this->cancel()->register( $this->action_registry() );
 		$this->reorder()->register( $this->action_registry() );
+		$this->invoice()->register( $this->action_registry() );
+		$this->help()->register( $this->action_registry() );
 
 		/**
 		 * Fires once core has wired itself, with the service container.
@@ -917,6 +992,7 @@ final class Plugin {
 		$this->template_replacer()->register();
 		$this->request_modal_renderer()->register();
 		$this->reorder_view()->register();
+		$this->help_view()->register();
 		$this->guest_order_view()->register();
 		$this->page_cache()->register();
 	}
@@ -931,6 +1007,18 @@ final class Plugin {
 		$this->requests_controller()->register_routes();
 		$this->lookup_controller()->register_routes();
 		$this->reorder_controller()->register_routes();
+		$this->help_controller()->register_routes();
+	}
+
+	/**
+	 * Drops the cached invoice-plugin detection.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @return void
+	 */
+	public function forget_invoice_detection(): void {
+		$this->invoice_detector()->forget();
 	}
 
 	/**

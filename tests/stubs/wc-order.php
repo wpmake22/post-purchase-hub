@@ -27,6 +27,13 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		private int $id;
 
 		/**
+		 * Overridden view-order URL, null while the default applies.
+		 *
+		 * @var string|null
+		 */
+		private ?string $view_order_url = null;
+
+		/**
 		 * Unprefixed order status.
 		 *
 		 * @var string
@@ -395,7 +402,22 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		 * @return string
 		 */
 		public function get_view_order_url(): string {
-			return 'https://example.test/my-account/view-order/' . $this->id . '/';
+			return null === $this->view_order_url
+				? 'https://example.test/my-account/view-order/' . $this->id . '/'
+				: $this->view_order_url;
+		}
+
+		/**
+		 * Overrides the view-order URL, including with an empty string — the
+		 * state a real order reaches when the My Account page is missing.
+		 *
+		 * @since 0.13.0
+		 *
+		 * @param string $url URL to report.
+		 * @return void
+		 */
+		public function set_view_order_url( string $url ): void {
+			$this->view_order_url = $url;
 		}
 
 		/**

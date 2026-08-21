@@ -9,7 +9,11 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Tests\Integration;
 
+use PostPurchaseHub\Actions\EligibilityResolver;
+use PostPurchaseHub\Actions\Help;
+use PostPurchaseHub\Actions\HelpContextBuilder;
 use PostPurchaseHub\Emails\AdminDigest;
+use PostPurchaseHub\Emails\HelpRequest;
 use PostPurchaseHub\Emails\LinkInjector;
 use PostPurchaseHub\Emails\Mailer;
 use PostPurchaseHub\Emails\NewRequestAdmin;
@@ -22,6 +26,12 @@ use PostPurchaseHub\Install\Schema;
 use PostPurchaseHub\Requests\Request;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Security\TokenService;
+use PostPurchaseHub\Support\Cache;
+use PostPurchaseHub\Support\Logger;
+use PostPurchaseHub\Timeline\StageMap;
+use PostPurchaseHub\Timeline\StatusDetector;
+use PostPurchaseHub\Timeline\TimelineBuilder;
+use PostPurchaseHub\Timeline\TransitionRecorder;
 
 /**
  * Exercises the milestone's real dependencies: the actual `WC_Email` base
@@ -40,6 +50,7 @@ use PostPurchaseHub\Security\TokenService;
  * @covers \PostPurchaseHub\Emails\RequestApproved
  * @covers \PostPurchaseHub\Emails\RequestDeclined
  * @covers \PostPurchaseHub\Emails\NewRequestAdmin
+ * @covers \PostPurchaseHub\Emails\HelpRequest
  * @covers \PostPurchaseHub\Emails\SecureOrderLink
  * @covers \PostPurchaseHub\Emails\AdminDigest
  * @covers \PostPurchaseHub\Emails\LinkInjector
@@ -287,5 +298,51 @@ final class EmailsTest extends \WP_UnitTestCase {
 		$injector->maybe_inject( $order, false, false, new \WC_Email_Customer_Processing_Order() );
 		$captured = (string) ob_get_clean();
 		$this->assertStringContainsString( 'view-order', $captured );
+	}
+
+	/**
+	 * The help email renders both real templates against a real order, with the
+	 * order context attached and a payload in the customer's own words escaped
+	 * in both formats — M13's acceptance criterion, against real WooCommerce
+	 * rendering rather than the unit suite's shims.
+	 *
+	 * @return void
+	 */
+	public function test_help_email_renders_and_escapes_the_customers_message(): void {
+		$payload = '<script>alert(1)</script>';
+		$order   = $this->order();
+		$order->set_status( 'processing' );
+		$order->save();
+
+		$stages   = new StageMap( new StatusDetector( new Cache() ) );
+		$timeline = new TimelineBuilder( $stages, new TransitionRecorder( $stages, new Logger() ) );
+		$help     = new Help( new EligibilityResolver( new RequestRepository() ), new HelpContextBuilder( $timeline ) );
+
+		$context = $help->context_for( $order )->submitted(
+			'where_is_my_order',
+			'Where is my order?',
+			'It has not arrived. ' . $payload,
+			Help::SOURCE_ACCOUNT,
+			$order->get_edit_order_url()
+		);
+
+		$email = new HelpRequest();
+
+		$email->trigger( $context, $order );
+
+		$html  = $email->get_content_html();
+		$plain = $email->get_content_plain();
+
+		foreach ( array(
+			'html'  => $html,
+			'plain' => $plain,
+		) as $format => $content ) {
+			$this->assertNotSame( '', $content, 'The ' . $format . ' template rendered nothing.' );
+			$this->assertStringNotContainsString( '<script>', $content, $format . ' must not contain a raw <script> tag.' );
+			$this->assertStringContainsString( 'It has not arrived.', $content, $format . ' carries the message.' );
+			$this->assertStringContainsString( (string) $order->get_order_number(), $content, $format . ' names the order.' );
+		}
+
+		$this->assertSame( get_option( 'admin_email' ), $email->get_recipient() );
 	}
 }

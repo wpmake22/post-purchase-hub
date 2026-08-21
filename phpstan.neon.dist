@@ -11,6 +11,7 @@ parameters:
 		- vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
 		- vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
 		- tests/stubs/wp-constants.php
+		- tests/stubs/invoice-plugins.php
 	treatPhpDocTypesAsCertain: false
 	# bin/build.php rewrites this constant when it stages each zip, so its value
 	# in source is not its value in either distribution. Without this, PHPStan

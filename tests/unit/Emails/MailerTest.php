@@ -11,6 +11,7 @@ namespace PostPurchaseHub\Tests\Unit\Emails;
 
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Emails\AdminDigest;
+use PostPurchaseHub\Emails\HelpRequest;
 use PostPurchaseHub\Emails\Mailer;
 use PostPurchaseHub\Emails\NewRequestAdmin;
 use PostPurchaseHub\Emails\RequestApproved;
@@ -46,19 +47,19 @@ final class MailerTest extends TestCase {
 	}
 
 	/**
-	 * Registers all six of this plugin's own emails, keyed by class name,
+	 * Registers all seven of this plugin's own emails, keyed by class name,
 	 * alongside whatever WooCommerce classes were already present.
 	 *
 	 * @return void
 	 */
-	public function test_registers_all_six_emails_keyed_by_class_name(): void {
+	public function test_registers_all_seven_emails_keyed_by_class_name(): void {
 		$mailer = new Mailer( new RequestRepository(), new TokenService() );
 
 		$classes = $mailer->register_email_classes( array( 'WC_Email_New_Order' => 'placeholder' ) );
 
 		$this->assertArrayHasKey( 'WC_Email_New_Order', $classes, 'Existing entries are preserved, not replaced.' );
 
-		foreach ( array( RequestReceived::class, RequestApproved::class, RequestDeclined::class, NewRequestAdmin::class, SecureOrderLink::class, AdminDigest::class ) as $class ) {
+		foreach ( array( RequestReceived::class, RequestApproved::class, RequestDeclined::class, NewRequestAdmin::class, HelpRequest::class, SecureOrderLink::class, AdminDigest::class ) as $class ) {
 			$this->assertArrayHasKey( $class, $classes );
 			$this->assertInstanceOf( $class, $classes[ $class ] );
 		}

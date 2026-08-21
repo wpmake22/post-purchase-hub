@@ -13,6 +13,9 @@ use PostPurchaseHub\Actions\ActionRegistry;
 use PostPurchaseHub\Actions\Cancel;
 use PostPurchaseHub\Actions\CartGateway;
 use PostPurchaseHub\Actions\EligibilityResolver;
+use PostPurchaseHub\Actions\Help;
+use PostPurchaseHub\Actions\HelpContextBuilder;
+use PostPurchaseHub\Actions\Invoice;
 use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Actions\ReorderPlanner;
 use PostPurchaseHub\Actions\WooCommerceCart;
@@ -26,6 +29,7 @@ use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Blocks;
 use PostPurchaseHub\Frontend\GuestContext;
 use PostPurchaseHub\Frontend\GuestOrderView;
+use PostPurchaseHub\Frontend\HelpView;
 use PostPurchaseHub\Frontend\LookupForm;
 use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\ReorderView;
@@ -35,12 +39,14 @@ use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Migrator;
 use PostPurchaseHub\Integrations\Compat\PageCache;
+use PostPurchaseHub\Integrations\Invoices\Detector;
 use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\PendingCancellationBranch;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Rest\HelpController;
 use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
@@ -305,6 +311,53 @@ final class Services {
 			'reorder_view',
 			static function ( Plugin $plugin ): ReorderView {
 				return new ReorderView( $plugin->reorder(), $plugin->cart(), $plugin->templates() );
+			}
+		);
+
+		$plugin->set(
+			'invoice_detector',
+			static function ( Plugin $plugin ): Detector {
+				return new Detector( $plugin->cache() );
+			}
+		);
+
+		$plugin->set(
+			'invoice',
+			static function ( Plugin $plugin ): Invoice {
+				return new Invoice( $plugin->eligibility_resolver(), $plugin->invoice_detector() );
+			}
+		);
+
+		$plugin->set(
+			'help_context_builder',
+			static function ( Plugin $plugin ): HelpContextBuilder {
+				return new HelpContextBuilder( $plugin->timeline_builder() );
+			}
+		);
+
+		$plugin->set(
+			'help',
+			static function ( Plugin $plugin ): Help {
+				return new Help( $plugin->eligibility_resolver(), $plugin->help_context_builder() );
+			}
+		);
+
+		$plugin->set(
+			'help_controller',
+			static function ( Plugin $plugin ): HelpController {
+				return new HelpController(
+					$plugin->ownership_resolver(),
+					$plugin->rate_limiter(),
+					$plugin->help(),
+					$plugin->logger()
+				);
+			}
+		);
+
+		$plugin->set(
+			'help_view',
+			static function ( Plugin $plugin ): HelpView {
+				return new HelpView( $plugin->help(), $plugin->templates() );
 			}
 		);
 

@@ -17,7 +17,7 @@ use PostPurchaseHub\Security\TokenService;
  *
  * Registration goes through `woocommerce_email_classes` — the same filter
  * WooCommerce's own emails, and any third-party plugin's, use — so merchants
- * find these six emails in WooCommerce → Settings → Emails, get the
+ * find these seven emails in WooCommerce → Settings → Emails, get the
  * customiser and the block email editor for free, and never see a
  * plugin-specific settings screen for something Woo already has one for.
  *
@@ -103,6 +103,7 @@ final class Mailer {
 			RequestApproved::class => new RequestApproved(),
 			RequestDeclined::class => new RequestDeclined(),
 			NewRequestAdmin::class => new NewRequestAdmin(),
+			HelpRequest::class     => new HelpRequest(),
 			SecureOrderLink::class => new SecureOrderLink( $this->tokens ),
 			AdminDigest::class     => $this->admin_digest(),
 		);

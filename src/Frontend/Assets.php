@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Frontend;
 
 use PostPurchaseHub\Actions\Reorder;
+use PostPurchaseHub\Rest\HelpController;
 use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
@@ -55,6 +56,13 @@ final class Assets {
 	 * @var string
 	 */
 	public const REORDER_HANDLE = 'pph-reorder';
+
+	/**
+	 * Help-form script handle.
+	 *
+	 * @var string
+	 */
+	public const HELP_HANDLE = 'pph-help';
 
 	/**
 	 * Build directory, relative to the plugin root.
@@ -116,6 +124,39 @@ final class Assets {
 
 		$this->enqueue_lookup();
 		$this->enqueue_reorder();
+		$this->enqueue_help();
+	}
+
+	/**
+	 * Enqueues the help form's submission script.
+	 *
+	 * Scoped exactly as the request modal is, rather than tighter: the form is
+	 * drawn on any order this plugin renders a detail view for, including the
+	 * one a guest reaches through a signed link, and a narrower gate would have
+	 * to re-derive which of those this request is.
+	 *
+	 * @since 0.13.0
+	 * @return void
+	 */
+	private function enqueue_help(): void {
+		$script = $this->manifest( 'help.asset.php' );
+
+		wp_enqueue_script(
+			self::HELP_HANDLE,
+			PPH_PLUGIN_URL . self::BUILD_PATH . 'help.js',
+			$script['dependencies'],
+			$script['version'],
+			true
+		);
+
+		wp_localize_script(
+			self::HELP_HANDLE,
+			'pphHelp',
+			array(
+				'restUrl' => rest_url( HelpController::NAMESPACE . HelpController::ROUTE ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+			)
+		);
 	}
 
 	/**

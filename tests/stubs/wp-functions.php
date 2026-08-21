@@ -1393,6 +1393,154 @@ if ( ! function_exists( 'add_shortcode' ) ) {
 	}
 }
 
+if ( ! function_exists( 'shortcode_exists' ) ) {
+	/**
+	 * Whether a shortcode was registered through the add_shortcode() shim.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @param string $tag Shortcode tag.
+	 * @return bool
+	 */
+	function shortcode_exists( $tag ): bool {
+		return isset( FakeWordPress::$shortcodes[ (string) $tag ] );
+	}
+}
+
+if ( ! function_exists( 'do_shortcode' ) ) {
+	/**
+	 * Runs one registered shortcode, parsing its quoted attributes.
+	 *
+	 * Deliberately narrow: enough to hand a registered callback the attributes
+	 * it was called with — which is what an invoice adapter reading another
+	 * plugin's documented shortcode depends on — and nothing more. Unregistered
+	 * tags return the content unchanged, as WordPress does.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @param string $content Content containing one shortcode.
+	 * @return string
+	 */
+	function do_shortcode( $content ): string {
+		$content = (string) $content;
+
+		if ( 1 !== preg_match( '/^\[([a-z0-9_-]+)([^\]]*)\]$/i', trim( $content ), $matches ) ) {
+			return $content;
+		}
+
+		$tag = $matches[1];
+
+		if ( ! isset( FakeWordPress::$shortcodes[ $tag ] ) ) {
+			return $content;
+		}
+
+		$atts = array();
+
+		if ( preg_match_all( '/([a-z0-9_-]+)=["\']([^"\']*)["\']/i', $matches[2], $pairs, PREG_SET_ORDER ) ) {
+			foreach ( $pairs as $pair ) {
+				$atts[ $pair[1] ] = $pair[2];
+			}
+		}
+
+		$callback = FakeWordPress::$shortcodes[ $tag ];
+
+		return is_callable( $callback ) ? (string) call_user_func( $callback, $atts, '', $tag ) : '';
+	}
+}
+
+if ( ! function_exists( 'wpautop' ) ) {
+	/**
+	 * Wraps text in paragraph tags, close enough for an escaping assertion.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @param string $text Text to wrap.
+	 * @param bool   $br   Whether to convert newlines, unused.
+	 * @return string
+	 */
+	function wpautop( $text, $br = true ): string {
+		unset( $br );
+
+		return '<p>' . str_replace( "\n\n", '</p><p>', (string) $text ) . '</p>';
+	}
+}
+
+if ( ! function_exists( 'wptexturize' ) ) {
+	/**
+	 * Returns the text unchanged; the unit suite asserts escaping, not curly quotes.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
+	function wptexturize( $text ): string {
+		return (string) $text;
+	}
+}
+
+if ( ! function_exists( 'wp_kses_post' ) ) {
+	/**
+	 * Strips the tags WordPress would strip from post content.
+	 *
+	 * Only the handful an escaping test cares about — script, style, iframe,
+	 * on* attributes — rather than a kses reimplementation.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @param string $content Content to filter.
+	 * @return string
+	 */
+	function wp_kses_post( $content ): string {
+		$content = (string) preg_replace( '#<(script|style|iframe)[^>]*>.*?</\\1>#is', '', (string) $content );
+
+		return (string) preg_replace( '#<(script|style|iframe)[^>]*>#i', '', $content );
+	}
+}
+
+if ( ! function_exists( 'wc_get_template_html' ) ) {
+	/**
+	 * Renders one of this plugin's own email templates and returns the markup.
+	 *
+	 * Unlike the wc_get_template() shim above, which only records the call,
+	 * this includes the real file: the escaping M13 has to prove — an XSS
+	 * payload in a customer's own words, in both email formats — is a property
+	 * of the template, so a test that did not render it would prove nothing.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @param string               $template_name Template name, relative to the plugin's templates directory.
+	 * @param array<string, mixed> $args          Arguments the template documents.
+	 * @param string               $template_path Theme override path, unused: the unit suite has no theme.
+	 * @param string               $default_path  Absolute base path.
+	 * @return string
+	 */
+	function wc_get_template_html( $template_name, $args = array(), $template_path = '', $default_path = '' ): string {
+		unset( $template_path );
+
+		$base = '' !== (string) $default_path ? (string) $default_path : PPH_PLUGIN_DIR . 'templates/';
+		$path = $base . (string) $template_name;
+
+		FakeWordPress::$rendered_templates[] = array(
+			'name' => (string) $template_name,
+			'args' => is_array( $args ) ? $args : array(),
+		);
+
+		if ( ! is_readable( $path ) ) {
+			return '';
+		}
+
+		ob_start();
+
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- Mirrors wc_get_template()'s own contract: documented named variables, built in this repository.
+		extract( is_array( $args ) ? $args : array(), EXTR_SKIP );
+
+		include $path;
+
+		return (string) ob_get_clean();
+	}
+}
+
 if ( ! function_exists( 'wp_parse_url' ) ) {
 	/**
 	 * Thin wrapper matching WordPress's own, close enough for the plain
