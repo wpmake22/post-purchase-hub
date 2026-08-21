@@ -531,6 +531,45 @@ if ( ! function_exists( 'has_block' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_strip_all_tags' ) ) {
+	/**
+	 * Strips markup, closely enough to wp_strip_all_tags() for the unit suite:
+	 * script/style blocks are removed with their content, everything else with
+	 * strip_tags(), and the result is trimmed.
+	 *
+	 * @since 0.6.0
+	 *
+	 * @param string $text          Text.
+	 * @param bool   $remove_breaks Whether to collapse whitespace, matching core's second argument.
+	 * @return string
+	 */
+	function wp_strip_all_tags( $text, $remove_breaks = false ): string {
+		$text = (string) preg_replace( '@<(script|style)[^>]*?>.*?</\1>@si', '', (string) $text );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- This shim is what stands in for wp_strip_all_tags() itself in the unit suite.
+		$text = strip_tags( $text );
+
+		if ( $remove_breaks ) {
+			$text = (string) preg_replace( '/[\r\n\t ]+/', ' ', $text );
+		}
+
+		return trim( $text );
+	}
+}
+
+if ( ! function_exists( 'current_user_can' ) ) {
+	/**
+	 * Whether the fake current user has a capability.
+	 *
+	 * @since 0.6.0
+	 *
+	 * @param string $capability Capability name.
+	 * @return bool
+	 */
+	function current_user_can( $capability ): bool {
+		return in_array( (string) $capability, FakeWordPress::$current_user_capabilities, true );
+	}
+}
+
 if ( ! function_exists( 'get_current_user_id' ) ) {
 	/**
 	 * Returns the fake current user id.

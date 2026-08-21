@@ -127,6 +127,13 @@ final class FakeWordPress {
 	public static array $transient_writes = array();
 
 	/**
+	 * Capabilities the current user should report having, for current_user_can().
+	 *
+	 * @var list<string>
+	 */
+	public static array $current_user_capabilities = array();
+
+	/**
 	 * Clears all state between tests.
 	 *
 	 * @since 0.1.0
@@ -134,21 +141,22 @@ final class FakeWordPress {
 	 * @return void
 	 */
 	public static function reset(): void {
-		self::$ext_object_cache = false;
-		self::$object_cache     = array();
-		self::$options          = array();
-		self::$actions          = array();
-		self::$filters          = array();
-		self::$transient_writes = array();
-		self::$orders           = array();
-		self::$theme_templates  = array();
-		self::$is_account_page  = false;
-		self::$endpoints        = array();
-		self::$post             = null;
-		self::$current_user_id  = 0;
-		self::$account_page_id  = 0;
-		self::$post_meta        = array();
-		self::$post_content     = array();
+		self::$ext_object_cache          = false;
+		self::$object_cache              = array();
+		self::$options                   = array();
+		self::$actions                   = array();
+		self::$filters                   = array();
+		self::$transient_writes          = array();
+		self::$orders                    = array();
+		self::$theme_templates           = array();
+		self::$is_account_page           = false;
+		self::$endpoints                 = array();
+		self::$post                      = null;
+		self::$current_user_id           = 0;
+		self::$account_page_id           = 0;
+		self::$post_meta                 = array();
+		self::$post_content              = array();
+		self::$current_user_capabilities = array();
 	}
 
 	/**

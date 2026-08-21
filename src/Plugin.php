@@ -23,6 +23,9 @@ use PostPurchaseHub\Install\Migrator;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Security\OwnershipResolver;
+use PostPurchaseHub\Security\RateLimiter;
+use PostPurchaseHub\Security\TokenService;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 use PostPurchaseHub\Timeline\EstimatedDelivery;
@@ -314,6 +317,36 @@ final class Plugin {
 	 */
 	public function template_replacer(): TemplateReplacer {
 		return $this->typed( 'template_replacer', TemplateReplacer::class );
+	}
+
+	/**
+	 * Returns the signed-token service.
+	 *
+	 * @since 0.6.0
+	 * @return TokenService
+	 */
+	public function tokens(): TokenService {
+		return $this->typed( 'tokens', TokenService::class );
+	}
+
+	/**
+	 * Returns the rate limiter.
+	 *
+	 * @since 0.6.0
+	 * @return RateLimiter
+	 */
+	public function rate_limiter(): RateLimiter {
+		return $this->typed( 'rate_limiter', RateLimiter::class );
+	}
+
+	/**
+	 * Returns the ownership resolver — the only place order access is decided.
+	 *
+	 * @since 0.6.0
+	 * @return OwnershipResolver
+	 */
+	public function ownership_resolver(): OwnershipResolver {
+		return $this->typed( 'ownership_resolver', OwnershipResolver::class );
 	}
 
 	/**

@@ -21,6 +21,9 @@ use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RetentionSweeper;
+use PostPurchaseHub\Security\OwnershipResolver;
+use PostPurchaseHub\Security\RateLimiter;
+use PostPurchaseHub\Security\TokenService;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 use PostPurchaseHub\Timeline\EstimatedDelivery;
@@ -167,6 +170,27 @@ final class Services {
 			'template_replacer',
 			static function ( Plugin $plugin ): TemplateReplacer {
 				return new TemplateReplacer( $plugin->templates(), $plugin->conflict_scanner() );
+			}
+		);
+
+		$plugin->set(
+			'tokens',
+			static function (): TokenService {
+				return new TokenService();
+			}
+		);
+
+		$plugin->set(
+			'rate_limiter',
+			static function ( Plugin $plugin ): RateLimiter {
+				return new RateLimiter( $plugin->cache() );
+			}
+		);
+
+		$plugin->set(
+			'ownership_resolver',
+			static function ( Plugin $plugin ): OwnershipResolver {
+				return new OwnershipResolver( $plugin->tokens() );
 			}
 		);
 	}

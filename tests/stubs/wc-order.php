@@ -66,6 +66,27 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		private array $shipping_methods = array();
 
 		/**
+		 * Customer user id, 0 for a guest order.
+		 *
+		 * @var int
+		 */
+		private int $customer_id = 0;
+
+		/**
+		 * Order key, as WooCommerce generates for every order.
+		 *
+		 * @var string
+		 */
+		private string $order_key = '';
+
+		/**
+		 * Billing email address.
+		 *
+		 * @var string
+		 */
+		private string $billing_email = '';
+
+		/**
 		 * Constructor.
 		 *
 		 * @param int    $id     Order id.
@@ -74,6 +95,63 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public function __construct( int $id = 1, string $status = 'pending' ) {
 			$this->id     = $id;
 			$this->status = $status;
+		}
+
+		/**
+		 * Returns the customer user id, 0 for a guest order.
+		 *
+		 * @return int
+		 */
+		public function get_customer_id(): int {
+			return $this->customer_id;
+		}
+
+		/**
+		 * Sets the customer user id.
+		 *
+		 * @param int $customer_id Customer user id.
+		 * @return void
+		 */
+		public function set_customer_id( int $customer_id ): void {
+			$this->customer_id = $customer_id;
+		}
+
+		/**
+		 * Returns the order key.
+		 *
+		 * @return string
+		 */
+		public function get_order_key(): string {
+			return $this->order_key;
+		}
+
+		/**
+		 * Sets the order key.
+		 *
+		 * @param string $order_key Order key.
+		 * @return void
+		 */
+		public function set_order_key( string $order_key ): void {
+			$this->order_key = $order_key;
+		}
+
+		/**
+		 * Returns the billing email address.
+		 *
+		 * @return string
+		 */
+		public function get_billing_email(): string {
+			return $this->billing_email;
+		}
+
+		/**
+		 * Sets the billing email address.
+		 *
+		 * @param string $billing_email Billing email address.
+		 * @return void
+		 */
+		public function set_billing_email( string $billing_email ): void {
+			$this->billing_email = $billing_email;
 		}
 
 		/**
