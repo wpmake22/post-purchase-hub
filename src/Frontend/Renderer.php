@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Timeline\EstimatedDelivery;
 use PostPurchaseHub\Timeline\TimelineBuilder;
 
 /**
@@ -69,6 +70,13 @@ final class Renderer {
 	private TemplateLoader $templates;
 
 	/**
+	 * Estimated-delivery calculator.
+	 *
+	 * @var EstimatedDelivery
+	 */
+	private EstimatedDelivery $eta;
+
+	/**
 	 * Order ids whose detail timeline has already been drawn this request.
 	 *
 	 * @var array<int, bool>
@@ -80,12 +88,14 @@ final class Renderer {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @param TimelineBuilder $builder   Timeline builder.
-	 * @param TemplateLoader  $templates Template loader.
+	 * @param TimelineBuilder   $builder   Timeline builder.
+	 * @param TemplateLoader    $templates Template loader.
+	 * @param EstimatedDelivery $eta       Estimated-delivery calculator.
 	 */
-	public function __construct( TimelineBuilder $builder, TemplateLoader $templates ) {
+	public function __construct( TimelineBuilder $builder, TemplateLoader $templates, EstimatedDelivery $eta ) {
 		$this->builder   = $builder;
 		$this->templates = $templates;
+		$this->eta       = $eta;
 	}
 
 	/**
@@ -217,6 +227,11 @@ final class Renderer {
 		$this->templates->render(
 			'partials/timeline.php',
 			array( 'timeline' => TimelineView::present( $this->builder->build( $order ) ) )
+		);
+
+		$this->templates->render(
+			'partials/eta.php',
+			array( 'eta' => EstimatedDeliveryView::present( $this->eta->for_order( $order ) ) )
 		);
 	}
 

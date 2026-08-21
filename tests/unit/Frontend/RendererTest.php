@@ -11,9 +11,11 @@ namespace PostPurchaseHub\Tests\Unit\Frontend;
 
 use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\TemplateLoader;
+use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
+use PostPurchaseHub\Timeline\EstimatedDelivery;
 use PostPurchaseHub\Timeline\StageMap;
 use PostPurchaseHub\Timeline\StatusDetector;
 use PostPurchaseHub\Timeline\TimelineBuilder;
@@ -53,7 +55,8 @@ final class RendererTest extends TestCase {
 
 		$this->renderer = new Renderer(
 			new TimelineBuilder( $stages, new TransitionRecorder( $stages, new Logger() ) ),
-			new TemplateLoader( new Logger() )
+			new TemplateLoader( new Logger() ),
+			new EstimatedDelivery( new NullTrackingAvailability(), new Logger() )
 		);
 	}
 

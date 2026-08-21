@@ -20,10 +20,12 @@ use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
+use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RetentionSweeper;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
+use PostPurchaseHub\Timeline\EstimatedDelivery;
 use PostPurchaseHub\Timeline\StageMap;
 use PostPurchaseHub\Timeline\StatusDetector;
 use PostPurchaseHub\Timeline\TimelineBuilder;
@@ -235,6 +237,26 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the tracking-availability check.
+	 *
+	 * @since 0.5.0
+	 * @return TrackingAvailability
+	 */
+	public function tracking_availability(): TrackingAvailability {
+		return $this->typed( 'tracking_availability', TrackingAvailability::class );
+	}
+
+	/**
+	 * Returns the estimated-delivery calculator.
+	 *
+	 * @since 0.5.0
+	 * @return EstimatedDelivery
+	 */
+	public function estimated_delivery(): EstimatedDelivery {
+		return $this->typed( 'estimated_delivery', EstimatedDelivery::class );
+	}
+
+	/**
 	 * Returns the frontend renderer.
 	 *
 	 * @since 0.4.0
@@ -343,6 +365,16 @@ final class Plugin {
 		add_action( Activator::CLEANUP_HOOK, array( $this, 'run_cleanup' ) );
 
 		add_action( 'woocommerce_order_status_changed', array( $this, 'record_transition' ), 10, 4 );
+		add_action( 'woocommerce_order_status_changed', array( $this, 'resync_eta_on_status_change' ), 10, 4 );
+
+		// Shipping-line changes: the admin order editor's bulk save
+		// (wc-admin-functions.php) and the per-item CRUD hooks new/updated
+		// shipping items fire through WC_Order_Item_Type_Data_Store, covering
+		// the admin UI, the order being placed in the first place, and any
+		// programmatic edit that goes through save().
+		add_action( 'woocommerce_saved_order_items', array( $this, 'resync_eta_for_order_id' ) );
+		add_action( 'woocommerce_new_order_item', array( $this, 'resync_eta_for_shipping_item' ), 10, 2 );
+		add_action( 'woocommerce_update_order_item', array( $this, 'resync_eta_for_shipping_item' ), 10, 2 );
 
 		add_action( 'init', array( $this, 'register_rendering' ), 20 );
 
@@ -391,6 +423,90 @@ final class Plugin {
 	 */
 	public function record_transition( $order_id, $from, $to, $order = null ): void {
 		$this->transition_recorder()->record( (int) $order_id, (string) $from, (string) $to, $order );
+	}
+
+	/**
+	 * Resyncs an order's cached estimated-delivery range when its status changes.
+	 *
+	 * A range is a promise made at one point in time; it must not silently
+	 * change because the order moved to a new status, but it does need
+	 * recomputing so a later read reflects anything about the order that
+	 * changed alongside the status — a cancelled or refunded order, for one,
+	 * should stop showing an estimate on its next render. Deliberately a
+	 * write here rather than on a read path: `woocommerce_order_status_changed`
+	 * is never fired from a GET request.
+	 *
+	 * @since 0.5.0
+	 *
+	 * @param int    $order_id Order id.
+	 * @param string $from     Status moved away from.
+	 * @param string $to       Status moved to.
+	 * @param mixed  $order    Order object as passed by WooCommerce.
+	 * @return void
+	 */
+	public function resync_eta_on_status_change( $order_id, $from, $to, $order = null ): void {
+		unset( $from, $to );
+
+		if ( ! $order instanceof \WC_Order ) {
+			$order = wc_get_order( (int) $order_id );
+		}
+
+		if ( $order instanceof \WC_Order ) {
+			$this->estimated_delivery()->sync( $order );
+		}
+	}
+
+	/**
+	 * Resyncs a cached estimated-delivery range after the admin order editor saves.
+	 *
+	 * Callback for `woocommerce_saved_order_items`, which fires once per bulk
+	 * save regardless of which lines changed — cheap enough to run
+	 * unconditionally rather than inspect the batch for a shipping line.
+	 *
+	 * @since 0.5.0
+	 *
+	 * @param int   $order_id Order id.
+	 * @param mixed $items    Raw posted item data, unused.
+	 * @return void
+	 */
+	public function resync_eta_for_order_id( $order_id, $items = null ): void {
+		unset( $items );
+
+		$order = wc_get_order( (int) $order_id );
+
+		if ( $order instanceof \WC_Order ) {
+			$this->estimated_delivery()->sync( $order );
+		}
+	}
+
+	/**
+	 * Resyncs a cached estimated-delivery range when a shipping line is written.
+	 *
+	 * Callback for the generic per-item CRUD hooks, which fire for every order
+	 * item type — including the shipping line WooCommerce creates as part of
+	 * placing the order in the first place, which is what gets a range cached
+	 * before the customer ever looks at the order. Only a shipping item
+	 * changing can change the estimate, so anything else is ignored without
+	 * loading the order it belongs to.
+	 *
+	 * @since 0.5.0
+	 *
+	 * @param int   $item_id Order item id, unused.
+	 * @param mixed $item    Order item object, as passed by WooCommerce.
+	 * @return void
+	 */
+	public function resync_eta_for_shipping_item( $item_id, $item = null ): void {
+		unset( $item_id );
+
+		if ( ! $item instanceof \WC_Order_Item_Shipping ) {
+			return;
+		}
+
+		$order = wc_get_order( $item->get_order_id() );
+
+		if ( $order instanceof \WC_Order ) {
+			$this->estimated_delivery()->sync( $order );
+		}
 	}
 
 	/**

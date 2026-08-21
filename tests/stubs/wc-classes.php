@@ -22,4 +22,5 @@ if ( ! class_exists( 'WC_DateTime' ) ) {
 
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
 
+require_once __DIR__ . '/wc-order-item-shipping.php';
 require_once __DIR__ . '/wc-order.php';

@@ -59,6 +59,13 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public int $saves = 0;
 
 		/**
+		 * Shipping line items.
+		 *
+		 * @var WC_Order_Item_Shipping[]
+		 */
+		private array $shipping_methods = array();
+
+		/**
 		 * Constructor.
 		 *
 		 * @param int    $id     Order id.
@@ -196,6 +203,25 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		 */
 		public function set_date( string $name, ?WC_DateTime $date ): void {
 			$this->dates[ $name ] = $date;
+		}
+
+		/**
+		 * Returns the order's shipping line items.
+		 *
+		 * @return WC_Order_Item_Shipping[]
+		 */
+		public function get_shipping_methods(): array {
+			return $this->shipping_methods;
+		}
+
+		/**
+		 * Sets the order's shipping line items.
+		 *
+		 * @param WC_Order_Item_Shipping[] $shipping_methods Shipping line items.
+		 * @return void
+		 */
+		public function set_shipping_methods( array $shipping_methods ): void {
+			$this->shipping_methods = $shipping_methods;
 		}
 	}
 }

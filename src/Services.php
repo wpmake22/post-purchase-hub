@@ -17,10 +17,13 @@ use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Migrator;
+use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
+use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RetentionSweeper;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
+use PostPurchaseHub\Timeline\EstimatedDelivery;
 use PostPurchaseHub\Timeline\StageMap;
 use PostPurchaseHub\Timeline\StatusDetector;
 use PostPurchaseHub\Timeline\TimelineBuilder;
@@ -112,9 +115,23 @@ final class Services {
 		);
 
 		$plugin->set(
+			'tracking_availability',
+			static function (): TrackingAvailability {
+				return new NullTrackingAvailability();
+			}
+		);
+
+		$plugin->set(
+			'estimated_delivery',
+			static function ( Plugin $plugin ): EstimatedDelivery {
+				return new EstimatedDelivery( $plugin->tracking_availability(), $plugin->logger() );
+			}
+		);
+
+		$plugin->set(
 			'renderer',
 			static function ( Plugin $plugin ): Renderer {
-				return new Renderer( $plugin->timeline_builder(), $plugin->templates() );
+				return new Renderer( $plugin->timeline_builder(), $plugin->templates(), $plugin->estimated_delivery() );
 			}
 		);
 
