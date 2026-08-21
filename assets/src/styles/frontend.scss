@@ -1,0 +1,144 @@
+/**
+ * Frontend styles.
+ *
+ * Every rule is scoped under a .pph- class and nothing here styles a
+ * WooCommerce or theme selector. The plugin renders inside templates that six
+ * themes and four page builders each lay out differently, so this stylesheet
+ * describes its own components and inherits everything else — font, colour and
+ * spacing come from the theme on purpose.
+ *
+ * Colour is never the only carrier of meaning: each stage prints its state as
+ * text, and the markers below only reinforce it. currentColor keeps contrast at
+ * whatever the theme's body text already achieves.
+ */
+
+.pph-timeline {
+	margin: 1.5em 0;
+
+	&__heading {
+		font-size: 1.1em;
+		margin: 0 0 0.75em;
+	}
+
+	&__stages {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__stage {
+		display: grid;
+		grid-template-columns: 1.25em 1fr auto;
+		gap: 0.25em 0.75em;
+		align-items: baseline;
+		padding: 0 0 1em;
+		position: relative;
+
+		&:not(:last-child) .pph-timeline__marker::after {
+			content: "";
+			position: absolute;
+			left: 50%;
+			top: 1.25em;
+			bottom: -0.35em;
+			width: 2px;
+			transform: translateX(-50%);
+			background: currentColor;
+			opacity: 0.25;
+		}
+	}
+
+	&__marker {
+		width: 0.75em;
+		height: 0.75em;
+		margin-top: 0.25em;
+		border: 2px solid currentColor;
+		border-radius: 50%;
+		position: relative;
+		justify-self: center;
+	}
+
+	&__stage--complete &__marker,
+	&__stage--current &__marker {
+		background: currentColor;
+	}
+
+	&__stage--pending &__marker {
+		opacity: 0.45;
+	}
+
+	&__stage--pending {
+		opacity: 0.7;
+	}
+
+	&__label {
+		font-weight: 600;
+	}
+
+	&__stage--pending &__label {
+		font-weight: 400;
+	}
+
+	&__state {
+		grid-column: 2;
+		font-size: 0.85em;
+		opacity: 0.8;
+	}
+
+	&__time {
+		grid-column: 3;
+		grid-row: 1;
+		font-size: 0.85em;
+		opacity: 0.8;
+		white-space: nowrap;
+	}
+
+	&__branch {
+		margin: 0 0 0.5em;
+		padding: 0.75em 1em;
+		border-left: 3px solid currentColor;
+	}
+
+	&__branch-label {
+		margin-right: 0.5em;
+	}
+
+	&__notice {
+		font-size: 0.9em;
+		opacity: 0.8;
+		margin: 0;
+	}
+}
+
+.pph-timeline-summary {
+	display: block;
+
+	&__time {
+		display: block;
+		font-size: 0.85em;
+		opacity: 0.8;
+	}
+}
+
+.pph-orders {
+	&__empty {
+		margin: 1em 0;
+	}
+}
+
+@media (max-width: 480px) {
+	.pph-timeline__stage {
+		grid-template-columns: 1.25em 1fr;
+	}
+
+	.pph-timeline__time {
+		grid-column: 2;
+		grid-row: auto;
+		white-space: normal;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pph-timeline * {
+		transition: none !important;
+	}
+}

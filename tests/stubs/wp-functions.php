@@ -409,9 +409,271 @@ if ( ! function_exists( 'wc_get_order' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_html__' ) ) {
+	/**
+	 * Returns the string unchanged; the unit suite loads no translations.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string $text   Text.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	function esc_html__( $text, $domain = 'default' ): string { // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment -- A shim, not a translation call.
+		unset( $domain );
+
+		return htmlspecialchars( (string) $text, ENT_QUOTES );
+	}
+}
+
+if ( ! function_exists( 'locate_template' ) ) {
+	/**
+	 * Resolves a template name against the fake theme.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string|string[] $template_names Template names.
+	 * @return string Empty string when the theme has none of them.
+	 */
+	function locate_template( $template_names ): string {
+		foreach ( (array) $template_names as $name ) {
+			if ( isset( FakeWordPress::$theme_templates[ $name ] ) ) {
+				return FakeWordPress::$theme_templates[ $name ];
+			}
+		}
+
+		return '';
+	}
+}
+
+if ( ! function_exists( 'wp_date' ) ) {
+	/**
+	 * Formats a timestamp in UTC; the unit suite has no site timezone.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string   $format    Date format.
+	 * @param int|null $timestamp Unix timestamp.
+	 * @return string
+	 */
+	function wp_date( $format, $timestamp = null ): string {
+		return gmdate( (string) $format, null === $timestamp ? time() : (int) $timestamp );
+	}
+}
+
+if ( ! function_exists( 'is_account_page' ) ) {
+	/**
+	 * Whether the request is the My Account page.
+	 *
+	 * @since 0.4.0
+	 * @return bool
+	 */
+	function is_account_page(): bool {
+		return FakeWordPress::$is_account_page;
+	}
+}
+
+if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
+	/**
+	 * Whether the request is a given WooCommerce endpoint.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string|false $endpoint Endpoint name.
+	 * @return bool
+	 */
+	function is_wc_endpoint_url( $endpoint = false ): bool {
+		return in_array( (string) $endpoint, FakeWordPress::$endpoints, true );
+	}
+}
+
+if ( ! function_exists( 'get_post' ) ) {
+	/**
+	 * Returns the fake queried post.
+	 *
+	 * @since 0.4.0
+	 * @return mixed
+	 */
+	function get_post() {
+		return FakeWordPress::$post;
+	}
+}
+
+if ( ! function_exists( 'has_shortcode' ) ) {
+	/**
+	 * Whether content contains a shortcode.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string $content Content.
+	 * @param string $tag     Shortcode tag.
+	 * @return bool
+	 */
+	function has_shortcode( $content, $tag ): bool {
+		return str_contains( (string) $content, '[' . (string) $tag );
+	}
+}
+
+if ( ! function_exists( 'has_block' ) ) {
+	/**
+	 * Whether a post contains a block.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string $name Block name.
+	 * @param mixed  $post Post object.
+	 * @return bool
+	 */
+	function has_block( $name, $post = null ): bool {
+		$content = is_object( $post ) && isset( $post->post_content ) ? (string) $post->post_content : '';
+
+		return str_contains( $content, '<!-- wp:' . (string) $name );
+	}
+}
+
+if ( ! function_exists( 'get_current_user_id' ) ) {
+	/**
+	 * Returns the fake current user id.
+	 *
+	 * @since 0.4.0
+	 * @return int
+	 */
+	function get_current_user_id(): int {
+		return FakeWordPress::$current_user_id;
+	}
+}
+
+if ( ! function_exists( 'shortcode_atts' ) ) {
+	/**
+	 * Merges shortcode attributes over their defaults.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param array<string, mixed> $pairs     Defaults.
+	 * @param array<string, mixed> $atts      Supplied attributes.
+	 * @param string               $shortcode Shortcode tag.
+	 * @return array<string, mixed>
+	 */
+	function shortcode_atts( $pairs, $atts, $shortcode = '' ): array {
+		unset( $shortcode );
+
+		$out = array();
+
+		foreach ( (array) $pairs as $name => $default_value ) {
+			$out[ $name ] = array_key_exists( $name, (array) $atts ) ? $atts[ $name ] : $default_value;
+		}
+
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'wc_get_order_statuses' ) ) {
+	/**
+	 * Returns the WooCommerce core order statuses, prefixed.
+	 *
+	 * @since 0.4.0
+	 * @return array<string, string>
+	 */
+	function wc_get_order_statuses(): array {
+		return array(
+			'wc-pending'    => 'Pending payment',
+			'wc-processing' => 'Processing',
+			'wc-on-hold'    => 'On hold',
+			'wc-completed'  => 'Completed',
+			'wc-cancelled'  => 'Cancelled',
+			'wc-refunded'   => 'Refunded',
+			'wc-failed'     => 'Failed',
+		);
+	}
+}
+
+if ( ! function_exists( 'esc_attr' ) ) {
+	/**
+	 * Escapes text for an HTML attribute.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
+	function esc_attr( $text ): string {
+		return htmlspecialchars( (string) $text, ENT_QUOTES );
+	}
+}
+
+if ( ! function_exists( 'esc_url' ) ) {
+	/**
+	 * Escapes a URL for output.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string $url URL.
+	 * @return string
+	 */
+	function esc_url( $url ): string {
+		return htmlspecialchars( (string) $url, ENT_QUOTES );
+	}
+}
+
+if ( ! function_exists( 'esc_html_e' ) ) {
+	/**
+	 * Echoes an escaped translated string.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string $text   Text.
+	 * @param string $domain Text domain.
+	 * @return void
+	 */
+	function esc_html_e( $text, $domain = 'default' ): void { // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment -- A shim, not a translation call.
+		unset( $domain );
+
+		echo htmlspecialchars( (string) $text, ENT_QUOTES ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped on the line above.
+	}
+}
+
+if ( ! function_exists( 'do_action' ) ) {
+	/**
+	 * Runs the callbacks registered for an action.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param string $hook_name Hook name.
+	 * @param mixed  ...$args   Arguments.
+	 * @return void
+	 */
+	function do_action( $hook_name, ...$args ): void { // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- A shim, not a hook declaration.
+		foreach ( FakeWordPress::$actions[ $hook_name ] ?? array() as $action ) {
+			if ( is_callable( $action['callback'] ) ) {
+				call_user_func_array( $action['callback'], $args );
+			}
+		}
+	}
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- These deliberately mirror WordPress core constant names.
+
+/*
+ * Templates guard on ABSPATH and call exit when it is absent, which would end
+ * the PHPUnit process rather than fail a test.
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', dirname( __DIR__, 5 ) . '/' );
+}
+
+if ( ! defined( 'PPH_PLUGIN_DIR' ) ) {
+	define( 'PPH_PLUGIN_DIR', dirname( __DIR__, 2 ) . '/' );
+}
+
+if ( ! defined( 'PPH_PLUGIN_URL' ) ) {
+	define( 'PPH_PLUGIN_URL', 'https://example.test/wp-content/plugins/post-purchase-hub/' );
+}
+
+if ( ! defined( 'PPH_VERSION' ) ) {
+	define( 'PPH_VERSION', '0.0.0-test' );
+}
 
 if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {
 	define( 'MINUTE_IN_SECONDS', 60 );
@@ -431,4 +693,5 @@ if ( ! defined( 'WEEK_IN_SECONDS' ) ) {
 
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 
+require_once __DIR__ . '/wp-post.php';
 require_once __DIR__ . '/wc-classes.php';

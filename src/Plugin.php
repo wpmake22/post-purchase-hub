@@ -9,8 +9,15 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub;
 
+use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\CLI\BackfillCommand;
 use PostPurchaseHub\CLI\CleanupCommand;
+use PostPurchaseHub\Frontend\Assets;
+use PostPurchaseHub\Frontend\Blocks;
+use PostPurchaseHub\Frontend\Renderer;
+use PostPurchaseHub\Frontend\Shortcodes;
+use PostPurchaseHub\Frontend\TemplateLoader;
+use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
 use PostPurchaseHub\Requests\RequestRepository;
@@ -67,61 +74,7 @@ final class Plugin {
 	 * @since 0.1.0
 	 */
 	public function __construct() {
-		$this->set(
-			'logger',
-			static function (): Logger {
-				return new Logger();
-			}
-		);
-
-		$this->set(
-			'cache',
-			static function (): Cache {
-				return new Cache();
-			}
-		);
-
-		$this->set(
-			'migrator',
-			static function ( Plugin $plugin ): Migrator {
-				return new Migrator( $plugin->logger() );
-			}
-		);
-
-		$this->set(
-			'requests',
-			static function (): RequestRepository {
-				return new RequestRepository();
-			}
-		);
-
-		$this->set(
-			'sweeper',
-			static function ( Plugin $plugin ): RetentionSweeper {
-				return new RetentionSweeper( $plugin->logger() );
-			}
-		);
-
-		$this->set(
-			'stage_map',
-			static function ( Plugin $plugin ): StageMap {
-				return new StageMap( new StatusDetector( $plugin->cache() ) );
-			}
-		);
-
-		$this->set(
-			'transition_recorder',
-			static function ( Plugin $plugin ): TransitionRecorder {
-				return new TransitionRecorder( $plugin->stage_map(), $plugin->logger() );
-			}
-		);
-
-		$this->set(
-			'timeline_builder',
-			static function ( Plugin $plugin ): TimelineBuilder {
-				return new TimelineBuilder( $plugin->stage_map(), $plugin->transition_recorder() );
-			}
-		);
+		Services::register( $this );
 	}
 
 	/**
@@ -272,6 +225,76 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the template loader.
+	 *
+	 * @since 0.4.0
+	 * @return TemplateLoader
+	 */
+	public function templates(): TemplateLoader {
+		return $this->typed( 'templates', TemplateLoader::class );
+	}
+
+	/**
+	 * Returns the frontend renderer.
+	 *
+	 * @since 0.4.0
+	 * @return Renderer
+	 */
+	public function renderer(): Renderer {
+		return $this->typed( 'renderer', Renderer::class );
+	}
+
+	/**
+	 * Returns the frontend asset loader.
+	 *
+	 * @since 0.4.0
+	 * @return Assets
+	 */
+	public function assets(): Assets {
+		return $this->typed( 'assets', Assets::class );
+	}
+
+	/**
+	 * Returns the shortcode service.
+	 *
+	 * @since 0.4.0
+	 * @return Shortcodes
+	 */
+	public function shortcodes(): Shortcodes {
+		return $this->typed( 'shortcodes', Shortcodes::class );
+	}
+
+	/**
+	 * Returns the block service.
+	 *
+	 * @since 0.4.0
+	 * @return Blocks
+	 */
+	public function blocks(): Blocks {
+		return $this->typed( 'blocks', Blocks::class );
+	}
+
+	/**
+	 * Returns the template conflict scanner.
+	 *
+	 * @since 0.4.0
+	 * @return TemplateConflictScanner
+	 */
+	public function conflict_scanner(): TemplateConflictScanner {
+		return $this->typed( 'conflict_scanner', TemplateConflictScanner::class );
+	}
+
+	/**
+	 * Returns the template replacer.
+	 *
+	 * @since 0.4.0
+	 * @return TemplateReplacer
+	 */
+	public function template_replacer(): TemplateReplacer {
+		return $this->typed( 'template_replacer', TemplateReplacer::class );
+	}
+
+	/**
 	 * Resolves a service and asserts what came back.
 	 *
 	 * A factory can be replaced through set(), so the type is checked once here
@@ -321,6 +344,8 @@ final class Plugin {
 
 		add_action( 'woocommerce_order_status_changed', array( $this, 'record_transition' ), 10, 4 );
 
+		add_action( 'init', array( $this, 'register_rendering' ), 20 );
+
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
 			\WP_CLI::add_command( 'pph backfill-timeline', new BackfillCommand( $this->transition_recorder(), $this->stage_map() ) );
@@ -353,6 +378,35 @@ final class Plugin {
 	 */
 	public function record_transition( $order_id, $from, $to, $order = null ): void {
 		$this->transition_recorder()->record( (int) $order_id, (string) $from, (string) $to, $order );
+	}
+
+	/**
+	 * Wires the rendering surfaces.
+	 *
+	 * Deferred to `init` because blocks and shortcodes cannot be registered
+	 * earlier, and split by context because a request that renders no storefront
+	 * has no reason to build a renderer or a template loader.
+	 *
+	 * @since 0.4.0
+	 * @return void
+	 */
+	public function register_rendering(): void {
+		// Registered in every context. The block editor renders over REST, where
+		// is_admin() is false, and the renderer's hooks are inert anywhere the
+		// storefront templates do not run — so gating them would buy nothing and
+		// would silently drop the hand-off templates use to draw nested partials.
+		$this->blocks()->register();
+		$this->shortcodes()->register();
+		$this->renderer()->register();
+
+		if ( is_admin() ) {
+			$this->conflict_scanner()->register();
+
+			return;
+		}
+
+		$this->assets()->register();
+		$this->template_replacer()->register();
 	}
 
 	/**

@@ -1,7 +1,11 @@
 /**
- * Front-end entry point.
+ * Shared frontend entry point.
  *
- * Intentionally empty at M00: this file exists so the asset pipeline and the
- * build manifest that Frontend\Assets versions against are verifiable before
- * any behaviour lands (M04).
+ * Carries the stylesheet for every surface this plugin renders — the timeline
+ * on the orders list and the order detail page, the shortcode and the block.
+ * Behaviour arrives with the request modal in M08; until then this file exists
+ * so the styles have a bundle and Frontend\Assets has a manifest to version
+ * against.
  */
+
+import './styles/frontend.scss';

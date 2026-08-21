@@ -180,10 +180,21 @@ final class PluginTest extends TestCase {
 		$plugin = new Plugin();
 
 		$plugin->register();
+
+		$after_first = FakeWordPress::$actions;
+
 		$plugin->register();
 
-		$this->assertCount( 1, FakeWordPress::$actions['init'] );
-		$this->assertSame( array( $plugin, 'load_textdomain' ), FakeWordPress::$actions['init'][0]['callback'] );
+		// Compared wholesale rather than counted, so a hook added by a later
+		// milestone cannot quietly stop this from testing what it says.
+		$this->assertEquals( $after_first, FakeWordPress::$actions );
+		$this->assertContains(
+			array(
+				'callback' => array( $plugin, 'load_textdomain' ),
+				'priority' => 10,
+			),
+			FakeWordPress::$actions['init']
+		);
 	}
 
 	/**

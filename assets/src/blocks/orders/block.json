@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pph/orders",
+	"title": "Order timeline",
+	"category": "woocommerce",
+	"icon": "list-view",
+	"description": "Shows the signed-in customer's orders with their delivery timeline.",
+	"textdomain": "post-purchase-hub",
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"]
+	},
+	"attributes": {
+		"limit": {
+			"type": "number",
+			"default": 10
+		}
+	},
+	"editorScript": "file:./index.js"
+}

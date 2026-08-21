@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPress constants, for static analysis only.
+ * Constants that static analysis cannot discover on its own.
  *
  * The php-stubs/wordpress-stubs package declares functions and classes but no
  * constants, so
@@ -33,3 +33,13 @@ define( 'MONTH_IN_SECONDS', 2592000 );
 define( 'YEAR_IN_SECONDS', 31536000 );
 
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+
+/*
+ * This plugin's own path constants. post-purchase-hub.php is analysed, but
+ * PHPStan only registers a define() whose value is a constant expression, and
+ * these are computed from plugin_dir_path() and plugin_dir_url(). Values are
+ * irrelevant — only the fact that the constants exist, and their type.
+ */
+define( 'PPH_PLUGIN_DIR', (string) getenv( 'PPH_STUB_PLUGIN_DIR' ) );
+define( 'PPH_PLUGIN_URL', (string) getenv( 'PPH_STUB_PLUGIN_URL' ) );
+define( 'PPH_PLUGIN_FILE', (string) getenv( 'PPH_STUB_PLUGIN_FILE' ) );

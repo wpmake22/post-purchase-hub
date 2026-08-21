@@ -64,6 +64,41 @@ final class FakeWordPress {
 	public static array $orders = array();
 
 	/**
+	 * Theme template overrides the locate_template() shim serves: name => path.
+	 *
+	 * @var array<string, string>
+	 */
+	public static array $theme_templates = array();
+
+	/**
+	 * Whether is_account_page() should report the My Account page.
+	 *
+	 * @var bool
+	 */
+	public static bool $is_account_page = false;
+
+	/**
+	 * WooCommerce endpoints is_wc_endpoint_url() should report as current.
+	 *
+	 * @var list<string>
+	 */
+	public static array $endpoints = array();
+
+	/**
+	 * Post that get_post() should return.
+	 *
+	 * @var \WP_Post|null
+	 */
+	public static ?\WP_Post $post = null;
+
+	/**
+	 * User id get_current_user_id() should return.
+	 *
+	 * @var int
+	 */
+	public static int $current_user_id = 0;
+
+	/**
 	 * Every TTL passed to set_transient(): name => list of seconds.
 	 *
 	 * @var array<string, list<int>>
@@ -85,6 +120,11 @@ final class FakeWordPress {
 		self::$filters          = array();
 		self::$transient_writes = array();
 		self::$orders           = array();
+		self::$theme_templates  = array();
+		self::$is_account_page  = false;
+		self::$endpoints        = array();
+		self::$post             = null;
+		self::$current_user_id  = 0;
 	}
 
 	/**

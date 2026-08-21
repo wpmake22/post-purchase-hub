@@ -143,6 +143,24 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		}
 
 		/**
+		 * Returns the customer-facing order number.
+		 *
+		 * @return string
+		 */
+		public function get_order_number(): string {
+			return (string) $this->id;
+		}
+
+		/**
+		 * Returns the customer's link to this order.
+		 *
+		 * @return string
+		 */
+		public function get_view_order_url(): string {
+			return 'https://example.test/my-account/view-order/' . $this->id . '/';
+		}
+
+		/**
 		 * Returns the creation date.
 		 *
 		 * @return WC_DateTime|null
