@@ -57,6 +57,13 @@ final class FakeWordPress {
 	public static array $filters = array();
 
 	/**
+	 * Fake orders the wc_get_orders() and wc_get_order() shims serve, keyed by id.
+	 *
+	 * @var array<int, \WC_Order>
+	 */
+	public static array $orders = array();
+
+	/**
 	 * Every TTL passed to set_transient(): name => list of seconds.
 	 *
 	 * @var array<string, list<int>>
@@ -77,6 +84,7 @@ final class FakeWordPress {
 		self::$actions          = array();
 		self::$filters          = array();
 		self::$transient_writes = array();
+		self::$orders           = array();
 	}
 
 	/**

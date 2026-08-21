@@ -314,4 +314,121 @@ if ( ! function_exists( 'esc_html' ) ) {
 	}
 }
 
+if ( ! function_exists( '__' ) ) {
+	/**
+	 * Returns the string unchanged; the unit suite loads no translations.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param string $text   Text.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	function __( $text, $domain = 'default' ): string { // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment -- A shim, not a translation call.
+		unset( $domain );
+
+		return (string) $text;
+	}
+}
+
+if ( ! function_exists( '_x' ) ) {
+	/**
+	 * Returns the string unchanged; the unit suite loads no translations.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param string $text    Text.
+	 * @param string $context Disambiguating context.
+	 * @param string $domain  Text domain.
+	 * @return string
+	 */
+	function _x( $text, $context, $domain = 'default' ): string { // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment -- A shim, not a translation call.
+		unset( $context, $domain );
+
+		return (string) $text;
+	}
+}
+
+if ( ! function_exists( 'delete_option' ) ) {
+	/**
+	 * Removes an option row.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param string $option Option name.
+	 * @return bool
+	 */
+	function delete_option( $option ): bool {
+		if ( ! array_key_exists( $option, FakeWordPress::$options ) ) {
+			return false;
+		}
+
+		unset( FakeWordPress::$options[ $option ] );
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'wc_get_orders' ) ) {
+	/**
+	 * Returns the fake orders matching the paging arguments.
+	 *
+	 * Only the arguments this plugin passes are honoured: everything here is
+	 * already ordered by id ascending, so `limit` and `page` are the whole of it.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param array<string, mixed> $args Query arguments.
+	 * @return array<int, mixed>
+	 */
+	function wc_get_orders( $args = array() ): array {
+		$orders = array_values( FakeWordPress::$orders );
+
+		if ( 'DESC' === strtoupper( (string) ( $args['order'] ?? 'DESC' ) ) ) {
+			$orders = array_reverse( $orders );
+		}
+
+		$limit = (int) ( $args['limit'] ?? 10 );
+		$page  = max( 1, (int) ( $args['page'] ?? 1 ) );
+
+		return $limit < 0 ? $orders : array_slice( $orders, ( $page - 1 ) * $limit, $limit );
+	}
+}
+
+if ( ! function_exists( 'wc_get_order' ) ) {
+	/**
+	 * Returns a fake order by id.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param int $order_id Order id.
+	 * @return mixed False when unknown, matching WooCommerce.
+	 */
+	function wc_get_order( $order_id = 0 ) {
+		return FakeWordPress::$orders[ (int) $order_id ] ?? false;
+	}
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- These deliberately mirror WordPress core constant names.
+
+if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {
+	define( 'MINUTE_IN_SECONDS', 60 );
+}
+
+if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
+	define( 'HOUR_IN_SECONDS', 3600 );
+}
+
+if ( ! defined( 'DAY_IN_SECONDS' ) ) {
+	define( 'DAY_IN_SECONDS', 86400 );
+}
+
+if ( ! defined( 'WEEK_IN_SECONDS' ) ) {
+	define( 'WEEK_IN_SECONDS', 604800 );
+}
+
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+
+require_once __DIR__ . '/wc-classes.php';

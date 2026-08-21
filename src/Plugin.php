@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub;
 
+use PostPurchaseHub\CLI\BackfillCommand;
 use PostPurchaseHub\CLI\CleanupCommand;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
@@ -16,6 +17,10 @@ use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RetentionSweeper;
 use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
+use PostPurchaseHub\Timeline\StageMap;
+use PostPurchaseHub\Timeline\StatusDetector;
+use PostPurchaseHub\Timeline\TimelineBuilder;
+use PostPurchaseHub\Timeline\TransitionRecorder;
 
 /**
  * Holds the plugin's services and wires its hooks.
@@ -94,6 +99,27 @@ final class Plugin {
 			'sweeper',
 			static function ( Plugin $plugin ): RetentionSweeper {
 				return new RetentionSweeper( $plugin->logger() );
+			}
+		);
+
+		$this->set(
+			'stage_map',
+			static function ( Plugin $plugin ): StageMap {
+				return new StageMap( new StatusDetector( $plugin->cache() ) );
+			}
+		);
+
+		$this->set(
+			'transition_recorder',
+			static function ( Plugin $plugin ): TransitionRecorder {
+				return new TransitionRecorder( $plugin->stage_map(), $plugin->logger() );
+			}
+		);
+
+		$this->set(
+			'timeline_builder',
+			static function ( Plugin $plugin ): TimelineBuilder {
+				return new TimelineBuilder( $plugin->stage_map(), $plugin->transition_recorder() );
 			}
 		);
 	}
@@ -216,6 +242,36 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the timeline stage definitions.
+	 *
+	 * @since 0.3.0
+	 * @return StageMap
+	 */
+	public function stage_map(): StageMap {
+		return $this->typed( 'stage_map', StageMap::class );
+	}
+
+	/**
+	 * Returns the status transition recorder.
+	 *
+	 * @since 0.3.0
+	 * @return TransitionRecorder
+	 */
+	public function transition_recorder(): TransitionRecorder {
+		return $this->typed( 'transition_recorder', TransitionRecorder::class );
+	}
+
+	/**
+	 * Returns the timeline builder.
+	 *
+	 * @since 0.3.0
+	 * @return TimelineBuilder
+	 */
+	public function timeline_builder(): TimelineBuilder {
+		return $this->typed( 'timeline_builder', TimelineBuilder::class );
+	}
+
+	/**
 	 * Resolves a service and asserts what came back.
 	 *
 	 * A factory can be replaced through set(), so the type is checked once here
@@ -263,8 +319,11 @@ final class Plugin {
 
 		add_action( Activator::CLEANUP_HOOK, array( $this, 'run_cleanup' ) );
 
+		add_action( 'woocommerce_order_status_changed', array( $this, 'record_transition' ), 10, 4 );
+
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
+			\WP_CLI::add_command( 'pph backfill-timeline', new BackfillCommand( $this->transition_recorder(), $this->stage_map() ) );
 		}
 	}
 
@@ -276,6 +335,24 @@ final class Plugin {
 	 */
 	public function check_schema(): void {
 		$this->migrator()->maybe_migrate();
+	}
+
+	/**
+	 * Records a status transition on the order's timeline.
+	 *
+	 * Wired here rather than inside the recorder so the services stay unbuilt on
+	 * the overwhelming majority of requests, where no order changes status.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param int    $order_id Order id.
+	 * @param string $from     Status moved away from.
+	 * @param string $to       Status moved to.
+	 * @param mixed  $order    Order object as passed by WooCommerce.
+	 * @return void
+	 */
+	public function record_transition( $order_id, $from, $to, $order = null ): void {
+		$this->transition_recorder()->record( (int) $order_id, (string) $from, (string) $to, $order );
 	}
 
 	/**
