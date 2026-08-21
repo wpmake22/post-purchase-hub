@@ -41,6 +41,13 @@ const core = {
 			'js',
 			'lookup.js'
 		),
+		reorder: path.resolve(
+			process.cwd(),
+			'assets',
+			'src',
+			'js',
+			'reorder.js'
+		),
 	},
 	output: {
 		...defaultConfig.output,

@@ -195,6 +195,83 @@
 	}
 }
 
+/*
+ * Reorder reconciliation. Each line prints its outcome as words, so the border
+ * accent below is reinforcement and never the only signal — a customer reading
+ * this in greyscale, or with a theme that overrides colour, still knows which
+ * line is not coming back.
+ */
+.pph-reorder {
+	margin: 1.5em 0;
+
+	&__heading {
+		font-size: 1.1em;
+		margin: 0 0 0.5em;
+	}
+
+	&__intro {
+		margin: 0 0 1em;
+	}
+
+	&__lines {
+		list-style: none;
+		margin: 0 0 1em;
+		padding: 0;
+	}
+
+	&__line {
+		border-left: 3px solid currentcolor;
+		display: grid;
+		gap: 0.15em 0.75em;
+		margin: 0 0 0.75em;
+		padding: 0.5em 0 0.5em 0.75em;
+	}
+
+	&__line--out_of_stock,
+	&__line--unavailable,
+	&__line--variation_changed,
+	&__line--not_checked {
+		border-left-style: dashed;
+	}
+
+	&__name {
+		font-weight: 600;
+	}
+
+	&__quantity,
+	&__status,
+	&__price {
+		font-size: 0.9em;
+	}
+
+	&__notice {
+		border-left: 4px solid currentcolor;
+		margin: 0 0 1em;
+		padding: 0.75em 1em;
+	}
+
+	&__modes {
+		border: 0;
+		margin: 0 0 1em;
+		padding: 0;
+	}
+
+	&__legend {
+		font-weight: 600;
+		padding: 0;
+	}
+
+	&__mode {
+		display: block;
+		margin: 0.35em 0;
+	}
+
+	&__error {
+		color: #8a1f11;
+		margin: 0 0 1em;
+	}
+}
+
 @media (max-width: 480px) {
 
 	.pph-timeline__stage {

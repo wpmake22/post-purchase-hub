@@ -11,7 +11,11 @@ namespace PostPurchaseHub;
 
 use PostPurchaseHub\Actions\ActionRegistry;
 use PostPurchaseHub\Actions\Cancel;
+use PostPurchaseHub\Actions\CartGateway;
 use PostPurchaseHub\Actions\EligibilityResolver;
+use PostPurchaseHub\Actions\Reorder;
+use PostPurchaseHub\Actions\ReorderPlanner;
+use PostPurchaseHub\Actions\WooCommerceCart;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
@@ -24,6 +28,7 @@ use PostPurchaseHub\Frontend\GuestContext;
 use PostPurchaseHub\Frontend\GuestOrderView;
 use PostPurchaseHub\Frontend\LookupForm;
 use PostPurchaseHub\Frontend\Renderer;
+use PostPurchaseHub\Frontend\ReorderView;
 use PostPurchaseHub\Frontend\RequestModalRenderer;
 use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
@@ -37,6 +42,7 @@ use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
 use PostPurchaseHub\Rest\LookupController;
+use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
 use PostPurchaseHub\Security\GuestAccess;
 use PostPurchaseHub\Security\GuestLookupService;
@@ -258,6 +264,46 @@ final class Services {
 			'cancel',
 			static function ( Plugin $plugin ): Cancel {
 				return new Cancel( $plugin->eligibility_resolver(), $plugin->request_service() );
+			}
+		);
+
+		$plugin->set(
+			'cart',
+			static function ( Plugin $plugin ): CartGateway {
+				return new WooCommerceCart( $plugin->logger() );
+			}
+		);
+
+		$plugin->set(
+			'reorder_planner',
+			static function (): ReorderPlanner {
+				return new ReorderPlanner();
+			}
+		);
+
+		$plugin->set(
+			'reorder',
+			static function ( Plugin $plugin ): Reorder {
+				return new Reorder( $plugin->eligibility_resolver(), $plugin->reorder_planner(), $plugin->cart() );
+			}
+		);
+
+		$plugin->set(
+			'reorder_controller',
+			static function ( Plugin $plugin ): ReorderController {
+				return new ReorderController(
+					$plugin->ownership_resolver(),
+					$plugin->rate_limiter(),
+					$plugin->reorder(),
+					$plugin->logger()
+				);
+			}
+		);
+
+		$plugin->set(
+			'reorder_view',
+			static function ( Plugin $plugin ): ReorderView {
+				return new ReorderView( $plugin->reorder(), $plugin->templates() );
 			}
 		);
 

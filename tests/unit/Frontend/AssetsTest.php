@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Tests\Unit\Frontend;
 
+use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
 use PHPUnit\Framework\TestCase;
@@ -216,6 +217,43 @@ final class AssetsTest extends TestCase {
 
 		$this->assertStringContainsString( 'pph/v1/requests', $data['restUrl'] );
 		$this->assertNotSame( '', $data['nonce'] );
+	}
+
+	/**
+	 * The reorder script stays off an order page that is not showing a
+	 * reconciliation summary — there is no form on it to submit.
+	 *
+	 * @return void
+	 */
+	public function test_the_reorder_script_stays_off_an_ordinary_order_page(): void {
+		FakeWordPress::$is_account_page = true;
+		FakeWordPress::$endpoints       = array( 'view-order' );
+
+		$this->assets->enqueue();
+
+		$this->assertArrayNotHasKey( Assets::REORDER_HANDLE, FakeWordPress::$enqueued_scripts );
+	}
+
+	/**
+	 * On the summary render it enqueues, localised with the reorder route.
+	 *
+	 * @return void
+	 */
+	public function test_the_reorder_script_loads_on_the_summary_render(): void {
+		FakeWordPress::$is_account_page = true;
+		FakeWordPress::$endpoints       = array( 'view-order' );
+		$_GET[ Reorder::QUERY_ARG ]     = '42';
+
+		$this->assets->enqueue();
+
+		$this->assertArrayHasKey( Assets::REORDER_HANDLE, FakeWordPress::$enqueued_scripts );
+
+		$data = FakeWordPress::$localized_scripts[ Assets::REORDER_HANDLE ]['pphReorder'];
+
+		$this->assertStringContainsString( 'pph/v1/reorder', $data['restUrl'] );
+		$this->assertNotSame( '', $data['nonce'] );
+
+		unset( $_GET[ Reorder::QUERY_ARG ] );
 	}
 
 	/**

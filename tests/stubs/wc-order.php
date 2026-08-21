@@ -108,6 +108,13 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		private array $items = array();
 
 		/**
+		 * ISO currency code the order was placed in.
+		 *
+		 * @var string
+		 */
+		private string $currency = 'USD';
+
+		/**
 		 * Order notes recorded by add_order_note(), in call order.
 		 *
 		 * @var list<array{note: string, is_customer_note: bool}>
@@ -264,6 +271,25 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		 */
 		public function set_items( array $items ): void {
 			$this->items = $items;
+		}
+
+		/**
+		 * Returns the order's currency.
+		 *
+		 * @return string
+		 */
+		public function get_currency(): string {
+			return $this->currency;
+		}
+
+		/**
+		 * Sets the order's currency.
+		 *
+		 * @param string $currency ISO currency code.
+		 * @return void
+		 */
+		public function set_currency( string $currency ): void {
+			$this->currency = $currency;
 		}
 
 		/**

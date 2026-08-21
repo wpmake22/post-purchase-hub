@@ -48,6 +48,7 @@ final class TemplateLoader {
 		'partials/eta.php',
 		'partials/actions.php',
 		'partials/request-modal.php',
+		'partials/reorder-summary.php',
 		'myaccount/orders.php',
 		'myaccount/view-order.php',
 		'myaccount/guest-order.php',

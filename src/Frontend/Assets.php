@@ -9,7 +9,9 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Rest\LookupController;
+use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
 
 /**
@@ -46,6 +48,13 @@ final class Assets {
 	 * @var string
 	 */
 	public const LOOKUP_HANDLE = 'pph-lookup';
+
+	/**
+	 * Reorder-confirmation script handle.
+	 *
+	 * @var string
+	 */
+	public const REORDER_HANDLE = 'pph-reorder';
 
 	/**
 	 * Build directory, relative to the plugin root.
@@ -106,6 +115,54 @@ final class Assets {
 		);
 
 		$this->enqueue_lookup();
+		$this->enqueue_reorder();
+	}
+
+	/**
+	 * Enqueues the reorder confirmation, on the one render that carries the form.
+	 *
+	 * Scoped tighter than the rest: the confirmation form exists only while a
+	 * customer is looking at a reconciliation summary, which is a single order
+	 * page carrying a single query argument. Loading it on every order page
+	 * would ship a script for a button that is not there.
+	 *
+	 * @since 0.12.0
+	 * @return void
+	 */
+	private function enqueue_reorder(): void {
+		if ( ! $this->renders_reorder_summary() ) {
+			return;
+		}
+
+		$script = $this->manifest( 'reorder.asset.php' );
+
+		wp_enqueue_script(
+			self::REORDER_HANDLE,
+			PPH_PLUGIN_URL . self::BUILD_PATH . 'reorder.js',
+			$script['dependencies'],
+			$script['version'],
+			true
+		);
+
+		wp_localize_script(
+			self::REORDER_HANDLE,
+			'pphReorder',
+			array(
+				'restUrl' => rest_url( ReorderController::NAMESPACE . ReorderController::ROUTE ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+			)
+		);
+	}
+
+	/**
+	 * Whether this request is the reorder summary being drawn.
+	 *
+	 * @since 0.12.0
+	 * @return bool
+	 */
+	private function renders_reorder_summary(): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Deciding whether one script is needed on a GET; the value is never used as anything but a presence test here.
+		return isset( $_GET[ Reorder::QUERY_ARG ] ) && absint( wp_unslash( $_GET[ Reorder::QUERY_ARG ] ) ) > 0;
 	}
 
 	/**

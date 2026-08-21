@@ -11,7 +11,10 @@ namespace PostPurchaseHub;
 
 use PostPurchaseHub\Actions\ActionRegistry;
 use PostPurchaseHub\Actions\Cancel;
+use PostPurchaseHub\Actions\CartGateway;
 use PostPurchaseHub\Actions\EligibilityResolver;
+use PostPurchaseHub\Actions\Reorder;
+use PostPurchaseHub\Actions\ReorderPlanner;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
@@ -27,6 +30,7 @@ use PostPurchaseHub\Frontend\GuestContext;
 use PostPurchaseHub\Frontend\GuestOrderView;
 use PostPurchaseHub\Frontend\LookupForm;
 use PostPurchaseHub\Frontend\Renderer;
+use PostPurchaseHub\Frontend\ReorderView;
 use PostPurchaseHub\Frontend\RequestModalRenderer;
 use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
@@ -41,6 +45,7 @@ use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
 use PostPurchaseHub\Rest\LookupController;
+use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
 use PostPurchaseHub\Security\GuestAccess;
 use PostPurchaseHub\Security\GuestLookupService;
@@ -432,6 +437,56 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the cart gateway.
+	 *
+	 * @since 0.12.0
+	 * @return CartGateway
+	 */
+	public function cart(): CartGateway {
+		return $this->typed( 'cart', CartGateway::class );
+	}
+
+	/**
+	 * Returns the reorder planner.
+	 *
+	 * @since 0.12.0
+	 * @return ReorderPlanner
+	 */
+	public function reorder_planner(): ReorderPlanner {
+		return $this->typed( 'reorder_planner', ReorderPlanner::class );
+	}
+
+	/**
+	 * Returns the reorder action.
+	 *
+	 * @since 0.12.0
+	 * @return Reorder
+	 */
+	public function reorder(): Reorder {
+		return $this->typed( 'reorder', Reorder::class );
+	}
+
+	/**
+	 * Returns the reorder REST controller.
+	 *
+	 * @since 0.12.0
+	 * @return ReorderController
+	 */
+	public function reorder_controller(): ReorderController {
+		return $this->typed( 'reorder_controller', ReorderController::class );
+	}
+
+	/**
+	 * Returns the reorder reconciliation view.
+	 *
+	 * @since 0.12.0
+	 * @return ReorderView
+	 */
+	public function reorder_view(): ReorderView {
+		return $this->typed( 'reorder_view', ReorderView::class );
+	}
+
+	/**
 	 * Returns the requests REST controller.
 	 *
 	 * @since 0.8.0
@@ -656,6 +711,7 @@ final class Plugin {
 		// anything hooking that action — Pro, a filter-driven extension — sees
 		// core's actions already registered rather than racing them.
 		$this->cancel()->register( $this->action_registry() );
+		$this->reorder()->register( $this->action_registry() );
 
 		/**
 		 * Fires once core has wired itself, with the service container.
@@ -860,6 +916,7 @@ final class Plugin {
 		$this->assets()->register();
 		$this->template_replacer()->register();
 		$this->request_modal_renderer()->register();
+		$this->reorder_view()->register();
 		$this->guest_order_view()->register();
 		$this->page_cache()->register();
 	}
@@ -873,6 +930,7 @@ final class Plugin {
 	public function register_rest_routes(): void {
 		$this->requests_controller()->register_routes();
 		$this->lookup_controller()->register_routes();
+		$this->reorder_controller()->register_routes();
 	}
 
 	/**

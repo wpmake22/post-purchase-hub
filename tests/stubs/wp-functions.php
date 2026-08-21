@@ -1624,6 +1624,229 @@ if ( ! function_exists( 'wc_create_refund' ) ) {
 	}
 }
 
+
+
+if ( ! function_exists( 'remove_action' ) ) {
+	/**
+	 * Removes a recorded action callback.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param string $hook_name Hook name.
+	 * @param mixed  $callback  Callback to remove.
+	 * @param int    $priority  Priority it was added at.
+	 * @return bool Whether anything was removed.
+	 */
+	function remove_action( $hook_name, $callback, $priority = 10 ): bool {
+		$removed = false;
+
+		foreach ( FakeWordPress::$actions[ $hook_name ] ?? array() as $index => $registered ) {
+			if ( $registered['callback'] === $callback && $registered['priority'] === $priority ) {
+				unset( FakeWordPress::$actions[ $hook_name ][ $index ] );
+				$removed = true;
+			}
+		}
+
+		if ( $removed ) {
+			FakeWordPress::$actions[ $hook_name ] = array_values( FakeWordPress::$actions[ $hook_name ] );
+		}
+
+		FakeWordPress::$removed_actions[] = array(
+			'hook'     => (string) $hook_name,
+			'callback' => $callback,
+		);
+
+		return $removed;
+	}
+}
+
+if ( ! function_exists( 'did_action' ) ) {
+	/**
+	 * Reports an action as having run when the test says so.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param string $hook_name Hook name.
+	 * @return int
+	 */
+	function did_action( $hook_name ): int {
+		return in_array( (string) $hook_name, FakeWordPress::$fired_actions, true ) ? 1 : 0;
+	}
+}
+
+if ( ! function_exists( 'checked' ) ) {
+	/**
+	 * Prints the checked attribute, as WordPress does.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param mixed $helper  Value to compare.
+	 * @param mixed $current Current value.
+	 * @param bool  $display Whether to echo.
+	 * @return string
+	 */
+	function checked( $helper, $current = true, $display = true ): string {
+		$attribute = (string) $helper === (string) $current ? " checked='checked'" : '';
+
+		if ( $display ) {
+			echo $attribute; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- A fixed attribute string, mirroring core's own output.
+		}
+
+		return $attribute;
+	}
+}
+
+if ( ! function_exists( 'wc_get_product' ) ) {
+	/**
+	 * Serves a fake product by id.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param int $product_id Product id.
+	 * @return WC_Product|false
+	 */
+	function wc_get_product( $product_id = 0 ) {
+		return FakeWordPress::$products[ (int) $product_id ] ?? false;
+	}
+}
+
+if ( ! function_exists( 'wc_price' ) ) {
+	/**
+	 * Formats an amount the way WooCommerce does: markup, and an entity for
+	 * the currency symbol. Both matter — the code under test has to strip one
+	 * and decode the other.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param float                $price Amount.
+	 * @param array<string, mixed> $args  Formatting arguments.
+	 * @return string
+	 */
+	function wc_price( $price, $args = array() ): string {
+		unset( $args );
+
+		return '<span class="woocommerce-Price-amount amount">&#36;' . number_format( (float) $price, 2, '.', '' ) . '</span>';
+	}
+}
+
+if ( ! function_exists( 'get_woocommerce_currency' ) ) {
+	/**
+	 * The store's currency.
+	 *
+	 * @since 0.12.0
+	 * @return string
+	 */
+	function get_woocommerce_currency(): string {
+		return FakeWordPress::$currency;
+	}
+}
+
+if ( ! function_exists( 'wc_get_price_excluding_tax' ) ) {
+	/**
+	 * A product's current price, excluding tax.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param WC_Product           $product Product to price.
+	 * @param array<string, mixed> $args    Arguments, honouring `qty`.
+	 * @return float
+	 */
+	function wc_get_price_excluding_tax( $product, $args = array() ): float {
+		$qty = isset( $args['qty'] ) ? (float) $args['qty'] : 1.0;
+
+		return (float) $product->get_price() * $qty;
+	}
+}
+
+if ( ! function_exists( 'wc_get_cart_url' ) ) {
+	/**
+	 * The cart page URL.
+	 *
+	 * @since 0.12.0
+	 * @return string
+	 */
+	function wc_get_cart_url(): string {
+		return 'https://example.test/cart/';
+	}
+}
+
+if ( ! function_exists( 'taxonomy_is_product_attribute' ) ) {
+	/**
+	 * Whether a meta key names a global attribute taxonomy.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param string $name Meta key.
+	 * @return bool
+	 */
+	function taxonomy_is_product_attribute( $name ): bool {
+		return 0 === strpos( (string) $name, 'pa_' );
+	}
+}
+
+if ( ! function_exists( 'meta_is_product_attribute' ) ) {
+	/**
+	 * Whether a meta key names a custom (per-product) attribute.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param string $name       Meta key.
+	 * @param string $value      Meta value.
+	 * @param int    $product_id Product id.
+	 * @return bool
+	 */
+	function meta_is_product_attribute( $name, $value, $product_id ): bool {
+		unset( $value, $product_id );
+
+		return in_array( (string) $name, FakeWordPress::$custom_attributes, true );
+	}
+}
+
+if ( ! function_exists( 'sanitize_title' ) ) {
+	/**
+	 * Slugifies a value.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param string $title Value to slugify.
+	 * @return string
+	 */
+	function sanitize_title( $title ): string {
+		$slug = strtolower( (string) $title );
+		$slug = (string) preg_replace( '/[^a-z0-9_]+/', '-', $slug );
+
+		return trim( $slug, '-' );
+	}
+}
+
+if ( ! function_exists( 'wc_clean' ) ) {
+	/**
+	 * Cleans a scalar the way WooCommerce does, for the cases here.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param mixed $value Value to clean.
+	 * @return string
+	 */
+	function wc_clean( $value ): string {
+		return is_scalar( $value ) ? sanitize_text_field( (string) $value ) : '';
+	}
+}
+
+if ( ! function_exists( 'get_bloginfo' ) ) {
+	/**
+	 * Site information, of which only the charset is asked for here.
+	 *
+	 * @since 0.12.0
+	 *
+	 * @param string $show Which value to return.
+	 * @return string
+	 */
+	function get_bloginfo( $show = '' ): string {
+		return 'charset' === $show ? 'UTF-8' : '';
+	}
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- These deliberately mirror WordPress core constant names.

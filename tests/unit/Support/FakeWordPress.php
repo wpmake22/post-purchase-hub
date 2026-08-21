@@ -254,6 +254,41 @@ final class FakeWordPress {
 	public static array $user_locales = array();
 
 	/**
+	 * Fake products the wc_get_product() shim serves, keyed by id.
+	 *
+	 * @var array<int, \WC_Product>
+	 */
+	public static array $products = array();
+
+	/**
+	 * Currency get_woocommerce_currency() reports.
+	 *
+	 * @var string
+	 */
+	public static string $currency = 'USD';
+
+	/**
+	 * Meta keys meta_is_product_attribute() should recognise.
+	 *
+	 * @var list<string>
+	 */
+	public static array $custom_attributes = array();
+
+	/**
+	 * Hooks did_action() should report as already fired.
+	 *
+	 * @var list<string>
+	 */
+	public static array $fired_actions = array();
+
+	/**
+	 * Every remove_action() call, whether or not it removed anything.
+	 *
+	 * @var list<array{hook: string, callback: mixed}>
+	 */
+	public static array $removed_actions = array();
+
+	/**
 	 * Emails recorded by the WC_Email stub's send() rather than delivered.
 	 *
 	 * @var list<array{id: string, to: string, subject: string, message: string}>
@@ -321,6 +356,11 @@ final class FakeWordPress {
 		self::$locale_stack              = array();
 		self::$sent_emails               = array();
 		self::$rendered_templates        = array();
+		self::$products                  = array();
+		self::$currency                  = 'USD';
+		self::$custom_attributes         = array();
+		self::$fired_actions             = array();
+		self::$removed_actions           = array();
 	}
 
 	/**
