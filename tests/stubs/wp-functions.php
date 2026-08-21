@@ -15,6 +15,8 @@ declare( strict_types = 1 );
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
 use PostPurchaseHub\Tests\Unit\Support\WPDieException;
 
+require_once __DIR__ . '/wp-screen.php';
+
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- These shims must carry the WordPress names they replace.
 
 if ( ! function_exists( 'wp_using_ext_object_cache' ) ) {
@@ -170,9 +172,13 @@ if ( ! function_exists( 'update_option' ) ) {
 	 * @return bool
 	 */
 	function update_option( $option, $value, $autoload = null ): bool {
-		unset( $autoload );
-
 		FakeWordPress::$options[ $option ] = $value;
+
+		// Recorded because this plugin cares: an option written on every
+		// request has to stay out of the autoloaded set.
+		if ( false === $autoload ) {
+			FakeWordPress::$non_autoloaded_options[ (string) $option ] = true;
+		}
 
 		return true;
 	}
@@ -1390,6 +1396,237 @@ if ( ! function_exists( 'add_shortcode' ) ) {
 	 */
 	function add_shortcode( $tag, $callback ): void {
 		FakeWordPress::$shortcodes[ (string) $tag ] = $callback;
+	}
+}
+
+if ( ! function_exists( 'is_admin' ) ) {
+	/**
+	 * Whether this is an admin request.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @return bool
+	 */
+	function is_admin(): bool {
+		return FakeWordPress::$is_admin;
+	}
+}
+
+if ( ! function_exists( 'register_block_type' ) ) {
+	/**
+	 * Records a block registration.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string               $metadata Path to the block's metadata directory.
+	 * @param array<string, mixed> $args     Registration arguments.
+	 * @return void
+	 */
+	function register_block_type( $metadata, $args = array() ): void {
+		FakeWordPress::$blocks[ (string) $metadata ] = is_array( $args ) ? $args : array();
+	}
+}
+
+if ( ! function_exists( 'get_block_wrapper_attributes' ) ) {
+	/**
+	 * The wrapper attributes a dynamic block prints.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param array<string, mixed> $extra Extra attributes, of which only `class` is used here.
+	 * @return string
+	 */
+	function get_block_wrapper_attributes( $extra = array() ): string {
+		$class = is_array( $extra ) && isset( $extra['class'] ) ? (string) $extra['class'] : '';
+
+		return 'class="' . esc_attr( $class ) . '"';
+	}
+}
+
+if ( ! function_exists( 'get_user_meta' ) ) {
+	/**
+	 * Reads fake user meta.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param int    $user_id User id.
+	 * @param string $key     Meta key.
+	 * @param bool   $single  Whether to return a single value.
+	 * @return mixed
+	 */
+	function get_user_meta( $user_id, $key = '', $single = false ) {
+		$value = FakeWordPress::$user_meta[ (int) $user_id ][ (string) $key ] ?? '';
+
+		return $single ? $value : array( $value );
+	}
+}
+
+if ( ! function_exists( 'update_user_meta' ) ) {
+	/**
+	 * Writes fake user meta.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param int    $user_id User id.
+	 * @param string $key     Meta key.
+	 * @param mixed  $value   Value to store.
+	 * @return bool
+	 */
+	function update_user_meta( $user_id, $key, $value ): bool {
+		FakeWordPress::$user_meta[ (int) $user_id ][ (string) $key ] = $value;
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'check_admin_referer' ) ) {
+	/**
+	 * Verifies an admin nonce, throwing the way wp_die() does on failure.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string $action Nonce action.
+	 * @param string $name   Request key carrying the nonce.
+	 * @return bool
+	 * @throws WPDieException When the nonce is not one the test declared valid.
+	 */
+	function check_admin_referer( $action = -1, $name = '_wpnonce' ): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This shim *is* the verifier.
+		$nonce = isset( $_REQUEST[ $name ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ $name ] ) ) : '';
+
+		if ( array() === FakeWordPress::$valid_referers ) {
+			return true;
+		}
+
+		if ( in_array( $nonce, FakeWordPress::$valid_referers, true ) ) {
+			return true;
+		}
+
+		throw new WPDieException( 'Nonce check failed.', 403 );
+	}
+}
+
+if ( ! function_exists( 'wp_nonce_url' ) ) {
+	/**
+	 * Appends a fake nonce to a URL.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string $url    URL to sign.
+	 * @param string $action Nonce action.
+	 * @param string $name   Query argument name.
+	 * @return string
+	 */
+	function wp_nonce_url( $url, $action = -1, $name = '_wpnonce' ): string {
+		return add_query_arg( $name, wp_create_nonce( (string) $action ), (string) $url );
+	}
+}
+
+if ( ! function_exists( 'register_setting' ) ) {
+	/**
+	 * Records a Settings API registration.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string               $group  Settings group.
+	 * @param string               $option Option name.
+	 * @param array<string, mixed> $args   Registration arguments.
+	 * @return void
+	 */
+	function register_setting( $group, $option, $args = array() ): void {
+		FakeWordPress::$registered_settings[] = array(
+			'group'  => (string) $group,
+			'option' => (string) $option,
+			'args'   => is_array( $args ) ? $args : array(),
+		);
+	}
+}
+
+if ( ! function_exists( 'settings_fields' ) ) {
+	/**
+	 * Prints the group's hidden fields, close enough for a markup assertion.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string $group Settings group.
+	 * @return void
+	 */
+	function settings_fields( $group ): void {
+		echo '<input type="hidden" name="option_page" value="' . esc_attr( (string) $group ) . '" />';
+		wp_nonce_field( (string) $group . '-options' );
+	}
+}
+
+if ( ! function_exists( 'settings_errors' ) ) {
+	/**
+	 * No-op: the unit suite asserts on saved values, not on admin notices.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string $setting Setting slug.
+	 * @return void
+	 */
+	function settings_errors( $setting = '' ): void {
+		unset( $setting );
+	}
+}
+
+if ( ! function_exists( 'submit_button' ) ) {
+	/**
+	 * Prints a submit button.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string $text Button text.
+	 * @return void
+	 */
+	function submit_button( $text = '' ): void {
+		echo '<button type="submit" class="button button-primary">' . esc_html( '' === (string) $text ? 'Save changes' : (string) $text ) . '</button>';
+	}
+}
+
+if ( ! function_exists( 'wp_next_scheduled' ) ) {
+	/**
+	 * Reports a fake scheduled event.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string $hook Hook name.
+	 * @return int|false
+	 */
+	function wp_next_scheduled( $hook ) {
+		return FakeWordPress::$scheduled[ (string) $hook ] ?? false;
+	}
+}
+
+if ( ! function_exists( 'get_current_screen' ) ) {
+	/**
+	 * Returns a fake screen, or null when the test declared none.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @return WP_Screen|null
+	 */
+	function get_current_screen() {
+		if ( '' === FakeWordPress::$current_screen ) {
+			return null;
+		}
+
+		return new WP_Screen( FakeWordPress::$current_screen );
+	}
+}
+
+if ( ! function_exists( 'esc_textarea' ) ) {
+	/**
+	 * Escapes text for a textarea.
+	 *
+	 * @since 0.14.0
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
+	function esc_textarea( $text ): string {
+		return htmlspecialchars( (string) $text, ENT_QUOTES );
 	}
 }
 

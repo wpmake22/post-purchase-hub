@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Tests\Unit\Frontend;
 
 use PostPurchaseHub\Frontend\Renderer;
+use PostPurchaseHub\Install\SetupState;
 use PostPurchaseHub\Frontend\Shortcodes;
 use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Integrations\Tracking\NullTrackingAvailability;
@@ -52,6 +53,10 @@ final class ShortcodesTest extends TestCase {
 		parent::setUp();
 
 		FakeWordPress::reset();
+
+		// Every test in this class is about a configured store. The one that is
+		// not says so itself.
+		self::complete_setup();
 
 		$stages = new StageMap( new StatusDetector( new Cache() ) );
 
@@ -149,5 +154,32 @@ final class ShortcodesTest extends TestCase {
 			'over the cap' => array( '500', Shortcodes::MAX_LIMIT ),
 			'nonsense'     => array( 'all', Shortcodes::DEFAULT_LIMIT ),
 		);
+	}
+	/**
+	 * Marks setup as finished, which is what makes this plugin render at all.
+	 *
+	 * @return void
+	 */
+	private static function complete_setup(): void {
+		FakeWordPress::$options[ SetupState::OPTION ] = array(
+			'step'         => SetupState::FINAL_STEP,
+			'completed_at' => '2026-08-21 00:00:00',
+		);
+	}
+
+	/**
+	 * An unconfigured store renders nothing at all — and, in particular, does
+	 * not print the raw shortcode text at customers, which is what an
+	 * *unregistered* shortcode would do (docs/MILESTONE-PROMPTS.md M14's hard
+	 * requirement).
+	 *
+	 * @return void
+	 */
+	public function test_it_renders_nothing_before_setup_completes(): void {
+		FakeWordPress::$options[ SetupState::OPTION ] = array( 'step' => 1 );
+		FakeWordPress::$current_user_id               = 7;
+
+		$this->assertSame( '', $this->shortcodes->render( array() ) );
+		$this->assertSame( '', $this->shortcodes->render_for_current_user( 5 ) );
 	}
 }

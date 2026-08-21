@@ -19,7 +19,15 @@ use PostPurchaseHub\Actions\Invoice;
 use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Actions\ReorderPlanner;
 use PostPurchaseHub\Actions\WooCommerceCart;
+use PostPurchaseHub\Admin\Assets as AdminAssets;
+use PostPurchaseHub\Admin\HealthPanel;
 use PostPurchaseHub\Admin\Menu;
+use PostPurchaseHub\Admin\Notices;
+use PostPurchaseHub\Admin\SettingsPage;
+use PostPurchaseHub\Admin\Wizard;
+use PostPurchaseHub\Admin\WizardPreview;
+use PostPurchaseHub\Admin\WizardScreen;
+use PostPurchaseHub\Admin\WizardSteps;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
@@ -60,6 +68,7 @@ use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 use PostPurchaseHub\Timeline\EstimatedDelivery;
 use PostPurchaseHub\Timeline\StageMap;
+use PostPurchaseHub\Timeline\StageMapConfig;
 use PostPurchaseHub\Timeline\StatusDetector;
 use PostPurchaseHub\Timeline\TimelineBuilder;
 use PostPurchaseHub\Timeline\TransitionRecorder;
@@ -460,6 +469,69 @@ final class Services {
 			'guest_order_view',
 			static function ( Plugin $plugin ): GuestOrderView {
 				return new GuestOrderView( $plugin->ownership_resolver(), $plugin->templates() );
+			}
+		);
+
+		$plugin->set(
+			'stage_map_config',
+			static function (): StageMapConfig {
+				return new StageMapConfig();
+			}
+		);
+
+		$plugin->set(
+			'health_panel',
+			static function ( Plugin $plugin ): HealthPanel {
+				return new HealthPanel( $plugin->conflict_scanner(), $plugin->invoice_detector() );
+			}
+		);
+
+		$plugin->set(
+			'settings_page',
+			static function ( Plugin $plugin ): SettingsPage {
+				return new SettingsPage( $plugin->stage_map(), $plugin->health_panel() );
+			}
+		);
+
+		$plugin->set(
+			'wizard_preview',
+			static function ( Plugin $plugin ): WizardPreview {
+				return new WizardPreview( $plugin->renderer() );
+			}
+		);
+
+		$plugin->set(
+			'wizard_steps',
+			static function ( Plugin $plugin ): WizardSteps {
+				return new WizardSteps( $plugin->wizard_preview() );
+			}
+		);
+
+		$plugin->set(
+			'wizard_screen',
+			static function ( Plugin $plugin ): WizardScreen {
+				return new WizardScreen( $plugin->wizard_steps() );
+			}
+		);
+
+		$plugin->set(
+			'wizard',
+			static function ( Plugin $plugin ): Wizard {
+				return new Wizard( $plugin->stage_map(), $plugin->health_panel(), $plugin->wizard_screen() );
+			}
+		);
+
+		$plugin->set(
+			'admin_assets',
+			static function (): AdminAssets {
+				return new AdminAssets();
+			}
+		);
+
+		$plugin->set(
+			'notices',
+			static function (): Notices {
+				return new Notices();
 			}
 		);
 

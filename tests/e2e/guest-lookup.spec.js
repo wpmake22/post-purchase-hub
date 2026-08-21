@@ -13,6 +13,7 @@
  */
 
 const { test, expect } = require("@wordpress/e2e-test-utils-playwright");
+const { completeSetup } = require("./utils/setup");
 
 const FORM = "[data-pph-lookup-form]";
 const NOTICE = "[data-pph-lookup-notice]";
@@ -49,6 +50,7 @@ test.describe("Guest order lookup", () => {
 
 	test.beforeAll(async ({ requestUtils }) => {
 		await requestUtils.activatePlugin("post-purchase-hub");
+		await completeSetup(requestUtils);
 
 		lookupPage = await requestUtils.createPage({
 			title: LOOKUP_PAGE_TITLE,

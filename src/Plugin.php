@@ -18,7 +18,15 @@ use PostPurchaseHub\Actions\HelpContextBuilder;
 use PostPurchaseHub\Actions\Invoice;
 use PostPurchaseHub\Actions\Reorder;
 use PostPurchaseHub\Actions\ReorderPlanner;
+use PostPurchaseHub\Admin\Assets as AdminAssets;
+use PostPurchaseHub\Admin\HealthPanel;
 use PostPurchaseHub\Admin\Menu;
+use PostPurchaseHub\Admin\Notices;
+use PostPurchaseHub\Admin\SettingsPage;
+use PostPurchaseHub\Admin\Wizard;
+use PostPurchaseHub\Admin\WizardPreview;
+use PostPurchaseHub\Admin\WizardScreen;
+use PostPurchaseHub\Admin\WizardSteps;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
@@ -41,6 +49,7 @@ use PostPurchaseHub\Frontend\TemplateLoader;
 use PostPurchaseHub\Frontend\TemplateReplacer;
 use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
+use PostPurchaseHub\Install\SetupState;
 use PostPurchaseHub\Integrations\Compat\PageCache;
 use PostPurchaseHub\Integrations\Invoices\Detector;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
@@ -63,6 +72,7 @@ use PostPurchaseHub\Support\Cache;
 use PostPurchaseHub\Support\Logger;
 use PostPurchaseHub\Timeline\EstimatedDelivery;
 use PostPurchaseHub\Timeline\StageMap;
+use PostPurchaseHub\Timeline\StageMapConfig;
 use PostPurchaseHub\Timeline\StatusDetector;
 use PostPurchaseHub\Timeline\TimelineBuilder;
 use PostPurchaseHub\Timeline\TransitionRecorder;
@@ -683,6 +693,96 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the stored stage map's filter layer.
+	 *
+	 * @since 0.14.0
+	 * @return StageMapConfig
+	 */
+	public function stage_map_config(): StageMapConfig {
+		return $this->typed( 'stage_map_config', StageMapConfig::class );
+	}
+
+	/**
+	 * Returns the admin health panel.
+	 *
+	 * @since 0.14.0
+	 * @return HealthPanel
+	 */
+	public function health_panel(): HealthPanel {
+		return $this->typed( 'health_panel', HealthPanel::class );
+	}
+
+	/**
+	 * Returns the settings screen.
+	 *
+	 * @since 0.14.0
+	 * @return SettingsPage
+	 */
+	public function settings_page(): SettingsPage {
+		return $this->typed( 'settings_page', SettingsPage::class );
+	}
+
+	/**
+	 * Returns the wizard's order-page preview.
+	 *
+	 * @since 0.14.0
+	 * @return WizardPreview
+	 */
+	public function wizard_preview(): WizardPreview {
+		return $this->typed( 'wizard_preview', WizardPreview::class );
+	}
+
+	/**
+	 * Returns the wizard's question bodies.
+	 *
+	 * @since 0.14.0
+	 * @return WizardSteps
+	 */
+	public function wizard_steps(): WizardSteps {
+		return $this->typed( 'wizard_steps', WizardSteps::class );
+	}
+
+	/**
+	 * Returns the wizard's screen chrome.
+	 *
+	 * @since 0.14.0
+	 * @return WizardScreen
+	 */
+	public function wizard_screen(): WizardScreen {
+		return $this->typed( 'wizard_screen', WizardScreen::class );
+	}
+
+	/**
+	 * Returns the setup wizard.
+	 *
+	 * @since 0.14.0
+	 * @return Wizard
+	 */
+	public function wizard(): Wizard {
+		return $this->typed( 'wizard', Wizard::class );
+	}
+
+	/**
+	 * Returns the admin asset loader.
+	 *
+	 * @since 0.14.0
+	 * @return AdminAssets
+	 */
+	public function admin_assets(): AdminAssets {
+		return $this->typed( 'admin_assets', AdminAssets::class );
+	}
+
+	/**
+	 * Returns the admin notice.
+	 *
+	 * @since 0.14.0
+	 * @return Notices
+	 */
+	public function notices(): Notices {
+		return $this->typed( 'notices', Notices::class );
+	}
+
+	/**
 	 * Returns the page-cache compatibility layer.
 	 *
 	 * @since 0.11.0
@@ -779,6 +879,11 @@ final class Plugin {
 			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
 			\WP_CLI::add_command( 'pph backfill-timeline', new BackfillCommand( $this->transition_recorder(), $this->stage_map() ) );
 		}
+
+		// Registered unconditionally and early: a stored stage map is what the
+		// timeline means on this store, and it has to be in effect for the
+		// storefront, the admin queue, the emails and WP-CLI alike.
+		$this->stage_map_config()->register();
 
 		// Core's own actions fill the registry before pph_loaded fires, so
 		// anything hooking that action — Pro, a filter-driven extension — sees
@@ -969,25 +1074,39 @@ final class Plugin {
 	 * @return void
 	 */
 	public function register_rendering(): void {
-		// Registered in every context. The block editor renders over REST, where
-		// is_admin() is false, and the renderer's hooks are inert anywhere the
-		// storefront templates do not run — so gating them would buy nothing and
-		// would silently drop the hand-off templates use to draw nested partials.
+		// Registered even before setup completes, and in every context: the
+		// block editor renders over REST, where is_admin() is false, and an
+		// *unregistered* shortcode prints its own raw text at customers, which
+		// is worse than the nothing an unconfigured store is supposed to show.
+		// Both render callbacks are gated instead — see
+		// Shortcodes::render_for_current_user() and Security\GuestAccess.
 		$this->blocks()->register();
 		$this->shortcodes()->register();
-		$this->renderer()->register();
-		$this->actions_renderer()->register();
-		$this->lookup_form()->register();
 
 		if ( is_admin() ) {
 			$this->conflict_scanner()->register();
 			$this->menu()->register();
 			$this->order_metabox()->register();
 			$this->request_action_controller()->register();
+			$this->settings_page()->register();
+			$this->wizard()->register();
+			$this->notices()->register();
+			$this->admin_assets()->register();
 
 			return;
 		}
 
+		// The hard requirement of docs/MILESTONE-PROMPTS.md M14: nothing this
+		// plugin draws reaches a customer's page until the merchant has been
+		// through the wizard. Enforced here, once, by not wiring the storefront
+		// at all — rather than by every render path remembering to ask.
+		if ( ! SetupState::is_complete() ) {
+			return;
+		}
+
+		$this->renderer()->register();
+		$this->actions_renderer()->register();
+		$this->lookup_form()->register();
 		$this->assets()->register();
 		$this->template_replacer()->register();
 		$this->request_modal_renderer()->register();
@@ -1004,6 +1123,14 @@ final class Plugin {
 	 * @return void
 	 */
 	public function register_rest_routes(): void {
+		// Same gate as the storefront, for the same reason and one more: an
+		// unconfigured store must not expose customer-facing mutation
+		// endpoints either. A button that is not drawn is not a control if the
+		// route behind it answers anyway.
+		if ( ! SetupState::is_complete() ) {
+			return;
+		}
+
 		$this->requests_controller()->register_routes();
 		$this->lookup_controller()->register_routes();
 		$this->reorder_controller()->register_routes();

@@ -49,6 +49,7 @@ const core = {
 			'reorder.js'
 		),
 		help: path.resolve( process.cwd(), 'assets', 'src', 'js', 'help.js' ),
+		admin: path.resolve( process.cwd(), 'assets', 'src', 'js', 'admin.js' ),
 	},
 	output: {
 		...defaultConfig.output,

@@ -12,6 +12,7 @@ namespace PostPurchaseHub\Tests\Integration;
 use PostPurchaseHub\Frontend\Assets;
 use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Frontend\TemplateReplacer;
+use PostPurchaseHub\Install\SetupState;
 use PostPurchaseHub\Plugin;
 
 /**
@@ -24,6 +25,48 @@ use PostPurchaseHub\Plugin;
  * @covers \PostPurchaseHub\Frontend\Assets
  */
 final class RenderingTest extends \WP_UnitTestCase {
+
+	/**
+	 * Every test in this class is about a configured store.
+	 *
+	 * Since M14 this plugin renders nothing on the storefront until the setup
+	 * wizard has been completed (`Install\SetupState`), so the premise has to
+	 * be stated rather than assumed. The one test that is about the opposite
+	 * says so itself.
+	 *
+	 * @return void
+	 */
+	public function set_up(): void {
+		parent::set_up();
+
+		SetupState::complete();
+	}
+
+	/**
+	 * Nothing this plugin draws reaches a customer before the wizard is done —
+	 * and, in particular, an embedded shortcode renders as nothing rather than
+	 * printing its own raw text at them.
+	 *
+	 * @return void
+	 */
+	public function test_nothing_renders_before_setup_completes(): void {
+		delete_option( SetupState::OPTION );
+
+		$customer = self::factory()->user->create( array( 'role' => 'customer' ) );
+
+		$order = new \WC_Order();
+		$order->set_customer_id( $customer );
+		$order->set_status( 'processing' );
+		$order->save();
+
+		wp_set_current_user( $customer );
+
+		$output = do_shortcode( '[pph_orders]' );
+
+		$this->assertSame( '', $output );
+		$this->assertStringNotContainsString( '[pph_orders]', $output );
+	}
+
 
 	/**
 	 * Creates orders in the state a live store's list would show.

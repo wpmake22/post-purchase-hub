@@ -21,6 +21,7 @@ namespace PostPurchaseHub\Actions;
  */
 final class EligibilityResult {
 
+	const REASON_ACTION_DISABLED         = 'action_disabled';
 	const REASON_ORDER_TYPE_EXCLUDED     = 'order_type_excluded';
 	const REASON_STATUS_NOT_ELIGIBLE     = 'status_not_eligible';
 	const REASON_PAYMENT_METHOD_EXCLUDED = 'payment_method_excluded';

@@ -15,6 +15,7 @@
  */
 
 const { test, expect } = require("@wordpress/e2e-test-utils-playwright");
+const { completeSetup } = require("./utils/setup");
 
 const SUMMARY = "[data-pph-reorder]";
 const LINE = "[data-pph-reorder-line]";
@@ -70,6 +71,7 @@ test.describe("Reorder", () => {
 
 	test.beforeAll(async ({ requestUtils }) => {
 		await requestUtils.activatePlugin("post-purchase-hub");
+		await completeSetup(requestUtils);
 
 		orderId = await seedBrokenOrder(requestUtils);
 	});

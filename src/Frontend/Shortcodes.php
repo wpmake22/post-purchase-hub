@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Install\SetupState;
+
 /**
  * Registers `[pph_orders]`.
  *
@@ -102,6 +104,14 @@ final class Shortcodes {
 	 * @return string
 	 */
 	public function render_for_current_user( int $limit ): string {
+		// An unconfigured store renders nothing on the storefront
+		// (docs/MILESTONE-PROMPTS.md M14). The shortcode stays registered so a
+		// page that embeds it shows an empty section rather than printing the
+		// raw shortcode text at customers.
+		if ( ! SetupState::is_complete() ) {
+			return '';
+		}
+
 		$customer_id = get_current_user_id();
 
 		if ( 0 === $customer_id ) {

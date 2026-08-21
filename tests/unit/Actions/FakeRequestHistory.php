@@ -28,6 +28,16 @@ final class FakeRequestHistory implements RequestHistory {
 	public array $requests = array();
 
 	/**
+	 * How many times the cap check asked this fake anything.
+	 *
+	 * Lets a test assert that a cheaper check ran first and short-circuited —
+	 * "a disabled action costs no storage lookup".
+	 *
+	 * @var int
+	 */
+	public int $count_calls = 0;
+
+	/**
 	 * Records one fake request, newest-first order preserved by insertion order.
 	 *
 	 * @since 0.7.0
@@ -64,6 +74,8 @@ final class FakeRequestHistory implements RequestHistory {
 	 * @return int
 	 */
 	public function count_for_order( int $order_id, string $type ): int {
+		++$this->count_calls;
+
 		return count( $this->requests[ $order_id . ':' . $type ] ?? array() );
 	}
 

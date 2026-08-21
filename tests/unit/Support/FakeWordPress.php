@@ -43,6 +43,63 @@ final class FakeWordPress {
 	public static array $options = array();
 
 	/**
+	 * Whether is_admin() should report an admin request.
+	 *
+	 * @var bool
+	 */
+	public static bool $is_admin = false;
+
+	/**
+	 * Blocks recorded by the register_block_type() shim, keyed by metadata path.
+	 *
+	 * @var array<string, array<string, mixed>>
+	 */
+	public static array $blocks = array();
+
+	/**
+	 * User meta the get_user_meta() shim serves: user id => key => value.
+	 *
+	 * @var array<int, array<string, mixed>>
+	 */
+	public static array $user_meta = array();
+
+	/**
+	 * Timestamps wp_next_scheduled() should report, keyed by hook.
+	 *
+	 * @var array<string, int>
+	 */
+	public static array $scheduled = array();
+
+	/**
+	 * Screen id get_current_screen() should report, empty for none.
+	 *
+	 * @var string
+	 */
+	public static string $current_screen = '';
+
+	/**
+	 * Settings registered through the register_setting() shim.
+	 *
+	 * @var list<array{group: string, option: string, args: array<string, mixed>}>
+	 */
+	public static array $registered_settings = array();
+
+	/**
+	 * Nonces the check_admin_referer() shim should accept. When empty, any
+	 * nonce passes — a test asserting the check itself sets this.
+	 *
+	 * @var list<string>
+	 */
+	public static array $valid_referers = array();
+
+	/**
+	 * Options written with autoload explicitly disabled, as a set.
+	 *
+	 * @var array<string, bool>
+	 */
+	public static array $non_autoloaded_options = array();
+
+	/**
 	 * Hooks registered through add_action(): hook => list of callbacks.
 	 *
 	 * @var array<string, list<array{callback: mixed, priority: int}>>
@@ -323,6 +380,14 @@ final class FakeWordPress {
 		self::$ext_object_cache          = false;
 		self::$object_cache              = array();
 		self::$options                   = array();
+		self::$non_autoloaded_options    = array();
+		self::$is_admin                  = false;
+		self::$blocks                    = array();
+		self::$user_meta                 = array();
+		self::$scheduled                 = array();
+		self::$current_screen            = '';
+		self::$registered_settings       = array();
+		self::$valid_referers            = array();
 		self::$actions                   = array();
 		self::$filters                   = array();
 		self::$transient_writes          = array();

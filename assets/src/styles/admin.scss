@@ -1,0 +1,117 @@
+/**
+ * Admin styles for the settings screen, the wizard and the health panel.
+ *
+ * Deliberately thin: wp-admin already styles form tables, buttons, notices and
+ * `widefat` tables, and a settings screen that looks like every other settings
+ * screen is one a merchant does not have to learn. What is here is layout for
+ * the three things core has no pattern for — the wizard's progress list, the
+ * health rows' states, and the checkbox groups.
+ */
+
+.pph-settings {
+
+	&__group {
+		border: 0;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__option {
+		display: block;
+		margin: 0 0 0.35em;
+	}
+
+	&__map {
+		margin: 0 0 1em;
+		max-width: 40em;
+	}
+
+	&__panel {
+		margin: 1em 0;
+	}
+}
+
+.pph-health {
+	margin: 1em 0 2em;
+
+	&__table {
+		max-width: 48em;
+	}
+
+	tr[data-pph-health-state="notice"] th {
+		border-left: 4px solid #dba617;
+		padding-left: 0.5em;
+	}
+
+	tr[data-pph-health-state="problem"] th {
+		border-left: 4px solid #d63638;
+		padding-left: 0.5em;
+	}
+
+	tr[data-pph-health-state="ok"] th {
+		border-left: 4px solid #00a32a;
+		padding-left: 0.5em;
+	}
+}
+
+.pph-notice {
+
+	&__dismiss {
+		display: inline;
+	}
+}
+
+.pph-wizard {
+
+	&__progress {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5em 1.5em;
+		list-style: none;
+		margin: 1em 0 2em;
+		padding: 0;
+	}
+
+	&__progress-item {
+		color: #646970;
+
+		&.is-current {
+			color: #1d2327;
+			font-weight: 600;
+		}
+
+		&.is-done {
+			color: #00a32a;
+		}
+	}
+
+	&__question {
+		margin: 0 0 0.25em;
+	}
+
+	&__help {
+		color: #50575e;
+		margin: 0 0 1.5em;
+		max-width: 46em;
+	}
+
+	&__detected {
+		background: #f6f7f7;
+		border-left: 4px solid #2271b1;
+		margin: 0 0 1.5em;
+		max-width: 46em;
+		padding: 0.75em 1em;
+	}
+
+	&__preview {
+		background: #fff;
+		border: 1px solid #dcdcde;
+		margin: 0 0 1.5em;
+		max-width: 46em;
+		padding: 1em 1.5em;
+	}
+
+	&__actions {
+		margin: 2em 0 0;
+	}
+}

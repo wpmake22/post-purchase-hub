@@ -12,9 +12,10 @@ namespace PostPurchaseHub\Actions;
 /**
  * Decides whether one action applies to one order, against a declarative rule.
  *
- * Every dimension a concrete action might care about — status, age, payment
- * method, order type, product type, per-order caps, cooldown — is evaluated
- * here, once, so no action re-implements this matrix slightly differently.
+ * Every dimension a concrete action might care about — whether the merchant
+ * offers the action at all, status, age, payment method, order type, product
+ * type, per-order caps, cooldown — is evaluated here, once, so no action
+ * re-implements this matrix slightly differently.
  * Checks run cheapest first: order type and status cost nothing, payment
  * method and age cost nothing, product type walks the order's line items, and
  * the request-history checks are the only ones that touch storage — so an
@@ -85,6 +86,18 @@ final class EligibilityResolver {
 	 * @return EligibilityResult
 	 */
 	private function evaluate( string $action_id, \WC_Order $order, EligibilityRule $rule ): EligibilityResult {
+		// Asked first, and cheapest: a merchant who turned an action off has
+		// said something about every order at once. Placed here rather than in
+		// each action so the switch reaches the REST routes too — they re-check
+		// through the same resolver, so an action that is off is refused rather
+		// than merely undrawn.
+		if ( ! ActionAvailability::is_enabled( $action_id ) ) {
+			return EligibilityResult::denied(
+				EligibilityResult::REASON_ACTION_DISABLED,
+				__( 'This is not something you can do here.', 'post-purchase-hub' )
+			);
+		}
+
 		if ( array() !== $rule->excluded_order_types && in_array( $order->get_type(), $rule->excluded_order_types, true ) ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_ORDER_TYPE_EXCLUDED,

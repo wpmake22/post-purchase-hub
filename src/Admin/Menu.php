@@ -16,11 +16,12 @@ use PostPurchaseHub\Requests\RequestRepository;
  * One submenu under WooCommerce's own top-level menu — no top-level menu of
  * this plugin's own, per the milestone brief.
  *
- * Registers a single page for now: the request queue, which routes itself
- * between the list table and one request's detail view depending on whether
- * `request_id` is present in the query string. `Admin\SettingsPage` (M14)
- * adds its own submenu item later; registering one now, before that page
- * exists, would be exactly the dead button hard rule 19 forbids.
+ * Registers one page: the request queue, which routes itself between the list
+ * table and one request's detail view depending on whether `request_id` is
+ * present in the query string. The settings screen registers its own entry
+ * (`Admin\SettingsPage`), and the setup wizard deliberately registers none
+ * (`Admin\Wizard`) — a permanent "Setup" item would still be offering to
+ * configure a store that was configured years earlier.
  *
  * `RequestDetail` and `RequestListTable` are built here, on demand, inside
  * render() — never injected and held. `WP_List_Table::__construct()` calls
