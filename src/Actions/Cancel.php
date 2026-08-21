@@ -102,6 +102,26 @@ final class Cancel {
 	public const DEFAULT_RESPONSE_TIME_HOURS = 24;
 
 	/**
+	 * Settings key for whether approving a request restocks the order's items.
+	 *
+	 * @var string
+	 */
+	public const RESTOCK_SETTING = 'cancel_restock_on_approve';
+
+	/**
+	 * Whether approving restocks when nothing is configured.
+	 *
+	 * Matches WooCommerce's own refund screen, whose "Restock refunded items"
+	 * checkbox defaults to checked — the same expectation a merchant already
+	 * has for "cancel returns the stock" carries over here. There is no
+	 * settings screen to change this yet (that is M14's job); until then this
+	 * default is what every store gets.
+	 *
+	 * @var bool
+	 */
+	public const DEFAULT_RESTOCK_ON_APPROVE = true;
+
+	/**
 	 * Reason codes this install accepts when nothing is configured.
 	 *
 	 * @var string[]
@@ -209,6 +229,78 @@ final class Cancel {
 				'source'              => $source,
 			)
 		);
+	}
+
+	/**
+	 * Transitions an order to cancelled and optionally restocks it.
+	 *
+	 * Never issues a refund and never will — see docs/SPEC.md "The refund
+	 * decision". A merchant refunds through Woo's own refund UI, one click
+	 * away from the notification this triggers.
+	 *
+	 * Callers (`Admin\RequestActionController`) are expected to have already
+	 * resolved the request row before calling this: `update_status()` fires
+	 * `woocommerce_order_status_changed` synchronously, which is also what
+	 * closes a stale pending cancellation request when an order is cancelled
+	 * by some other route (`Plugin::reconcile_pending_cancellation()`).
+	 * Resolving the request first means that generic handler finds nothing
+	 * left to reconcile when this method runs.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param \WC_Order $order   Order to cancel.
+	 * @param int       $user_id Staff member approving the request, for the order note.
+	 * @return bool True when the order transitioned here. False when it was
+	 *              already cancelled by another route — the caller's job to
+	 *              reconcile, not this method's to transition twice.
+	 */
+	public function approve( \WC_Order $order, int $user_id ): bool {
+		if ( $order->has_status( 'cancelled' ) ) {
+			return false;
+		}
+
+		$order->update_status( 'cancelled', '', true );
+
+		if ( self::restock_on_approve() ) {
+			wc_increase_stock_levels( $order );
+		}
+
+		$order->add_order_note( self::approval_note_text( $user_id ), 0, false );
+
+		return true;
+	}
+
+	/**
+	 * Whether approving a cancellation request restocks the order's items.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @return bool
+	 */
+	public static function restock_on_approve(): bool {
+		$settings = self::settings();
+
+		return isset( $settings[ self::RESTOCK_SETTING ] )
+			? (bool) $settings[ self::RESTOCK_SETTING ]
+			: self::DEFAULT_RESTOCK_ON_APPROVE;
+	}
+
+	/**
+	 * The order note text written when a cancellation request is approved.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param int $user_id Staff member approving the request, 0 when unknown.
+	 * @return string
+	 */
+	private static function approval_note_text( int $user_id ): string {
+		$user = $user_id > 0 ? get_userdata( $user_id ) : false;
+		$name = $user instanceof \WP_User ? $user->display_name : __( 'a store manager', 'post-purchase-hub' );
+
+		/* translators: 1: staff member's display name, 2: date and time the approval happened. */
+		$format = __( 'Cancellation request approved by %1$s on %2$s.', 'post-purchase-hub' );
+
+		return sprintf( $format, $name, wp_date( get_option( 'date_format', 'F j, Y' ) . ' ' . get_option( 'time_format', 'H:i' ) ) );
 	}
 
 	/**

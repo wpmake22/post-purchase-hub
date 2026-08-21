@@ -304,4 +304,67 @@ final class CancelTest extends TestCase {
 
 		$this->assertSame( 48, Cancel::response_time_hours() );
 	}
+
+	/**
+	 * Approve() transitions the order, writes a note, and never calls a
+	 * refund function.
+	 *
+	 * @return void
+	 */
+	public function test_approve_transitions_the_order_and_writes_a_note(): void {
+		$order = new \WC_Order( 5, 'processing' );
+
+		$transitioned = $this->cancel->approve( $order, 3 );
+
+		$this->assertTrue( $transitioned );
+		$this->assertTrue( $order->has_status( 'cancelled' ) );
+		$this->assertCount( 1, $order->notes );
+		$this->assertFalse( $order->notes[0]['is_customer_note'], 'The approval note is merchant-only.' );
+		$this->assertSame( 0, FakeWordPress::$refund_calls, 'Approve() must never call a refund function.' );
+	}
+
+	/**
+	 * Restocking is on by default, matching WooCommerce's own refund-screen default.
+	 *
+	 * @return void
+	 */
+	public function test_approve_restocks_by_default(): void {
+		$order = new \WC_Order( 5, 'processing' );
+
+		$this->cancel->approve( $order, 3 );
+
+		$this->assertSame( array( 5 ), FakeWordPress::$restocked_orders );
+	}
+
+	/**
+	 * Restocking is skipped when the setting is explicitly off.
+	 *
+	 * @return void
+	 */
+	public function test_approve_does_not_restock_when_the_setting_is_off(): void {
+		FakeWordPress::$options['pph_settings'] = array( Cancel::RESTOCK_SETTING => false );
+
+		$order = new \WC_Order( 5, 'processing' );
+
+		$this->cancel->approve( $order, 3 );
+
+		$this->assertSame( array(), FakeWordPress::$restocked_orders );
+	}
+
+	/**
+	 * An order already cancelled is left alone: no second transition, no
+	 * restock, no note, and the caller learns nothing happened.
+	 *
+	 * @return void
+	 */
+	public function test_approve_does_nothing_to_an_order_already_cancelled(): void {
+		$order = new \WC_Order( 5, 'cancelled' );
+
+		$transitioned = $this->cancel->approve( $order, 3 );
+
+		$this->assertFalse( $transitioned );
+		$this->assertSame( 0, $order->status_transitions );
+		$this->assertSame( array(), $order->notes );
+		$this->assertSame( array(), FakeWordPress::$restocked_orders );
+	}
 }

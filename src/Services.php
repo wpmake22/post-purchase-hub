@@ -12,6 +12,11 @@ namespace PostPurchaseHub;
 use PostPurchaseHub\Actions\ActionRegistry;
 use PostPurchaseHub\Actions\Cancel;
 use PostPurchaseHub\Actions\EligibilityResolver;
+use PostPurchaseHub\Admin\Menu;
+use PostPurchaseHub\Admin\OrderMetabox;
+use PostPurchaseHub\Admin\RequestActionController;
+use PostPurchaseHub\Admin\RequestDetail;
+use PostPurchaseHub\Admin\RequestListTable;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
@@ -266,6 +271,41 @@ final class Services {
 			'request_modal_renderer',
 			static function ( Plugin $plugin ): RequestModalRenderer {
 				return new RequestModalRenderer( $plugin->templates(), $plugin->assets() );
+			}
+		);
+
+		$plugin->set(
+			'request_detail',
+			static function ( Plugin $plugin ): RequestDetail {
+				return new RequestDetail( $plugin->requests() );
+			}
+		);
+
+		$plugin->set(
+			'request_list_table',
+			static function ( Plugin $plugin ): RequestListTable {
+				return new RequestListTable( $plugin->requests() );
+			}
+		);
+
+		$plugin->set(
+			'menu',
+			static function ( Plugin $plugin ): Menu {
+				return new Menu( $plugin->requests(), $plugin->request_detail(), $plugin->request_list_table() );
+			}
+		);
+
+		$plugin->set(
+			'order_metabox',
+			static function ( Plugin $plugin ): OrderMetabox {
+				return new OrderMetabox( $plugin->requests() );
+			}
+		);
+
+		$plugin->set(
+			'request_action_controller',
+			static function ( Plugin $plugin ): RequestActionController {
+				return new RequestActionController( $plugin->request_service(), $plugin->cancel(), $plugin->logger() );
 			}
 		);
 	}

@@ -13,6 +13,7 @@
 declare( strict_types = 1 );
 
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
+use PostPurchaseHub\Tests\Unit\Support\WPDieException;
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- These shims must carry the WordPress names they replace.
 
@@ -989,6 +990,258 @@ if ( ! function_exists( 'wp_create_nonce' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_verify_nonce' ) ) {
+	/**
+	 * Verifies a nonce built by the wp_create_nonce() shim above.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string $nonce  Nonce to verify.
+	 * @param string $action Nonce action.
+	 * @return int|false
+	 */
+	function wp_verify_nonce( $nonce, $action = -1 ) {
+		return ( wp_create_nonce( $action ) === (string) $nonce ) ? 1 : false;
+	}
+}
+
+if ( ! function_exists( 'wp_die' ) ) {
+	/**
+	 * Throws instead of halting, so a unit test can observe what a real
+	 * wp_die() call would have done.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string|\WP_Error         $message Message.
+	 * @param string                   $title   Unused by this shim.
+	 * @param array<string, mixed>|int $args    Args, honouring `response` as the HTTP status.
+	 * @return never
+	 * @throws WPDieException Always.
+	 */
+	function wp_die( $message = '', $title = '', $args = array() ) {
+		unset( $title );
+
+		$status = is_array( $args ) && isset( $args['response'] ) ? (int) $args['response'] : 200;
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- This shim stands in for wp_die() itself; nothing here echoes, and WPDieException carries the message for a test to assert on, not for output.
+		throw new WPDieException( is_string( $message ) ? $message : '', $status );
+	}
+}
+
+if ( ! function_exists( 'admin_url' ) ) {
+	/**
+	 * Builds a fake wp-admin URL.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string $path Path relative to wp-admin/.
+	 * @return string
+	 */
+	function admin_url( $path = '' ): string {
+		return 'https://example.test/wp-admin/' . ltrim( (string) $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'wp_safe_redirect' ) ) {
+	/**
+	 * Records a redirect rather than sending one.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string $location Destination URL.
+	 * @param int    $status   HTTP status.
+	 * @return bool
+	 */
+	function wp_safe_redirect( $location, $status = 302 ): bool {
+		FakeWordPress::$redirects[] = array(
+			'location' => (string) $location,
+			'status'   => (int) $status,
+		);
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'sanitize_key' ) ) {
+	/**
+	 * Lower-cases and strips anything but [a-z0-9_-], as sanitize_key() does.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string $key Candidate key.
+	 * @return string
+	 */
+	function sanitize_key( $key ): string {
+		return (string) preg_replace( '/[^a-z0-9_-]/', '', strtolower( (string) $key ) );
+	}
+}
+
+if ( ! function_exists( 'get_userdata' ) ) {
+	/**
+	 * Returns a fake user, if one was seeded.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param int $user_id User id.
+	 * @return WP_User|false
+	 */
+	function get_userdata( $user_id ) {
+		return FakeWordPress::$users[ (int) $user_id ] ?? false;
+	}
+}
+
+if ( ! function_exists( 'add_submenu_page' ) ) {
+	/**
+	 * Records a submenu page registration.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string   $parent_slug Parent menu slug.
+	 * @param string   $page_title  Page title.
+	 * @param string   $menu_title  Menu title.
+	 * @param string   $capability  Required capability.
+	 * @param string   $menu_slug   Page slug.
+	 * @param callable $callback    Render callback.
+	 * @return string|false
+	 */
+	function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $callback = '' ) {
+		FakeWordPress::$submenus[] = array(
+			'parent_slug' => $parent_slug,
+			'page_title'  => $page_title,
+			'menu_title'  => $menu_title,
+			'capability'  => $capability,
+			'menu_slug'   => $menu_slug,
+			'callback'    => $callback,
+		);
+
+		return $parent_slug . '_' . $menu_slug;
+	}
+}
+
+if ( ! function_exists( 'add_meta_box' ) ) {
+	/**
+	 * Records a metabox registration.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string   $id       Metabox id.
+	 * @param string   $title    Title.
+	 * @param callable $callback Render callback.
+	 * @param mixed    $screen   Screen id or ids.
+	 * @param string   $context  Context.
+	 * @return void
+	 */
+	function add_meta_box( $id, $title, $callback, $screen = null, $context = 'advanced' ): void {
+		FakeWordPress::$meta_boxes[] = array(
+			'id'       => $id,
+			'title'    => $title,
+			'callback' => $callback,
+			'screen'   => $screen,
+			'context'  => $context,
+		);
+	}
+}
+
+if ( ! function_exists( 'selected' ) ) {
+	/**
+	 * Echoes/returns the `selected` HTML attribute when two values match, as
+	 * WordPress's own selected() does.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param mixed $selected Current value.
+	 * @param mixed $current  Value being compared against.
+	 * @param bool  $display  Whether to echo the result.
+	 * @return string
+	 */
+	function selected( $selected, $current = true, $display = true ): string {
+		$result = ( (string) $selected === (string) $current ) ? ' selected="selected"' : '';
+
+		if ( $display ) {
+			echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed string, never user input.
+		}
+
+		return $result;
+	}
+}
+
+if ( ! function_exists( 'human_time_diff' ) ) {
+	/**
+	 * A fixed "X hours"-shaped string; the unit suite does not assert on the
+	 * exact wording, only that the age column renders something.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param int      $from Earlier timestamp.
+	 * @param int|null $to   Later timestamp, now when omitted.
+	 * @return string
+	 */
+	function human_time_diff( $from, $to = null ): string {
+		$to = $to ?? time();
+
+		return round( abs( $to - $from ) / HOUR_IN_SECONDS ) . ' hours';
+	}
+}
+
+if ( ! function_exists( 'wp_nonce_field' ) ) {
+	/**
+	 * Echoes a hidden nonce field built from the wp_create_nonce() shim.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param string $action  Nonce action.
+	 * @param string $name    Field name.
+	 * @param bool   $referer Whether to also print a referer field.
+	 * @param bool   $display Whether to echo rather than return.
+	 * @return string
+	 */
+	function wp_nonce_field( $action = -1, $name = '_wpnonce', $referer = true, $display = true ): string {
+		$field = sprintf( '<input type="hidden" name="%s" value="%s">', esc_attr( $name ), esc_attr( wp_create_nonce( $action ) ) );
+
+		if ( $referer ) {
+			$field .= '<input type="hidden" name="_wp_http_referer" value="">';
+		}
+
+		if ( $display ) {
+			echo $field; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built entirely from esc_attr() above.
+		}
+
+		return $field;
+	}
+}
+
+if ( ! function_exists( 'wc_increase_stock_levels' ) ) {
+	/**
+	 * Records a restock call rather than touching any product.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param \WC_Order|int $order Order or order id.
+	 * @return void
+	 */
+	function wc_increase_stock_levels( $order ): void {
+		FakeWordPress::$restocked_orders[] = $order instanceof \WC_Order ? $order->get_id() : (int) $order;
+	}
+}
+
+if ( ! function_exists( 'wc_create_refund' ) ) {
+	/**
+	 * A spy: this plugin must never call it. Records that it was called
+	 * rather than returning anything a caller could mistake for a real
+	 * refund object.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param array<string, mixed> $args Unused.
+	 * @return void
+	 */
+	function wc_create_refund( $args = array() ): void {
+		unset( $args );
+
+		++FakeWordPress::$refund_calls;
+	}
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- These deliberately mirror WordPress core constant names.
@@ -1032,6 +1285,7 @@ if ( ! defined( 'WEEK_IN_SECONDS' ) ) {
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 
 require_once __DIR__ . '/wp-post.php';
+require_once __DIR__ . '/wp-user.php';
 require_once __DIR__ . '/wp-error.php';
 require_once __DIR__ . '/wp-rest-request.php';
 require_once __DIR__ . '/wp-rest-response.php';

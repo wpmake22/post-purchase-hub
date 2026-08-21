@@ -12,6 +12,11 @@ namespace PostPurchaseHub;
 use PostPurchaseHub\Actions\ActionRegistry;
 use PostPurchaseHub\Actions\Cancel;
 use PostPurchaseHub\Actions\EligibilityResolver;
+use PostPurchaseHub\Admin\Menu;
+use PostPurchaseHub\Admin\OrderMetabox;
+use PostPurchaseHub\Admin\RequestActionController;
+use PostPurchaseHub\Admin\RequestDetail;
+use PostPurchaseHub\Admin\RequestListTable;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\CLI\BackfillCommand;
 use PostPurchaseHub\CLI\CleanupCommand;
@@ -27,6 +32,7 @@ use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Install\Migrator;
 use PostPurchaseHub\Integrations\Tracking\TrackingAvailability;
 use PostPurchaseHub\Requests\PendingCancellationBranch;
+use PostPurchaseHub\Requests\Request;
 use PostPurchaseHub\Requests\RequestRepository;
 use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Requests\RetentionSweeper;
@@ -438,6 +444,56 @@ final class Plugin {
 	}
 
 	/**
+	 * Returns the request detail view.
+	 *
+	 * @since 0.9.0
+	 * @return RequestDetail
+	 */
+	public function request_detail(): RequestDetail {
+		return $this->typed( 'request_detail', RequestDetail::class );
+	}
+
+	/**
+	 * Returns the request list table.
+	 *
+	 * @since 0.9.0
+	 * @return RequestListTable
+	 */
+	public function request_list_table(): RequestListTable {
+		return $this->typed( 'request_list_table', RequestListTable::class );
+	}
+
+	/**
+	 * Returns the admin menu.
+	 *
+	 * @since 0.9.0
+	 * @return Menu
+	 */
+	public function menu(): Menu {
+		return $this->typed( 'menu', Menu::class );
+	}
+
+	/**
+	 * Returns the order-edit metabox.
+	 *
+	 * @since 0.9.0
+	 * @return OrderMetabox
+	 */
+	public function order_metabox(): OrderMetabox {
+		return $this->typed( 'order_metabox', OrderMetabox::class );
+	}
+
+	/**
+	 * Returns the admin approve/decline handler.
+	 *
+	 * @since 0.9.0
+	 * @return RequestActionController
+	 */
+	public function request_action_controller(): RequestActionController {
+		return $this->typed( 'request_action_controller', RequestActionController::class );
+	}
+
+	/**
 	 * Resolves a service and asserts what came back.
 	 *
 	 * A factory can be replaced through set(), so the type is checked once here
@@ -487,6 +543,7 @@ final class Plugin {
 
 		add_action( 'woocommerce_order_status_changed', array( $this, 'record_transition' ), 10, 4 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'resync_eta_on_status_change' ), 10, 4 );
+		add_action( 'woocommerce_order_status_changed', array( $this, 'reconcile_pending_cancellation' ), 10, 4 );
 
 		// Shipping-line changes: the admin order editor's bulk save
 		// (wc-admin-functions.php) and the per-item CRUD hooks new/updated
@@ -584,6 +641,50 @@ final class Plugin {
 	}
 
 	/**
+	 * Closes a stale pending cancellation request when its order reaches
+	 * `cancelled` through any route other than this plugin's own approval —
+	 * a customer's own one-click cancel, a manual status change on the Orders
+	 * screen, or another plugin.
+	 *
+	 * `Admin\RequestActionController::approve()` resolves the request row
+	 * *before* transitioning the order for exactly this reason: by the time
+	 * that transition fires this same hook, `pending_for_order()` below
+	 * already finds nothing, so an approval never reconciles itself.
+	 *
+	 * @since 0.9.0
+	 *
+	 * @param int    $order_id Order id.
+	 * @param string $from     Status moved away from, unused.
+	 * @param string $to       Status moved to.
+	 * @param mixed  $order    Order object as passed by WooCommerce.
+	 * @return void
+	 */
+	public function reconcile_pending_cancellation( $order_id, $from, $to, $order = null ): void {
+		unset( $from );
+
+		if ( 'cancelled' !== $to ) {
+			return;
+		}
+
+		$pending = $this->requests()->pending_for_order( (int) $order_id, Request::TYPE_CANCELLATION );
+
+		if ( null === $pending ) {
+			return;
+		}
+
+		if ( ! $order instanceof \WC_Order ) {
+			$order = wc_get_order( (int) $order_id );
+		}
+
+		$this->request_service()->complete(
+			$pending,
+			$order instanceof \WC_Order ? $order : null,
+			get_current_user_id(),
+			RequestService::reconciliation_note()
+		);
+	}
+
+	/**
 	 * Resyncs a cached estimated-delivery range after the admin order editor saves.
 	 *
 	 * Callback for `woocommerce_saved_order_items`, which fires once per bulk
@@ -658,6 +759,9 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			$this->conflict_scanner()->register();
+			$this->menu()->register();
+			$this->order_metabox()->register();
+			$this->request_action_controller()->register();
 
 			return;
 		}

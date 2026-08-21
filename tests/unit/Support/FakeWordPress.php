@@ -176,6 +176,49 @@ final class FakeWordPress {
 	public static array $logged = array();
 
 	/**
+	 * Redirects recorded by the wp_safe_redirect() shim.
+	 *
+	 * @var list<array{location: string, status: int}>
+	 */
+	public static array $redirects = array();
+
+	/**
+	 * Submenu pages recorded by the add_submenu_page() shim.
+	 *
+	 * @var list<array<string, mixed>>
+	 */
+	public static array $submenus = array();
+
+	/**
+	 * Metaboxes recorded by the add_meta_box() shim.
+	 *
+	 * @var list<array<string, mixed>>
+	 */
+	public static array $meta_boxes = array();
+
+	/**
+	 * Fake users the get_userdata() shim serves, keyed by id.
+	 *
+	 * @var array<int, \WP_User>
+	 */
+	public static array $users = array();
+
+	/**
+	 * Order ids passed to the wc_increase_stock_levels() shim, in call order.
+	 *
+	 * @var list<int>
+	 */
+	public static array $restocked_orders = array();
+
+	/**
+	 * Calls recorded by the wc_create_refund() spy. Must stay zero for the
+	 * lifetime of every test — see CancelTest's assertion.
+	 *
+	 * @var int
+	 */
+	public static int $refund_calls = 0;
+
+	/**
 	 * Clears all state between tests.
 	 *
 	 * @since 0.1.0
@@ -205,6 +248,12 @@ final class FakeWordPress {
 		self::$enqueued_scripts          = array();
 		self::$localized_scripts         = array();
 		self::$logged                    = array();
+		self::$redirects                 = array();
+		self::$submenus                  = array();
+		self::$meta_boxes                = array();
+		self::$users                     = array();
+		self::$restocked_orders          = array();
+		self::$refund_calls              = 0;
 	}
 
 	/**

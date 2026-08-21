@@ -108,6 +108,20 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		private array $items = array();
 
 		/**
+		 * Order notes recorded by add_order_note(), in call order.
+		 *
+		 * @var list<array{note: string, is_customer_note: bool}>
+		 */
+		public array $notes = array();
+
+		/**
+		 * How many times update_status() has transitioned this order.
+		 *
+		 * @var int
+		 */
+		public int $status_transitions = 0;
+
+		/**
 		 * Constructor.
 		 *
 		 * @param int    $id     Order id.
@@ -379,7 +393,73 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public function set_shipping_methods( array $shipping_methods ): void {
 			$this->shipping_methods = $shipping_methods;
 		}
+
+		/**
+		 * Whether the order currently has the given status.
+		 *
+		 * @param string $status Unprefixed status.
+		 * @return bool
+		 */
+		public function has_status( string $status ): bool {
+			return $this->status === $status;
+		}
+
+		/**
+		 * Transitions the order's status immediately, as WooCommerce's own
+		 * update_status() does.
+		 *
+		 * @param string $new_status Status to change to.
+		 * @param string $note       Note, unused by this stub.
+		 * @param bool   $manual     Whether this is a manual change, unused by this stub.
+		 * @return bool
+		 */
+		public function update_status( string $new_status, string $note = '', bool $manual = false ): bool {
+			unset( $note, $manual );
+
+			$this->status = $new_status;
+			++$this->status_transitions;
+			++$this->saves;
+
+			return true;
+		}
+
+		/**
+		 * Records an order note. Untyped params, matching WooCommerce's own
+		 * loose signature: core callers pass `0`/`1` as often as `false`/`true`.
+		 *
+		 * @param string $note             Note text.
+		 * @param mixed  $is_customer_note Whether the note is customer-visible.
+		 * @param mixed  $added_by_user    Unused by this stub.
+		 * @return int
+		 */
+		public function add_order_note( $note, $is_customer_note = 0, $added_by_user = false ): int {
+			unset( $added_by_user );
+
+			$this->notes[] = array(
+				'note'             => (string) $note,
+				'is_customer_note' => (bool) $is_customer_note,
+			);
+
+			return count( $this->notes );
+		}
+
+		/**
+		 * Returns the order's admin edit URL.
+		 *
+		 * @return string
+		 */
+		public function get_edit_order_url(): string {
+			return 'https://example.test/wp-admin/admin.php?page=wc-orders&action=edit&id=' . $this->id;
+		}
+
+		/**
+		 * Returns the billing full name, formatted as WooCommerce would.
+		 *
+		 * @return string
+		 */
+		public function get_formatted_billing_full_name(): string {
+			return '';
+		}
 	}
 }
-
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
