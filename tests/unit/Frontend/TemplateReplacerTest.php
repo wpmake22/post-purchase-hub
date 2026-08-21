@@ -173,6 +173,64 @@ final class TemplateReplacerTest extends TestCase {
 	}
 
 	/**
+	 * A page builder owning the account page is a conflict too.
+	 *
+	 * A builder-rendered account page never calls WooCommerce's templates, so
+	 * swapping them would change nothing while reporting success.
+	 *
+	 * @dataProvider builder_pages
+	 *
+	 * @param array<string, string> $meta    Post meta on the My Account page.
+	 * @param string                $content Its content.
+	 * @param string                $builder Builder that should be named.
+	 * @return void
+	 */
+	public function test_a_page_builder_is_a_conflict( array $meta, string $content, string $builder ): void {
+		FakeWordPress::$account_page_id  = 12;
+		FakeWordPress::$post_meta[12]    = $meta;
+		FakeWordPress::$post_content[12] = $content;
+
+		$scanner = new TemplateConflictScanner( new Cache() );
+
+		$this->assertArrayHasKey( TemplateConflictScanner::BUILDER_PREFIX . $builder, $scanner->conflicts( true ) );
+
+		FakeWordPress::$options['pph_settings'] = array(
+			TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT,
+		);
+
+		$replacer = new TemplateReplacer( new TemplateLoader( new Logger() ), $scanner );
+
+		$this->assertTrue( $replacer->is_requested() );
+		$this->assertFalse( $replacer->is_enabled() );
+	}
+
+	/**
+	 * The marks each builder leaves on a page it owns.
+	 *
+	 * @return array<string, array{array<string, string>, string, string}>
+	 */
+	public static function builder_pages(): array {
+		return array(
+			'elementor'      => array( array( '_elementor_edit_mode' => 'builder' ), '', 'elementor' ),
+			'beaver builder' => array( array( '_fl_builder_enabled' => '1' ), '', 'beaver-builder' ),
+			'wpbakery'       => array( array( '_wpb_vc_js_status' => 'true' ), '', 'wpbakery' ),
+			'divi'           => array( array(), '[et_pb_section][et_pb_row][/et_pb_row][/et_pb_section]', 'divi' ),
+		);
+	}
+
+	/**
+	 * A plain account page is not mistaken for a builder's.
+	 *
+	 * @return void
+	 */
+	public function test_a_plain_account_page_is_not_a_conflict(): void {
+		FakeWordPress::$account_page_id  = 12;
+		FakeWordPress::$post_content[12] = '[woocommerce_my_account]';
+
+		$this->assertSame( array(), ( new TemplateConflictScanner( new Cache() ) )->conflicts( true ) );
+	}
+
+	/**
 	 * The mode is filterable, so a site can force it without the settings screen.
 	 *
 	 * @return void

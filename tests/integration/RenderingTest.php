@@ -250,6 +250,59 @@ final class RenderingTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Replacement mode still shows the merchant's notes to the customer.
+	 *
+	 * WooCommerce's own view-order template lists these as "Order updates".
+	 * Replacing that template must not quietly take them away.
+	 *
+	 * @return void
+	 */
+	public function test_replacement_mode_keeps_the_customer_notes(): void {
+		$order = $this->orders( 1 )[0];
+		$order->add_order_note( 'Your parcel leaves the warehouse tonight.', 1 );
+
+		ob_start();
+		Plugin::instance()->renderer()->render_order_notes( wc_get_order( $order->get_id() ) );
+		$markup = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'data-pph-order-notes', $markup );
+		$this->assertStringContainsString( 'Your parcel leaves the warehouse tonight.', $markup );
+	}
+
+	/**
+	 * An internal note is never shown to the customer.
+	 *
+	 * @return void
+	 */
+	public function test_private_notes_are_never_rendered(): void {
+		$order = $this->orders( 1 )[0];
+		$order->add_order_note( 'Chargeback risk, watch this one.' );
+
+		ob_start();
+		Plugin::instance()->renderer()->render_order_notes( wc_get_order( $order->get_id() ) );
+		$markup = (string) ob_get_clean();
+
+		$this->assertStringNotContainsString( 'Chargeback risk', $markup );
+		$this->assertSame( '', $markup );
+	}
+
+	/**
+	 * Note content is escaped, not echoed.
+	 *
+	 * @return void
+	 */
+	public function test_note_content_is_escaped(): void {
+		$order = $this->orders( 1 )[0];
+		$order->add_order_note( 'Shipped <script>alert(1)</script>', 1 );
+
+		ob_start();
+		Plugin::instance()->renderer()->render_order_notes( wc_get_order( $order->get_id() ) );
+		$markup = (string) ob_get_clean();
+
+		$this->assertStringNotContainsString( '<script>', $markup );
+	}
+
+	/**
 	 * The shortcode shows a guest nothing belonging to anyone else.
 	 *
 	 * @return void

@@ -44,6 +44,7 @@ final class TemplateLoader {
 		'partials/timeline.php',
 		'partials/timeline-summary.php',
 		'partials/orders-list.php',
+		'partials/order-notes.php',
 		'myaccount/orders.php',
 		'myaccount/view-order.php',
 	);

@@ -651,6 +651,53 @@ if ( ! function_exists( 'do_action' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wc_get_page_id' ) ) {
+	/**
+	 * Returns the fake WooCommerce page id.
+	 *
+	 * @since 0.4.1
+	 *
+	 * @param string $page Page slug.
+	 * @return int
+	 */
+	function wc_get_page_id( $page ): int {
+		return 'myaccount' === $page ? FakeWordPress::$account_page_id : 0;
+	}
+}
+
+if ( ! function_exists( 'get_post_meta' ) ) {
+	/**
+	 * Returns a fake post meta value.
+	 *
+	 * @since 0.4.1
+	 *
+	 * @param int    $post_id Post id.
+	 * @param string $key     Meta key.
+	 * @param bool   $single  Whether to return a single value.
+	 * @return mixed
+	 */
+	function get_post_meta( $post_id, $key = '', $single = false ) {
+		unset( $single );
+
+		return FakeWordPress::$post_meta[ (int) $post_id ][ $key ] ?? '';
+	}
+}
+
+if ( ! function_exists( 'get_post_field' ) ) {
+	/**
+	 * Returns a fake post field.
+	 *
+	 * @since 0.4.1
+	 *
+	 * @param string $field   Field name.
+	 * @param int    $post_id Post id.
+	 * @return string
+	 */
+	function get_post_field( $field, $post_id = 0 ): string {
+		return 'post_content' === $field ? ( FakeWordPress::$post_content[ (int) $post_id ] ?? '' ) : '';
+	}
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- These deliberately mirror WordPress core constant names.

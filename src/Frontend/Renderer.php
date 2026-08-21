@@ -103,6 +103,7 @@ final class Renderer {
 		}
 
 		add_action( 'pph_render_timeline_partial', array( $this, 'render_prepared_timeline' ) );
+		add_action( 'pph_render_order_notes', array( $this, 'render_order_notes' ) );
 		add_action( 'pph_render_orders_list', array( $this, 'render_orders_list' ), 10, 2 );
 		add_action( 'pph_render_order_detail', array( $this, 'render_replacement_detail' ) );
 	}
@@ -272,6 +273,33 @@ final class Renderer {
 					: __( 'No orders yet.', 'post-purchase-hub' ),
 			)
 		);
+	}
+
+	/**
+	 * Renders the merchant's notes to the customer.
+	 *
+	 * WooCommerce's own view-order template lists these as "Order updates", and
+	 * replacement mode does not render that template. Losing a merchant's words
+	 * to a customer because a rendering setting changed is a data loss the
+	 * customer notices and the merchant does not, so replacement carries them.
+	 *
+	 * @since 0.4.1
+	 *
+	 * @param mixed $order Order whose notes to show.
+	 * @return void
+	 */
+	public function render_order_notes( $order ): void {
+		if ( ! $order instanceof \WC_Order ) {
+			return;
+		}
+
+		$notes = OrderNotesView::present( $order );
+
+		if ( array() === $notes ) {
+			return;
+		}
+
+		$this->templates->render( 'partials/order-notes.php', array( 'notes' => $notes ) );
 	}
 
 	/**

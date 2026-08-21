@@ -29,6 +29,18 @@ defined( 'ABSPATH' ) || exit;
 do_action( 'pph_render_order_detail', $order ?? null );
 
 /**
+ * Renders the merchant's notes to this customer.
+ *
+ * WooCommerce's own template lists these as "Order updates". This one replaces
+ * that template, so it has to carry them.
+ *
+ * @since 0.4.1
+ *
+ * @param \WC_Order $order Order whose notes to show.
+ */
+do_action( 'pph_render_order_notes', $order ?? null );
+
+/**
  * Fires after this plugin's order detail heading.
  *
  * Mirrors WooCommerce's own `woocommerce_view_order`, so an integration hooked

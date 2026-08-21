@@ -119,6 +119,35 @@
 	}
 }
 
+.pph-order-notes {
+	margin: 1.5em 0;
+
+	&__heading {
+		font-size: 1.1em;
+		margin: 0 0 0.75em;
+	}
+
+	&__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__note {
+		padding: 0 0 0.75em;
+	}
+
+	&__time {
+		display: block;
+		font-size: 0.85em;
+		opacity: 0.8;
+	}
+
+	&__body > :last-child {
+		margin-bottom: 0;
+	}
+}
+
 .pph-orders {
 	&__empty {
 		margin: 1em 0;

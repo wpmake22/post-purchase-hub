@@ -99,6 +99,27 @@ final class FakeWordPress {
 	public static int $current_user_id = 0;
 
 	/**
+	 * Page id wc_get_page_id( 'myaccount' ) should return.
+	 *
+	 * @var int
+	 */
+	public static int $account_page_id = 0;
+
+	/**
+	 * Post meta the get_post_meta() shim serves: post id => key => value.
+	 *
+	 * @var array<int, array<string, string>>
+	 */
+	public static array $post_meta = array();
+
+	/**
+	 * Post content the get_post_field() shim serves: post id => content.
+	 *
+	 * @var array<int, string>
+	 */
+	public static array $post_content = array();
+
+	/**
 	 * Every TTL passed to set_transient(): name => list of seconds.
 	 *
 	 * @var array<string, list<int>>
@@ -125,6 +146,9 @@ final class FakeWordPress {
 		self::$endpoints        = array();
 		self::$post             = null;
 		self::$current_user_id  = 0;
+		self::$account_page_id  = 0;
+		self::$post_meta        = array();
+		self::$post_content     = array();
 	}
 
 	/**
