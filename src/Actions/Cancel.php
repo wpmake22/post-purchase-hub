@@ -238,6 +238,17 @@ final class Cancel {
 	 * decision". A merchant refunds through Woo's own refund UI, one click
 	 * away from the notification this triggers.
 	 *
+	 * **Restocking is WooCommerce's, not ours.** Core hooks
+	 * `wc_maybe_increase_stock_levels()` to `woocommerce_order_status_cancelled`,
+	 * so the transition below already restores the stock — and it does so
+	 * correctly, only for what the order actually reduced. This method used to
+	 * call `wc_increase_stock_levels()` afterwards as well, which restocked
+	 * every line a second time and silently inflated inventory on every
+	 * approval; `wc_increase_stock_levels()` has no `stock_reduced` guard of
+	 * its own, so nothing caught it. The merchant's "don't restock" setting is
+	 * therefore expressed as a veto on core's restore rather than as a call of
+	 * our own, because there is only one restock and it is core's.
+	 *
 	 * Callers (`Admin\RequestActionController`) are expected to have already
 	 * resolved the request row before calling this: `update_status()` fires
 	 * `woocommerce_order_status_changed` synchronously, which is also what
@@ -259,15 +270,50 @@ final class Cancel {
 			return false;
 		}
 
-		$order->update_status( 'cancelled', '', true );
+		$veto = self::restock_on_approve() ? null : self::restock_veto( $order );
 
-		if ( self::restock_on_approve() ) {
-			wc_increase_stock_levels( $order );
+		if ( null !== $veto ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, consulted by wc_increase_stock_levels(); vetoing core's restore is the point.
+			add_filter( 'woocommerce_can_restore_order_stock', $veto, 10, 2 );
+		}
+
+		try {
+			$order->update_status( 'cancelled', '', true );
+		} finally {
+			// Scoped to this transition. Left registered, it would suppress
+			// restocking for every later cancellation in the same request.
+			if ( null !== $veto ) {
+				remove_filter( 'woocommerce_can_restore_order_stock', $veto, 10 );
+			}
 		}
 
 		$order->add_order_note( self::approval_note_text( $user_id ), 0, false );
 
 		return true;
+	}
+
+	/**
+	 * A filter that stops WooCommerce restoring stock for one specific order.
+	 *
+	 * Bound to the order's id rather than returning a blanket `false`: another
+	 * order cancelled by an unrelated callback during this same transition is
+	 * none of this method's business.
+	 *
+	 * @since 0.16.0
+	 *
+	 * @param \WC_Order $order Order whose restock is to be suppressed.
+	 * @return callable
+	 */
+	private static function restock_veto( \WC_Order $order ): callable {
+		$order_id = $order->get_id();
+
+		return static function ( $can_restore, $candidate ) use ( $order_id ) {
+			if ( $candidate instanceof \WC_Order && $candidate->get_id() === $order_id ) {
+				return false;
+			}
+
+			return $can_restore;
+		};
 	}
 
 	/**

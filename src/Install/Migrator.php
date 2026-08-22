@@ -89,7 +89,7 @@ final class Migrator {
 	public function maybe_migrate(): void {
 		$installed = self::installed_version();
 
-		if ( $installed >= self::TARGET_VERSION ) {
+		if ( $installed >= $this->target_version() ) {
 			return;
 		}
 
@@ -142,7 +142,30 @@ final class Migrator {
 			$this->logger->info( 'Applied schema migration.', array( 'version' => $version ) );
 		}
 
-		$this->store_version( self::TARGET_VERSION );
+		$this->store_version( $this->target_version() );
+	}
+
+	/**
+	 * The highest schema version this instance can actually reach.
+	 *
+	 * `TARGET_VERSION` is the constant the shipped registry is maintained
+	 * against, and in production the two agree by construction — every entry in
+	 * `MIGRATIONS` sits at or below it, so this returns the constant unchanged.
+	 * The two differ only when a caller injects its own registry, which is the
+	 * only way this class's ordering and idempotence can be exercised at all:
+	 * clamping an injected registry to the shipped constant silently dropped
+	 * every migration above it, so the tests for "runs in ascending order" and
+	 * "already-applied migrations do not run again" were asserting against
+	 * migrations that never ran.
+	 *
+	 * @since 0.16.0
+	 *
+	 * @return int
+	 */
+	private function target_version(): int {
+		$versions = array_keys( $this->migrations );
+
+		return array() === $versions ? self::TARGET_VERSION : max( self::TARGET_VERSION, max( $versions ) );
 	}
 
 	/**
@@ -156,8 +179,8 @@ final class Migrator {
 	private function pending( int $from ): array {
 		$pending = array_filter(
 			$this->migrations,
-			static function ( int $version ) use ( $from ): bool {
-				return $version > $from && $version <= self::TARGET_VERSION;
+			function ( int $version ) use ( $from ): bool {
+				return $version > $from && $version <= $this->target_version();
 			},
 			ARRAY_FILTER_USE_KEY
 		);

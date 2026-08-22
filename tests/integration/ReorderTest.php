@@ -242,9 +242,19 @@ final class ReorderTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_a_reduced_quantity_is_what_reaches_the_cart(): void {
+		$product = $this->product( 'Espresso beans', '12.00', 20 );
+
 		$order = $this->order();
-		$order->add_product( $this->product( 'Espresso beans', '12.00', 2 ), 5 );
+		$order->add_product( $product, 5 );
 		$order = $this->complete( $order );
+
+		// Set the shelf after the order, not before: completing it reduces
+		// stock by the five it took, so a fixture that sets 2 up front is
+		// asserting against minus three. What this test is about is the store
+		// having 2 left *now*, when the customer comes back to reorder.
+		$product = wc_get_product( $product->get_id() );
+		$product->set_stock_quantity( 2 );
+		$product->save();
 
 		$plan = $this->reorder->preview( $order );
 
@@ -296,6 +306,58 @@ final class ReorderTest extends \WP_UnitTestCase {
 
 		$this->assertCount( 1, $cart );
 		$this->assertSame( $variation->get_id(), (int) reset( $cart )['variation_id'] );
+	}
+
+	/**
+	 * An oversold product is out of stock, not unlimited.
+	 *
+	 * `WC_Product::get_max_purchase_quantity()` returns -1 for "no limit" and,
+	 * for a stock-managed product, the stock quantity verbatim — which is
+	 * negative once a store has oversold. Reading the sign alone made every
+	 * oversold line look unlimited and offered it for reorder at the full
+	 * original quantity, which is the one answer a store with negative stock
+	 * cannot honour.
+	 *
+	 * @return void
+	 */
+	public function test_an_oversold_product_is_not_treated_as_unlimited(): void {
+		$product = $this->product( 'Cold brew bottle', '7.00', 1 );
+
+		$order = $this->order();
+		$order->add_product( $product, 4 );
+		$order = $this->complete( $order );
+
+		$oversold = wc_get_product( $product->get_id() );
+		$this->assertLessThan( 0, (int) $oversold->get_stock_quantity(), 'Precondition: completing the order oversold this line.' );
+
+		$plan = $this->reorder->preview( $order );
+
+		$this->assertSame( ReorderLine::OUTCOME_OUT_OF_STOCK, $plan->lines[0]->outcome );
+		$this->assertSame( 0, $plan->lines[0]->quantity );
+	}
+
+	/**
+	 * Backorders are the case where negative stock really does mean buyable.
+	 *
+	 * The counterpart to the test above: the fix must not turn "we will make
+	 * more" into "out of stock", or a store that sells on backorder loses
+	 * reorder entirely.
+	 *
+	 * @return void
+	 */
+	public function test_a_backordered_product_is_still_buyable(): void {
+		$product = $this->product( 'Single origin', '11.00', 1 );
+		$product->set_backorders( 'yes' );
+		$product->save();
+
+		$order = $this->order();
+		$order->add_product( $product, 4 );
+		$order = $this->complete( $order );
+
+		$plan = $this->reorder->preview( $order );
+
+		$this->assertSame( ReorderLine::OUTCOME_ADDED, $plan->lines[0]->outcome );
+		$this->assertSame( 4, $plan->lines[0]->quantity );
 	}
 
 	/**

@@ -250,9 +250,17 @@ final class EmailsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * The admin digest is disabled by default, sends nothing when there is
-	 * nothing new, and once enabled reports the right counts and advances
-	 * its own last-sent marker.
+	 * The admin digest is disabled by default, advances its own marker, and
+	 * keeps reporting for as long as anything is still pending.
+	 *
+	 * The contract worth being explicit about is the last assertion pair. This
+	 * is a digest *of pending requests* — its own template prints "N new since
+	 * your last digest" and "N currently pending" as two separate lines, which
+	 * only makes sense if a digest can go out with nothing new and something
+	 * still outstanding. A merchant with five requests sitting unactioned for a
+	 * week should keep hearing about them; silence once the marker advanced
+	 * would be the digest quietly giving up. What it must never do is send when
+	 * there is genuinely nothing to say, which is the final case here.
 	 *
 	 * @return void
 	 */
@@ -263,17 +271,23 @@ final class EmailsTest extends \WP_UnitTestCase {
 		$this->assertFalse( $digest->maybe_send(), 'Disabled by default.' );
 
 		update_option( 'woocommerce_pph_admin_digest_settings', array( 'enabled' => 'yes' ) );
-		$digest = $this->mailer()->admin_digest();
 
-		$order = $this->order();
-		$this->request( $order->get_id() );
+		// Enabled, but there is nothing to report yet.
+		$this->assertFalse( $this->mailer()->admin_digest()->maybe_send(), 'Opting in never means a daily email that says zero.' );
 
-		$this->assertTrue( $digest->maybe_send() );
+		$order   = $this->order();
+		$request = $this->request( $order->get_id() );
+
+		$this->assertTrue( $this->mailer()->admin_digest()->maybe_send() );
 		$this->assertNotSame( '', get_option( AdminDigest::LAST_SENT_OPTION, '' ) );
 
-		// Nothing new since the marker just advanced.
-		$digest_again = $this->mailer()->admin_digest();
-		$this->assertFalse( $digest_again->maybe_send() );
+		// Nothing new, but the request is still pending: still worth a nudge.
+		$this->assertTrue( $this->mailer()->admin_digest()->maybe_send(), 'A still-pending queue is still something to report.' );
+
+		// Resolved: nothing new and nothing pending, so nothing to send.
+		( new RequestRepository() )->update( $request->id, array( 'status' => Request::STATUS_APPROVED ) );
+
+		$this->assertFalse( $this->mailer()->admin_digest()->maybe_send(), 'An empty queue with no new activity sends nothing.' );
 	}
 
 	/**

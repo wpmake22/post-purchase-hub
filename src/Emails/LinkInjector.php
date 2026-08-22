@@ -120,6 +120,16 @@ final class LinkInjector {
 			return;
 		}
 
+		// This runs inside WooCommerce's rendering of somebody else's email —
+		// an order confirmation a customer is waiting on. An install with no
+		// token secret cannot mint a link, and `SecureLink::url()` throws when
+		// asked to; letting that escape here would turn a missing option into
+		// a fatal partway through a transactional send. The notice is an
+		// addition to that email, so its absence is the correct degradation.
+		if ( ! $this->tokens->has_secret() ) {
+			return;
+		}
+
 		wc_get_template(
 			'emails/partials/secure-link-notice.php',
 			array(

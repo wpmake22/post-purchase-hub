@@ -200,6 +200,27 @@ final class LinkInjectorTest extends TestCase {
 	}
 
 	/**
+	 * An install with no token secret injects nothing, and does not throw.
+	 *
+	 * This runs inside WooCommerce's rendering of an order confirmation the
+	 * customer is waiting on. `TokenService::issue()` throws when it has no
+	 * secret, and letting that escape here would turn a missing option into a
+	 * fatal partway through a transactional send.
+	 *
+	 * @return void
+	 */
+	public function test_an_install_without_a_token_secret_injects_nothing(): void {
+		unset( FakeWordPress::$options['pph_token_secret'] );
+
+		$order = new \WC_Order( 1 );
+		$order->set_order_key( 'wc_order_abc' );
+
+		( new LinkInjector( new TokenService() ) )->maybe_inject( $order, false, false, $this->opted_in_target_email() );
+
+		$this->assertSame( array(), FakeWordPress::$rendered_templates );
+	}
+
+	/**
 	 * A stand-in WC_Email at one of the default target ids, opted in.
 	 *
 	 * @return \WC_Email

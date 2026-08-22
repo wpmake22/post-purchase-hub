@@ -79,11 +79,20 @@ final class RequestQuery {
 	/**
 	 * Filters that accept a UTC datetime, mapped to their SQL comparison.
 	 *
+	 * `created_after` and `created_since` differ only in their boundary, and
+	 * both exist because their callers mean different things by "after". A
+	 * date-range filter on the admin list is a day boundary and must include
+	 * the moment itself, or an order placed at exactly midnight vanishes from
+	 * its own day. A watermark — "what has happened since I last looked" — must
+	 * exclude it, or the record sitting exactly on the mark is reported as new
+	 * every time and a digest that should fall silent never does.
+	 *
 	 * @var array<string, string>
 	 */
 	private const DATE_FILTERS = array(
 		'created_after'   => 'created_at >= %s',
 		'created_before'  => 'created_at <= %s',
+		'created_since'   => 'created_at > %s',
 		'resolved_before' => 'resolved_at <= %s',
 	);
 

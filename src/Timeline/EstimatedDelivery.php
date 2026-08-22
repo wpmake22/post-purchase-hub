@@ -107,6 +107,23 @@ final class EstimatedDelivery {
 	private Logger $logger;
 
 	/**
+	 * Order ids currently inside sync(), so a write cannot re-enter its own hook.
+	 *
+	 * `write_cache()` saves the order, and saving an order re-fires
+	 * `woocommerce_update_order_item` — the very hook that called sync() in the
+	 * first place. Without this, syncing an order with a shipping line is an
+	 * infinite loop that hangs the request: checkout, on a store that has
+	 * configured transit days for its shipping method. The idempotence check in
+	 * `write_cache()` closes the cycle on its own for a stable range, but the
+	 * `pph_estimated_delivery_range` filter is public and nothing stops a
+	 * merchant returning a value derived from `time()` — which would never
+	 * settle. This is what makes that survivable rather than fatal.
+	 *
+	 * @var array<int, true>
+	 */
+	private array $syncing = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 0.5.0
@@ -166,15 +183,27 @@ final class EstimatedDelivery {
 	 * @return void
 	 */
 	public function sync( \WC_Order $order ): void {
-		$range = $this->tracking->has_tracking( $order ) ? null : $this->calculate( $order );
+		$order_id = $order->get_id();
 
-		if ( null === $range ) {
-			$this->clear_cache( $order );
-
+		if ( isset( $this->syncing[ $order_id ] ) ) {
 			return;
 		}
 
-		$this->write_cache( $order, $range );
+		$this->syncing[ $order_id ] = true;
+
+		try {
+			$range = $this->tracking->has_tracking( $order ) ? null : $this->calculate( $order );
+
+			if ( null === $range ) {
+				$this->clear_cache( $order );
+
+				return;
+			}
+
+			$this->write_cache( $order, $range );
+		} finally {
+			unset( $this->syncing[ $order_id ] );
+		}
 	}
 
 	/**
@@ -501,13 +530,22 @@ final class EstimatedDelivery {
 	private function write_cache( \WC_Order $order, EstimatedDeliveryRange $range ): void {
 		$utc = new \DateTimeZone( 'UTC' );
 
-		$order->update_meta_data(
-			self::META_KEY,
-			array(
-				'start' => $range->start->setTimezone( $utc )->format( 'Y-m-d H:i:s' ),
-				'end'   => $range->end->setTimezone( $utc )->format( 'Y-m-d H:i:s' ),
-			)
+		$payload = array(
+			'start' => $range->start->setTimezone( $utc )->format( 'Y-m-d H:i:s' ),
+			'end'   => $range->end->setTimezone( $utc )->format( 'Y-m-d H:i:s' ),
 		);
+
+		// Saving is what re-fires the item hooks this method is often called
+		// from, so an unconditional save is a cycle. Writing only a changed
+		// value is both the fix and the obviously correct behaviour: there is
+		// nothing to persist when the cache already says this.
+		$stored = $order->get_meta( self::META_KEY, true );
+
+		if ( is_array( $stored ) && $stored === $payload ) {
+			return;
+		}
+
+		$order->update_meta_data( self::META_KEY, $payload );
 
 		$order->save();
 	}

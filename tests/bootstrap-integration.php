@@ -70,7 +70,19 @@ function pph_tests_load_plugins(): void {
 }
 
 /**
- * Installs WooCommerce tables and roles into the fresh test database.
+ * Installs WooCommerce tables and roles into the fresh test database, then
+ * installs this plugin the way a real activation would.
+ *
+ * The plugin half matters more than it looks. `register_activation_hook()`
+ * never fires in the test harness, so without this the suite runs against an
+ * install that has no `pph_token_secret` — and every code path that mints a
+ * signed link fails for a reason no production site would ever hit. Two
+ * integration failures were exactly that, and they masked the question of
+ * whether the code under test was sound. An integration suite whose
+ * environment is not a real install is testing the harness.
+ *
+ * WP_UnitTestCase rolls each test back in a transaction, so this runs once and
+ * every test sees the same installed state.
  *
  * @return void
  */
@@ -84,6 +96,38 @@ function pph_tests_install_woocommerce(): void {
 	// Roles are cached before WooCommerce adds its own, so rebuild them.
 	$GLOBALS['wp_roles'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 	wp_roles();
+
+	pph_tests_install_plugin_options();
+}
+
+/**
+ * Installs the options a real activation would have written.
+ *
+ * Deliberately not `Activator::activate()`. That would also create the custom
+ * tables, and it runs outside the per-test lifecycle — where WP_UnitTestCase's
+ * `query` filters rewrite `CREATE TABLE` to `CREATE TEMPORARY TABLE`. Real
+ * tables created here would then be shadowed by each test's temporary ones,
+ * and a test that drops its tables would see the real pair still standing,
+ * which is how `UninstallTest` starts failing for a reason that has nothing to
+ * do with uninstalling.
+ *
+ * What the harness was actually missing is the token secret:
+ * `register_activation_hook()` never fires here, so the suite ran against an
+ * install that could not mint a signed link, and every path that tried failed
+ * for a reason no production site would ever hit. Schema installation already
+ * happens where it belongs, inside the tests that need it.
+ *
+ * @return void
+ */
+function pph_tests_install_plugin_options(): void {
+	if ( ! class_exists( PostPurchaseHub\Install\Activator::class ) ) {
+		return;
+	}
+
+	if ( '' === (string) get_option( PostPurchaseHub\Install\Activator::TOKEN_SECRET_OPTION, '' ) ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Encoding random bytes for storage, as Activator does; not obfuscation.
+		add_option( PostPurchaseHub\Install\Activator::TOKEN_SECRET_OPTION, base64_encode( random_bytes( 64 ) ), '', false );
+	}
 }
 
 tests_add_filter( 'muplugins_loaded', 'pph_tests_load_plugins' );

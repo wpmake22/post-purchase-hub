@@ -240,15 +240,24 @@ final class ReorderPlanner {
 	private function buyable_quantity( \WC_Product $product, int $quantity ): int {
 		$max = (int) $product->get_max_purchase_quantity();
 
+		if ( $max > 0 ) {
+			return min( $quantity, $max );
+		}
+
 		if ( 0 === $max ) {
 			return 0;
 		}
 
-		if ( $max < 0 ) {
-			return $quantity;
-		}
+		// A negative here is ambiguous in WooCommerce's own API: -1 is its
+		// "no limit" sentinel, but for a stock-managed product the method
+		// returns `get_stock_quantity()` verbatim, and that goes negative the
+		// moment a store oversells. Reading every negative as "unlimited" is
+		// what let an oversold product be offered for reorder at the full
+		// original quantity. Ask what the sentinel is standing in for instead
+		// of trusting the sign.
+		$unlimited = ! $product->managing_stock() || $product->backorders_allowed();
 
-		return min( $quantity, $max );
+		return $unlimited ? $quantity : 0;
 	}
 
 	/**

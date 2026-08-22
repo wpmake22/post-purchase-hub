@@ -11,6 +11,7 @@ namespace PostPurchaseHub\Tests\Unit\Emails;
 
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Emails\SecureOrderLink;
+use PostPurchaseHub\Install\Activator;
 use PostPurchaseHub\Security\TokenService;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
 
@@ -37,6 +38,10 @@ final class SecureOrderLinkTest extends TestCase {
 		parent::setUp();
 
 		FakeWordPress::reset();
+
+		// Every test here but the one that removes it needs an install that can
+		// mint tokens: this email's whole content is a signed link.
+		FakeWordPress::$options[ Activator::TOKEN_SECRET_OPTION ] = 'unit-test-secret-do-not-use-in-production';
 	}
 
 	/**
@@ -99,5 +104,27 @@ final class SecureOrderLinkTest extends TestCase {
 
 		$this->assertSame( '', $email->get_content_html() );
 		$this->assertSame( '', $email->get_content_plain() );
+	}
+
+	/**
+	 * An install that cannot mint tokens sends nothing, rather than throwing.
+	 *
+	 * `TokenService::issue()` throws on a missing secret, which is right — but
+	 * this trigger runs on `pph_secure_link_requested`, at `shutdown`, after a
+	 * guest lookup. An exception there is a fatal on a request the visitor has
+	 * already been answered for, and the email it would have sent has no
+	 * content without a link anyway.
+	 *
+	 * @return void
+	 */
+	public function test_an_install_without_a_token_secret_sends_nothing(): void {
+		unset( FakeWordPress::$options[ Activator::TOKEN_SECRET_OPTION ] );
+
+		$order = new \WC_Order( 91 );
+		$order->set_billing_email( 'customer@example.test' );
+
+		( new SecureOrderLink( new TokenService() ) )->trigger( $order );
+
+		$this->assertSame( array(), FakeWordPress::$sent_emails );
 	}
 }

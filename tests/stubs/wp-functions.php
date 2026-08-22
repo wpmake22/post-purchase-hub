@@ -2011,6 +2011,41 @@ if ( ! function_exists( 'wc_create_refund' ) ) {
 
 
 
+if ( ! function_exists( 'remove_filter' ) ) {
+	/**
+	 * Removes a recorded filter callback.
+	 *
+	 * The priority argument is accepted and ignored, matching this stub's
+	 * `add_filter()`, which does not record one either — nothing under test
+	 * registers two callbacks that differ only by priority.
+	 *
+	 * @since 0.16.0
+	 *
+	 * @param string $hook_name Hook name.
+	 * @param mixed  $callback  Callback to remove.
+	 * @param int    $priority  Priority it was added at. Ignored.
+	 * @return bool Whether anything was removed.
+	 */
+	function remove_filter( $hook_name, $callback, $priority = 10 ): bool {
+		unset( $priority );
+
+		$removed = false;
+
+		foreach ( FakeWordPress::$filters[ $hook_name ] ?? array() as $index => $registered ) {
+			if ( $registered === $callback ) {
+				unset( FakeWordPress::$filters[ $hook_name ][ $index ] );
+				$removed = true;
+			}
+		}
+
+		if ( $removed ) {
+			FakeWordPress::$filters[ $hook_name ] = array_values( FakeWordPress::$filters[ $hook_name ] );
+		}
+
+		return $removed;
+	}
+}
+
 if ( ! function_exists( 'remove_action' ) ) {
 	/**
 	 * Removes a recorded action callback.

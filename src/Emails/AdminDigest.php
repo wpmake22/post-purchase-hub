@@ -122,7 +122,7 @@ final class AdminDigest extends AbstractEmail {
 		$this->pending_count = $this->requests->count( array( 'status' => Request::STATUS_PENDING ) );
 		$this->new_count     = '' === $since
 			? $this->pending_count
-			: $this->requests->count( array( 'created_after' => $since ) );
+			: $this->requests->count( array( 'created_since' => $since ) );
 
 		if ( 0 === $this->pending_count && 0 === $this->new_count ) {
 			return false;

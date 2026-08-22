@@ -489,7 +489,17 @@ if ( ! class_exists( 'WC_Order' ) ) {
 
 		/**
 		 * Transitions the order's status immediately, as WooCommerce's own
-		 * update_status() does.
+		 * update_status() does — including the restock core performs on the
+		 * way to `cancelled`.
+		 *
+		 * That restock is modelled here rather than left out because leaving
+		 * it out is what let a double-restock bug live in `Actions\Cancel`
+		 * through three milestones: the unit suite could only see the plugin's
+		 * own `wc_increase_stock_levels()` call, so a second restock by core
+		 * was invisible and the tests passed while inventory inflated. Core
+		 * hooks `wc_maybe_increase_stock_levels()` to
+		 * `woocommerce_order_status_cancelled`, and consults
+		 * `woocommerce_can_restore_order_stock` before restoring anything.
 		 *
 		 * @param string $new_status Status to change to.
 		 * @param string $note       Note, unused by this stub.
@@ -499,9 +509,16 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public function update_status( string $new_status, string $note = '', bool $manual = false ): bool {
 			unset( $note, $manual );
 
+			$was_cancelled = 'cancelled' === $this->status;
+
 			$this->status = $new_status;
 			++$this->status_transitions;
 			++$this->saves;
+
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Standing in for WooCommerce's own filter, so the name is core's.
+			if ( 'cancelled' === $new_status && ! $was_cancelled && apply_filters( 'woocommerce_can_restore_order_stock', true, $this ) ) {
+				wc_increase_stock_levels( $this );
+			}
 
 			return true;
 		}

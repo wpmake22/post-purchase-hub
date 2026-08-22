@@ -82,6 +82,13 @@ final class SecureOrderLink extends AbstractEmail {
 	 * @return void
 	 */
 	public function trigger( \WC_Order $order ): void {
+		// The link is the entire content of this email. Without a token secret
+		// there is no link to send, and sending the shell of one would tell a
+		// customer their secure link had arrived when it had not.
+		if ( ! $this->tokens->has_secret() ) {
+			return;
+		}
+
 		$this->object = $order;
 
 		$this->setup_locale();
@@ -100,7 +107,7 @@ final class SecureOrderLink extends AbstractEmail {
 	public function get_content_html(): string {
 		$order = $this->pph_order();
 
-		if ( ! $order instanceof \WC_Order ) {
+		if ( ! $order instanceof \WC_Order || ! $this->tokens->has_secret() ) {
 			return '';
 		}
 
@@ -126,7 +133,7 @@ final class SecureOrderLink extends AbstractEmail {
 	public function get_content_plain(): string {
 		$order = $this->pph_order();
 
-		if ( ! $order instanceof \WC_Order ) {
+		if ( ! $order instanceof \WC_Order || ! $this->tokens->has_secret() ) {
 			return '';
 		}
 
@@ -169,7 +176,9 @@ final class SecureOrderLink extends AbstractEmail {
 	 * email in this plugin only passes `$object` into a template, which copes;
 	 * this one is the exception, because it mints a signed token from the
 	 * order before the template is reached, and doing that to `false` is a
-	 * fatal in wp-admin rather than a blank section.
+	 * fatal in wp-admin rather than a blank section. The same preview reaches
+	 * these methods on an install with no token secret, which is why the
+	 * callers pair this with `TokenService::has_secret()`.
 	 *
 	 * @since 0.15.0
 	 *

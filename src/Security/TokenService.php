@@ -172,6 +172,25 @@ final class TokenService {
 	}
 
 	/**
+	 * Whether this install can mint tokens at all.
+	 *
+	 * The secret is written once, by `Install\Activator`. A site that has
+	 * somehow lost it — the option deleted, a clone with options stripped, a
+	 * plugin dropped into `mu-plugins` where no activation hook ever fires —
+	 * can still verify nothing and issue nothing, and `issue()` throws rather
+	 * than minting a token against an empty key. Callers that render a link as
+	 * part of something larger ask this first, so a missing secret costs the
+	 * link and not the whole email.
+	 *
+	 * @since 0.16.0
+	 *
+	 * @return bool
+	 */
+	public function has_secret(): bool {
+		return '' !== $this->secret();
+	}
+
+	/**
 	 * Reads the HMAC secret generated at activation.
 	 *
 	 * @since 0.6.0

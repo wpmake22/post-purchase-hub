@@ -245,6 +245,27 @@ final class RequestQueryTest extends TestCase {
 	}
 
 	/**
+	 * The two "after" filters differ by their boundary, on purpose.
+	 *
+	 * `created_after` is a day boundary for the admin list and includes the
+	 * moment itself; `created_since` is a watermark and excludes it. Getting
+	 * these the same way round is what kept the admin digest sending forever
+	 * after a request created in the same second as its last-sent marker.
+	 *
+	 * @return void
+	 */
+	public function test_created_after_is_inclusive_and_created_since_is_not(): void {
+		$moment = '2026-08-22 07:19:33';
+
+		$inclusive = RequestQuery::where( array( 'created_after' => $moment ) );
+		$exclusive = RequestQuery::where( array( 'created_since' => $moment ) );
+
+		$this->assertSame( 'WHERE created_at >= %s', $inclusive['sql'] );
+		$this->assertSame( 'WHERE created_at > %s', $exclusive['sql'] );
+		$this->assertSame( array( $moment ), $exclusive['args'] );
+	}
+
+	/**
 	 * Datetime filters must be exactly the stored UTC format.
 	 *
 	 * @dataProvider bad_datetime_provider

@@ -69,6 +69,26 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		private int $max_purchase_quantity = -1;
 
 		/**
+		 * Whether this product tracks stock.
+		 *
+		 * Defaults to false, matching this stub's documented reading of
+		 * `max_purchase_quantity`: -1 means unlimited. That is only true of an
+		 * unmanaged product — a stock-managed one returns its stock quantity
+		 * verbatim, and -1 there means oversold by one. A test that wants the
+		 * oversold case says so with `set_managing_stock( true )`.
+		 *
+		 * @var bool
+		 */
+		private bool $managing_stock = false;
+
+		/**
+		 * Whether backorders are accepted.
+		 *
+		 * @var bool
+		 */
+		private bool $backorders_allowed = false;
+
+		/**
 		 * Permalink.
 		 *
 		 * @var string
@@ -188,6 +208,49 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		 */
 		public function set_max_purchase_quantity( int $quantity ): void {
 			$this->max_purchase_quantity = $quantity;
+		}
+
+		/**
+		 * Whether this product tracks stock.
+		 *
+		 * Needed because a negative `get_max_purchase_quantity()` is ambiguous
+		 * in WooCommerce's own API — -1 means "no limit", but a stock-managed
+		 * product returns its stock quantity verbatim, which goes negative when
+		 * a store oversells. Callers disambiguate with this pair.
+		 *
+		 * @return bool
+		 */
+		public function managing_stock(): bool {
+			return $this->managing_stock;
+		}
+
+		/**
+		 * Sets whether this product tracks stock.
+		 *
+		 * @param bool $managing Whether stock is managed.
+		 * @return void
+		 */
+		public function set_managing_stock( bool $managing ): void {
+			$this->managing_stock = $managing;
+		}
+
+		/**
+		 * Whether the store will accept orders beyond available stock.
+		 *
+		 * @return bool
+		 */
+		public function backorders_allowed(): bool {
+			return $this->backorders_allowed;
+		}
+
+		/**
+		 * Sets whether backorders are accepted.
+		 *
+		 * @param bool $allowed Whether backorders are accepted.
+		 * @return void
+		 */
+		public function set_backorders_allowed( bool $allowed ): void {
+			$this->backorders_allowed = $allowed;
 		}
 
 		/**

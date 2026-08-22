@@ -122,6 +122,86 @@ final class AdminRequestResolutionTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Approving restocks exactly once, not once per code path that could.
+	 *
+	 * The regression guard for the bug M16 found: WooCommerce restores stock
+	 * on `woocommerce_order_status_cancelled` and `Actions\Cancel` used to
+	 * restore it a second time afterwards, inflating inventory by a full order
+	 * on every approval. Asserted on the product's own quantity rather than on
+	 * which functions were called, because "restocked twice" and "restocked
+	 * once" are indistinguishable from the call side.
+	 *
+	 * @return void
+	 */
+	public function test_approve_restocks_once_and_only_once(): void {
+		$order   = $this->order();
+		$product = $order->get_items()[ array_key_first( $order->get_items() ) ]->get_product();
+		$service = new RequestService( new RequestRepository() );
+
+		$this->assertSame( 3, wc_get_product( $product->get_id() )->get_stock_quantity(), 'Precondition: the order reduced stock from 5 to 3.' );
+
+		$service->approve( $this->pending_request( $order->get_id() ), $order, 1 );
+		( new Cancel( Plugin::instance()->eligibility_resolver(), $service ) )->approve( $order, 1 );
+
+		$this->assertSame( 5, wc_get_product( $product->get_id() )->get_stock_quantity(), 'Restored to 5. 7 means two restocks ran.' );
+	}
+
+	/**
+	 * A merchant who turned restocking off gets no restock at all.
+	 *
+	 * The setting is expressed as a veto on WooCommerce's own restore rather
+	 * than as a call of ours, so this asserts that the veto actually reaches
+	 * core — the half of the fix a unit test with a fake WC_Order cannot prove.
+	 *
+	 * @return void
+	 */
+	public function test_approve_does_not_restock_when_the_merchant_turned_it_off(): void {
+		update_option( 'pph_settings', array( Cancel::RESTOCK_SETTING => false ), false );
+
+		$order   = $this->order();
+		$product = $order->get_items()[ array_key_first( $order->get_items() ) ]->get_product();
+		$service = new RequestService( new RequestRepository() );
+
+		$service->approve( $this->pending_request( $order->get_id() ), $order, 1 );
+		( new Cancel( Plugin::instance()->eligibility_resolver(), $service ) )->approve( $order, 1 );
+
+		delete_option( 'pph_settings' );
+
+		$this->assertTrue( wc_get_order( $order->get_id() )->has_status( 'cancelled' ) );
+		$this->assertSame( 3, wc_get_product( $product->get_id() )->get_stock_quantity(), 'Stock stays where the order left it.' );
+	}
+
+	/**
+	 * The veto is scoped to the one order and does not outlive the transition.
+	 *
+	 * A filter left registered would silently stop restocking every later
+	 * cancellation in the same request — the kind of leak that only shows up
+	 * on a store cancelling orders in bulk.
+	 *
+	 * @return void
+	 */
+	public function test_the_no_restock_veto_does_not_leak_to_the_next_order(): void {
+		$service = new RequestService( new RequestRepository() );
+		$cancel  = new Cancel( Plugin::instance()->eligibility_resolver(), $service );
+
+		update_option( 'pph_settings', array( Cancel::RESTOCK_SETTING => false ), false );
+
+		$suppressed = $this->order();
+		$service->approve( $this->pending_request( $suppressed->get_id() ), $suppressed, 1 );
+		$cancel->approve( $suppressed, 1 );
+
+		delete_option( 'pph_settings' );
+
+		$restocked = $this->order();
+		$product   = $restocked->get_items()[ array_key_first( $restocked->get_items() ) ]->get_product();
+
+		$service->approve( $this->pending_request( $restocked->get_id() ), $restocked, 1 );
+		$cancel->approve( $restocked, 1 );
+
+		$this->assertSame( 5, wc_get_product( $product->get_id() )->get_stock_quantity(), 'The second order restocks normally.' );
+	}
+
+	/**
 	 * Declining never touches the order.
 	 *
 	 * @return void
