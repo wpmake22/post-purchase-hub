@@ -14,9 +14,9 @@
 		"lint:css": "wp-scripts lint-style \"assets/src/**/*.scss\"",
 		"format": "wp-scripts format assets/src",
 		"packages-update": "wp-scripts packages-update",
-		"env:start": "wp-env start",
+		"env:start": "wp-env start && wp-env run tests-cli wp option update woocommerce_feature_custom_order_tables_enabled no && wp-env run tests-cli wp option update woocommerce_custom_orders_table_enabled no",
 		"env:stop": "wp-env stop",
-		"env:start:hpos": "wp-env start --config .wp-env.hpos.json",
+		"env:start:hpos": "wp-env start --config .wp-env.hpos.json && wp-env run tests-cli --config .wp-env.hpos.json wp option update woocommerce_feature_custom_order_tables_enabled yes && wp-env run tests-cli --config .wp-env.hpos.json wp option update woocommerce_custom_orders_table_enabled yes && wp-env run tests-cli --config .wp-env.hpos.json wp wc update --user=1",
 		"test:int": "wp-env run tests-cli --env-cwd=wp-content/plugins/post-purchase-hub vendor/bin/phpunit --configuration phpunit-integration.xml.dist",
 		"test:int:hpos": "wp-env run tests-cli --config .wp-env.hpos.json --env-cwd=wp-content/plugins/post-purchase-hub vendor/bin/phpunit --configuration phpunit-integration.xml.dist",
 		"test:e2e": "wp-scripts test-playwright --config playwright.config.js"

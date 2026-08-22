@@ -11,16 +11,5 @@
 		"WP_DEBUG_DISPLAY": false,
 		"SCRIPT_DEBUG": true,
 		"WP_DISABLE_FATAL_ERROR_HANDLER": true
-	},
-	"env": {
-		"tests": {
-			"config": {
-				"WP_DEBUG": true,
-				"WP_DEBUG_DISPLAY": false
-			}
-		}
-	},
-	"lifecycleScripts": {
-		"afterStart": "wp-env run tests-cli wp option update woocommerce_feature_custom_order_tables_enabled yes && wp-env run tests-cli wp option update woocommerce_custom_orders_table_enabled yes && wp-env run tests-cli wp wc update --user=1"
 	}
 }

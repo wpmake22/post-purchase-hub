@@ -151,6 +151,28 @@ jobs:
       - name: Start wp-env
         run: npx wp-env start --update --config .wp-env.ci.json
 
+      # Not a lifecycleScripts.afterStart hook, which is where this used to
+      # live. wp-env keys each environment by an md5 of the config file path
+      # (lib/config/load-config.js), and it runs afterStart with a bare
+      # `exec()` that passes no --config through. A nested `wp-env run` in that
+      # script therefore resolved to the default .wp-env.json environment,
+      # which this job never started — "Environment not initialized". Every
+      # nested call has to carry the same --config as the start that created
+      # the environment, and here it can, because the step can see the matrix.
+      - name: Set the order-storage mode for this leg
+        run: |
+          ENABLED=$([ "${{ matrix.hpos }}" = "on" ] && echo yes || echo no)
+
+          npx wp-env run tests-cli --config .wp-env.ci.json \
+            wp option update woocommerce_feature_custom_order_tables_enabled "$ENABLED"
+          npx wp-env run tests-cli --config .wp-env.ci.json \
+            wp option update woocommerce_custom_orders_table_enabled "$ENABLED"
+
+          # Creates the HPOS tables. Only meaningful on the leg that uses them.
+          if [ "$ENABLED" = "yes" ]; then
+            npx wp-env run tests-cli --config .wp-env.ci.json wp wc update --user=1
+          fi
+
       - name: Assert the HPOS state this leg expects
         run: |
           ACTUAL=$(npx wp-env run tests-cli --config .wp-env.ci.json wp option get woocommerce_custom_orders_table_enabled --quiet | tr -d '\r\n')
