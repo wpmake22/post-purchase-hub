@@ -279,6 +279,53 @@ final class ReorderControllerTest extends TestCase {
 		$this->fail( 'The rate limiter never refused a request.' );
 	}
 
+	/**
+	 * The per-email limit refuses across changing IPs.
+	 *
+	 * The IP dimension alone stops one machine; docs/SPEC.md Phase 8 names
+	 * reorder in its rate-limiting row because a botnet spreading one attempt
+	 * per address is exactly the shape of cart abuse this route invites.
+	 *
+	 * @return void
+	 */
+	public function test_the_email_budget_is_refused_across_changing_ips(): void {
+		FakeWordPress::$current_user_id = 5;
+		$order                          = $this->order( 24, 5 );
+
+		for ( $i = 0; $i < 10; $i++ ) {
+			$this->rate_limiter->allow_email( 'reorder', $order->get_billing_email(), 10, HOUR_IN_SECONDS );
+		}
+
+		$_SERVER['REMOTE_ADDR'] = '203.0.113.99';
+
+		$result = $this->controller->authorise( $this->request( 24 ) );
+
+		unset( $_SERVER['REMOTE_ADDR'] );
+
+		$this->assertInstanceOf( \WP_Error::class, $result );
+		$this->assertSame( 'pph_rate_limited', $result->get_error_code() );
+		$this->assertSame( 429, $result->get_error_data()['status'] );
+	}
+
+	/**
+	 * The site-wide backstop refuses even a first-time identity.
+	 *
+	 * @return void
+	 */
+	public function test_the_site_budget_is_refused(): void {
+		FakeWordPress::$current_user_id = 5;
+		$this->order( 25, 5 );
+
+		for ( $i = 0; $i < 300; $i++ ) {
+			$this->rate_limiter->allow_site( 'reorder', 300, HOUR_IN_SECONDS );
+		}
+
+		$result = $this->controller->authorise( $this->request( 25 ) );
+
+		$this->assertInstanceOf( \WP_Error::class, $result );
+		$this->assertSame( 429, $result->get_error_data()['status'] );
+	}
+
 	// -----------------------------------------------------------------
 	// confirm()
 	// -----------------------------------------------------------------

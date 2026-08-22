@@ -32,6 +32,27 @@
 	<rule ref="WordPress-Docs"/>
 	<rule ref="WooCommerce-Core"/>
 
+	<!--
+		M15: the security and database sniffs are errors, not warnings.
+
+		WPCS ships several of these at warning severity because it cannot tell
+		a real hole from a false positive — NonceVerification on any superglobal
+		read, PreparedSQL on any interpolated identifier. A warning is a thing
+		a build stays green with, and this plugin's whole risk surface is order
+		data reached over unauthenticated routes. Every one of them is now a
+		build failure, so silencing one has to be a deliberate `phpcs:ignore`
+		with a reason on the line, which review can see.
+	-->
+	<rule ref="WordPress.Security">
+		<type>error</type>
+		<severity>5</severity>
+	</rule>
+
+	<rule ref="WordPress.DB">
+		<type>error</type>
+		<severity>5</severity>
+	</rule>
+
 	<!-- PHPCS cannot verify the version guard in the main file, so the floor is asserted here too. -->
 	<config name="minimum_wp_version" value="6.5"/>
 	<config name="testVersion" value="8.1-"/>

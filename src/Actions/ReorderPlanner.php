@@ -336,8 +336,13 @@ final class ReorderPlanner {
 			}
 
 			if ( meta_is_product_attribute( $key, $value, (int) $item->get_product_id() ) ) {
+				// wc_clean() maps over arrays and returns one for one; $value is
+				// the scalar cast to string above, so the array branch is
+				// unreachable and an empty attribute is the safe reading of it.
+				$clean = wc_clean( $value );
+
 				$attributes[ 'attribute_' . sanitize_title( $key ) ] = html_entity_decode(
-					wc_clean( $value ),
+					is_string( $clean ) ? $clean : '',
 					ENT_QUOTES,
 					get_bloginfo( 'charset' )
 				);

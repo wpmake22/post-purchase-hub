@@ -185,7 +185,11 @@ final class TemplateConflictScanner {
 			}
 		}
 
-		$content = (string) get_post_field( 'post_content', $page_id );
+		// get_post_field() runs the value through sanitize_post_field(), whose
+		// filters a third-party plugin can point at anything; a non-string
+		// means no marker can be present rather than something to cast.
+		$content = get_post_field( 'post_content', $page_id );
+		$content = is_string( $content ) ? $content : '';
 
 		foreach ( self::BUILDER_CONTENT as $builder => $marker ) {
 			if ( '' !== $content && str_contains( $content, $marker ) ) {

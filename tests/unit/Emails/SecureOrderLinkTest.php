@@ -81,4 +81,23 @@ final class SecureOrderLinkTest extends TestCase {
 
 		$this->assertSame( array(), FakeWordPress::$sent_emails );
 	}
+
+	/**
+	 * An instance that was never triggered renders nothing instead of fataling.
+	 *
+	 * WooCommerce constructs every registered email to list on the settings
+	 * screen and to render in its email preview, and such an instance has no
+	 * order on it. The other five emails only pass `$object` into a template,
+	 * which copes with that; this one mints a signed token from the order
+	 * first, and doing that to `false` would be a fatal in wp-admin. Found by
+	 * raising PHPStan to level 7 at M15.
+	 *
+	 * @return void
+	 */
+	public function test_an_untriggered_instance_renders_nothing_rather_than_fataling(): void {
+		$email = new SecureOrderLink( new TokenService() );
+
+		$this->assertSame( '', $email->get_content_html() );
+		$this->assertSame( '', $email->get_content_plain() );
+	}
 }

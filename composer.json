@@ -46,6 +46,7 @@
 	"scripts": {
 		"lint": "phpcs",
 		"lint:fix": "phpcbf",
+		"security:gates": "bash bin/security-gates.sh",
 		"analyse": "phpstan analyse --memory-limit=1G",
 		"test:unit": "phpunit --configuration phpunit.xml.dist",
 		"test:int": "phpunit --configuration phpunit-integration.xml.dist",
@@ -61,7 +62,8 @@
 	"scripts-descriptions": {
 		"lint": "Run PHP_CodeSniffer against the WordPress-Extra, WordPress-Docs and WooCommerce-Core rulesets.",
 		"lint:fix": "Auto-fix the PHPCS violations that are safely fixable.",
-		"analyse": "Run PHPStan level 6 over src/ with WordPress and WooCommerce stubs.",
+		"security:gates": "Run the six security grep gates CI enforces (docs/SECURITY-AUDIT.md).",
+		"analyse": "Run PHPStan level 7 over src/ with WordPress and WooCommerce stubs.",
 		"test:unit": "Run the unit suite (no WordPress bootstrap).",
 		"test:int": "Run the integration suite (requires wp-env; run once with HPOS on and once off).",
 		"build": "Build both distribution zips into dist/.",

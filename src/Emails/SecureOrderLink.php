@@ -98,11 +98,17 @@ final class SecureOrderLink extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_content_html(): string {
+		$order = $this->pph_order();
+
+		if ( ! $order instanceof \WC_Order ) {
+			return '';
+		}
+
 		return wc_get_template_html(
 			$this->template_html,
 			array(
-				'order'              => $this->object,
-				'link_url'           => SecureLink::url( $this->object, $this->tokens ),
+				'order'              => $order,
+				'link_url'           => SecureLink::url( $order, $this->tokens ),
 				'email_heading'      => $this->get_heading(),
 				'additional_content' => $this->get_additional_content(),
 				'sent_to_admin'      => false,
@@ -118,11 +124,17 @@ final class SecureOrderLink extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_content_plain(): string {
+		$order = $this->pph_order();
+
+		if ( ! $order instanceof \WC_Order ) {
+			return '';
+		}
+
 		return wc_get_template_html(
 			$this->template_plain,
 			array(
-				'order'              => $this->object,
-				'link_url'           => SecureLink::url( $this->object, $this->tokens ),
+				'order'              => $order,
+				'link_url'           => SecureLink::url( $order, $this->tokens ),
 				'email_heading'      => $this->get_heading(),
 				'additional_content' => $this->get_additional_content(),
 				'sent_to_admin'      => false,
@@ -146,5 +158,24 @@ final class SecureOrderLink extends AbstractEmail {
 	 */
 	public function init_form_fields(): void {
 		$this->form_fields = $this->enabled_field() + $this->content_fields();
+	}
+
+	/**
+	 * The order this instance was triggered for, if it has one.
+	 *
+	 * `WC_Email::$object` is untyped and is whatever the last trigger put
+	 * there — nothing at all on an instance WooCommerce constructed to list on
+	 * the email settings screen or to render in its email preview. Every other
+	 * email in this plugin only passes `$object` into a template, which copes;
+	 * this one is the exception, because it mints a signed token from the
+	 * order before the template is reached, and doing that to `false` is a
+	 * fatal in wp-admin rather than a blank section.
+	 *
+	 * @since 0.15.0
+	 *
+	 * @return \WC_Order|null
+	 */
+	private function pph_order(): ?\WC_Order {
+		return $this->object instanceof \WC_Order ? $this->object : null;
 	}
 }

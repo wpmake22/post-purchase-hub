@@ -1,5 +1,9 @@
 parameters:
-	level: 6
+	# Raised from 6 at M15. Level 7 (union-member access) caught four real
+	# defects rather than needing annotations to satisfy; level 8 would need
+	# null-guards on WordPress functions whose stubs say `false` for states
+	# this plugin has already excluded, so it stops here.
+	level: 7
 	phpVersion: 80100
 	paths:
 		- src

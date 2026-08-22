@@ -260,6 +260,68 @@ final class HelpControllerTest extends TestCase {
 	}
 
 	/**
+	 * The response is marked uncacheable before anything else happens.
+	 *
+	 * Every response this route can produce says something about one order,
+	 * including its denials — a cached 403 is still a cached fact about an
+	 * order (docs/SPEC.md Phase 8).
+	 *
+	 * @return void
+	 */
+	public function test_authorise_sets_nocache(): void {
+		$this->controller->authorise( $this->request( 1 ) );
+
+		$this->assertTrue( defined( 'DONOTCACHEPAGE' ) );
+	}
+
+	/**
+	 * The per-email limit refuses across changing IPs.
+	 *
+	 * This route ends in an outbound email, so the dimension that matters is
+	 * the one an attacker cannot rotate: the address on the order, not the
+	 * machine the submission came from.
+	 *
+	 * @return void
+	 */
+	public function test_the_email_budget_is_refused_across_changing_ips(): void {
+		FakeWordPress::$current_user_id = 5;
+		$order                          = $this->order( 34, 5 );
+
+		for ( $i = 0; $i < 3; $i++ ) {
+			$this->rate_limiter->allow_email( 'help_submit', $order->get_billing_email(), 3, HOUR_IN_SECONDS );
+		}
+
+		$_SERVER['REMOTE_ADDR'] = '203.0.113.42';
+
+		$result = $this->controller->authorise( $this->request( 34 ) );
+
+		unset( $_SERVER['REMOTE_ADDR'] );
+
+		$this->assertInstanceOf( \WP_Error::class, $result );
+		$this->assertSame( 'pph_rate_limited', $result->get_error_code() );
+		$this->assertSame( 429, $result->get_error_data()['status'] );
+	}
+
+	/**
+	 * The site-wide backstop refuses even a first-time identity.
+	 *
+	 * @return void
+	 */
+	public function test_the_site_budget_is_refused(): void {
+		FakeWordPress::$current_user_id = 5;
+		$this->order( 35, 5 );
+
+		for ( $i = 0; $i < 100; $i++ ) {
+			$this->rate_limiter->allow_site( 'help_submit', 100, HOUR_IN_SECONDS );
+		}
+
+		$result = $this->controller->authorise( $this->request( 35 ) );
+
+		$this->assertInstanceOf( \WP_Error::class, $result );
+		$this->assertSame( 429, $result->get_error_data()['status'] );
+	}
+
+	/**
 	 * The rate limit is enforced, and the response says so rather than leaking
 	 * why.
 	 *

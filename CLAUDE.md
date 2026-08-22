@@ -100,7 +100,7 @@ Deliberate non-choices — do not introduce these: DI framework, template engine
 ## Coding standards
 
 - WordPress Coding Standards via `phpcs.xml.dist` (WordPress-Extra + WordPress-Docs + WooCommerce-Core). PHPCS must be clean before you report a milestone done.
-- PHPStan level 6 with `php-stubs/woocommerce-stubs`. Clean before reporting done.
+- PHPStan level 7 with `php-stubs/woocommerce-stubs`. Clean before reporting done.
 - Classes under ~300 lines, methods under ~50. If you exceed it, split — don't argue.
 - Every user-facing string translatable with `post-purchase-hub` text domain. Translator context (`_x`) on anything ambiguous. Never concatenate translatable strings.
 - Comments explain **why**, never **what**. No comment restating the line below it.

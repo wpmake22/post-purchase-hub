@@ -74,17 +74,14 @@ jobs:
 
           exit $FAIL
 
-      # docs/SPEC.md Phase 8: OwnershipResolver is the ONLY place order
-      # ownership is decided. A full PHPCS sniff for this is disproportionate
-      # to what it checks, so — as the milestone prompt allows — this is a
-      # documented grep gate instead, run the same way as the edition
-      # boundary above.
-      - name: Ownership choke point
-        run: |
-          if grep -rn 'get_customer_id()' src/ free/ pro/ --include='*.php' | grep -v '/Security/OwnershipResolver.php:'; then
-            echo "::error::get_customer_id() referenced outside OwnershipResolver. Ownership is decided in exactly one place (CLAUDE.md hard rule 2)."
-            exit 1
-          fi
+      # Six architectural prohibitions from docs/SPEC.md Phase 8 and CLAUDE.md's
+      # hard rules, each failing the build: __return_true as a permission
+      # callback, an unprepared $wpdb call, wp_set_auth_cookie, a refund API,
+      # an ownership comparison outside OwnershipResolver, and outbound HTTP.
+      # Kept in a script rather than inline so the same gates run locally
+      # (`composer security:gates`) and are testable.
+      - name: Security gates
+        run: ./bin/security-gates.sh
 
       - run: composer lint
       - run: composer analyse

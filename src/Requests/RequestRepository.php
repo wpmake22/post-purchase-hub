@@ -278,11 +278,13 @@ final class RequestRepository implements RequestHistory {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom table; identifiers are whitelisted and every value is a placeholder argument.
 		$rows = $wpdb->get_results( $wpdb->prepare( $sql, ...$args ), ARRAY_A );
 
-		return array_map(
-			static function ( array $row ): Request {
-				return Request::from_row( $row );
-			},
-			is_array( $rows ) ? $rows : array()
+		return array_values(
+			array_map(
+				static function ( array $row ): Request {
+					return Request::from_row( $row );
+				},
+				is_array( $rows ) ? $rows : array()
+			)
 		);
 	}
 

@@ -176,7 +176,7 @@ final class RetentionSweeper {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom table; identifiers are class constants and every value is a placeholder argument.
 			$ids = $wpdb->get_col( $wpdb->prepare( $sql, ...array_merge( self::TERMINAL_STATUSES, array( $cutoff, self::BATCH_SIZE ) ) ) );
-			$ids = array_map( 'intval', (array) $ids );
+			$ids = array_values( array_map( 'intval', (array) $ids ) );
 
 			if ( ! $ids ) {
 				break;
@@ -218,7 +218,7 @@ final class RetentionSweeper {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom tables; identifiers come from Schema and the limit is a placeholder argument.
 			$ids = $wpdb->get_col( $wpdb->prepare( $sql, self::BATCH_SIZE ) );
-			$ids = array_map( 'intval', (array) $ids );
+			$ids = array_values( array_map( 'intval', (array) $ids ) );
 
 			if ( ! $ids ) {
 				break;
