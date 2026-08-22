@@ -34,6 +34,16 @@ final class ActivationTest extends \WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 
+		// This class exercises schema lifecycle — creating and dropping real
+		// tables — so it opts out of WP_UnitTestCase's DDL rewriting.
+		// WP_UnitTestCase turns CREATE TABLE into CREATE TEMPORARY TABLE and
+		// DROP TABLE into DROP TEMPORARY TABLE, and `SHOW TABLES` (which
+		// Schema::table_exists() uses, correctly, in production) cannot see a
+		// temporary table at all. Left in place, an install is invisible and a
+		// drop silently misses the real table these assertions then find.
+		remove_filter( 'query', array( $this, '_create_temporary_tables' ) );
+		remove_filter( 'query', array( $this, '_drop_temporary_tables' ) );
+
 		delete_option( Activator::TOKEN_SECRET_OPTION );
 		delete_option( Activator::SCHEMA_VERSION_OPTION );
 		delete_option( Cache::GENERATION_OPTION );

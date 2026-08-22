@@ -143,7 +143,12 @@ final class RenderingTest extends \WP_UnitTestCase {
 
 		$markup = (string) ob_get_clean();
 
-		$this->assertSame( 1, substr_count( $markup, 'data-pph-timeline=' ) );
+		// Counted on the stage list, not on `data-pph-timeline=`. The section
+		// carries `data-pph-timeline` as a bare boolean attribute, so the
+		// version with an equals sign appears nowhere in the markup and this
+		// assertion could only ever have read zero — including when the
+		// timeline rendered perfectly, which is what it was doing.
+		$this->assertSame( 1, substr_count( $markup, 'data-pph-timeline-stages' ) );
 	}
 
 	/**

@@ -57,6 +57,16 @@ final class GuestLookupTest extends \WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 
+		// The plugin's own GuestContext registered `pph_current_request_token`
+		// at bootstrap, and it memoises the first token it resolves for the
+		// life of the process. Every test here mints a fresh secret and builds
+		// its own context, so that ambient one answers each later test with a
+		// token that no longer decodes — and because it registered first, its
+		// answer is the one that wins. Clearing it in tear_down does not work:
+		// WP_UnitTestCase snapshots the hooks in set_up and restores them
+		// afterwards, which puts it straight back.
+		remove_all_filters( 'pph_current_request_token' );
+
 		update_option( Activator::TOKEN_SECRET_OPTION, bin2hex( random_bytes( 64 ) ), '', false );
 
 		update_option(

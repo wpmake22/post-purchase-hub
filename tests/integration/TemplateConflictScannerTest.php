@@ -38,6 +38,14 @@ final class TemplateConflictScannerTest extends \WP_UnitTestCase {
 
 		add_filter( 'stylesheet_directory', $path );
 		add_filter( 'template_directory', $path );
+
+		// locate_template() has read $wp_stylesheet_path/$wp_template_path
+		// rather than calling these filters since WP 6.4, and those globals are
+		// populated once during bootstrap. switch_theme() the *function*
+		// refreshes them; the switch_theme *action* this test fires does not.
+		// Without this the filters are inert and the fixture theme is invisible,
+		// so the scanner is asked to find a conflict that is not reachable.
+		wp_set_template_globals();
 	}
 
 	/**
