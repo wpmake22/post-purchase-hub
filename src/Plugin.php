@@ -32,7 +32,6 @@ use PostPurchaseHub\Admin\RequestActionController;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\CLI\BackfillCommand;
 use PostPurchaseHub\CLI\CleanupCommand;
-use PostPurchaseHub\Emails\AdminDigest;
 use PostPurchaseHub\Emails\Mailer;
 use PostPurchaseHub\Frontend\ActionsRenderer;
 use PostPurchaseHub\Frontend\Assets;
@@ -846,7 +845,7 @@ final class Plugin {
 		add_action( 'deactivated_plugin', array( $this, 'forget_invoice_detection' ) );
 
 		add_action( Activator::CLEANUP_HOOK, array( $this, 'run_cleanup' ) );
-		add_action( AdminDigest::CRON_HOOK, array( $this, 'run_digest' ) );
+		add_action( Activator::DIGEST_HOOK, array( $this, 'run_digest' ) );
 
 		add_action( 'woocommerce_order_status_changed', array( $this, 'record_transition' ), 10, 4 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'resync_eta_on_status_change' ), 10, 4 );
@@ -1166,6 +1165,16 @@ final class Plugin {
 	 * @return void
 	 */
 	public function run_digest(): void {
+		// WooCommerce includes `class-wc-email.php` inside its own mailer's
+		// boot, and nowhere else. On a cron request nothing else will have
+		// asked for it, so constructing our digest first would autoload a
+		// subclass of a class that does not exist yet — see
+		// `Emails\EmailSettings`. This also means our own emails are
+		// registered by the time the digest looks for itself.
+		if ( function_exists( 'WC' ) ) {
+			WC()->mailer();
+		}
+
 		$this->mailer()->admin_digest()->maybe_send();
 	}
 

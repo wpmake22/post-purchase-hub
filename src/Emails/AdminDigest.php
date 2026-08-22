@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Emails;
 
+use PostPurchaseHub\Install\Activator;
+
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Requests\Request;
 use PostPurchaseHub\Requests\RequestQuery;
@@ -49,7 +51,7 @@ final class AdminDigest extends AbstractEmail {
 	 *
 	 * @var string
 	 */
-	public const CRON_HOOK = 'pph_daily_digest';
+	public const CRON_HOOK = Activator::DIGEST_HOOK;
 
 	/**
 	 * Pending-request count as of the moment this digest was built.

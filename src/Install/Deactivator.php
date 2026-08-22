@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Install;
 
-use PostPurchaseHub\Emails\AdminDigest;
 use PostPurchaseHub\Support\Cache;
 
 /**
@@ -31,7 +30,7 @@ final class Deactivator {
 	 *
 	 * @var string[]
 	 */
-	private const CRON_HOOKS = array( 'pph_daily_cleanup', AdminDigest::CRON_HOOK );
+	private const CRON_HOOKS = array( Activator::CLEANUP_HOOK, Activator::DIGEST_HOOK );
 
 	/**
 	 * Runs on deactivation.

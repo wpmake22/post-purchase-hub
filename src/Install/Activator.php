@@ -9,8 +9,6 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Install;
 
-use PostPurchaseHub\Emails\AdminDigest;
-
 /**
  * Prepares the options, tables and scheduled work the plugin needs.
  *
@@ -56,6 +54,19 @@ final class Activator {
 	 * @var string
 	 */
 	public const CLEANUP_HOOK = 'pph_daily_cleanup';
+
+	/**
+	 * Cron hook for the opt-in admin digest.
+	 *
+	 * The name lives here, with the code that schedules it, rather than on
+	 * `Emails\AdminDigest` where it started. Naming that class from anywhere
+	 * that runs before WooCommerce's mailer is up autoloads a `WC_Email`
+	 * subclass whose parent does not exist yet — see `Emails\EmailSettings`.
+	 * A cron event name is a string; learning it must not cost a class load.
+	 *
+	 * @var string
+	 */
+	public const DIGEST_HOOK = 'pph_daily_digest';
 
 	/**
 	 * Runs on activation. Idempotent: re-activating changes nothing.
@@ -107,7 +118,7 @@ final class Activator {
 	 *
 	 * Scheduled unconditionally at activation, same as the cleanup sweep: the
 	 * digest email itself stays disabled until a merchant opts in
-	 * (`Emails\AdminDigest::init_form_fields()`'s `enabled` default is `no`),
+	 * (the digest email ships disabled),
 	 * so an idle event firing daily on a store that never turns it on costs a
 	 * cheap `is_enabled()` check and nothing else.
 	 *
@@ -115,12 +126,12 @@ final class Activator {
 	 * @return void
 	 */
 	public static function schedule_digest(): void {
-		if ( wp_next_scheduled( AdminDigest::CRON_HOOK ) ) {
+		if ( wp_next_scheduled( self::DIGEST_HOOK ) ) {
 			return;
 		}
 
 		// A different offset from the cleanup sweep, so the two never contend.
-		wp_schedule_event( time() + ( 37 * MINUTE_IN_SECONDS ), 'daily', AdminDigest::CRON_HOOK );
+		wp_schedule_event( time() + ( 37 * MINUTE_IN_SECONDS ), 'daily', self::DIGEST_HOOK );
 	}
 
 	/**

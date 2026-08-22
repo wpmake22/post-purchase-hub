@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Actions;
 
-use PostPurchaseHub\Emails\HelpRequest;
+use PostPurchaseHub\Emails\EmailSettings;
 use PostPurchaseHub\Security\Sanitizer;
 
 /**
@@ -176,12 +176,17 @@ final class Help {
 	 * integration consuming `pph_help_submitted` says "send it to me instead"
 	 * without the email being on.
 	 *
+	 * Read through `Emails\EmailSettings` rather than from the email class:
+	 * this runs while an order page is being rendered, and naming a `WC_Email`
+	 * subclass there is a fatal on any request that has not already booted
+	 * WooCommerce's mailer.
+	 *
 	 * @since 0.13.0
 	 *
 	 * @return bool
 	 */
 	public static function has_destination(): bool {
-		if ( HelpRequest::will_send() ) {
+		if ( EmailSettings::is_enabled( EmailSettings::HELP_REQUEST ) ) {
 			return true;
 		}
 

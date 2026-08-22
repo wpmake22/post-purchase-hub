@@ -46,6 +46,22 @@ final class HelpRequest extends AbstractEmail {
 	public const SETTINGS_OPTION = 'woocommerce_' . self::ID . '_settings';
 
 	/**
+	 * Whether a submission would be emailed anywhere.
+	 *
+	 * Kept as a name callers already know, but the answer comes from
+	 * `EmailSettings` — which can be asked without loading this class, and
+	 * therefore without loading `WC_Email`. `Actions\Help` asks it that way,
+	 * on order-page renders where WooCommerce's mailer may not have booted.
+	 *
+	 * @since 0.13.0
+	 *
+	 * @return bool
+	 */
+	public static function will_send(): bool {
+		return EmailSettings::is_enabled( self::ID );
+	}
+
+	/**
 	 * The submission this instance is reporting.
 	 *
 	 * @var HelpContext|null
@@ -108,36 +124,6 @@ final class HelpRequest extends AbstractEmail {
 		$this->send_notification();
 
 		$this->restore_locale();
-	}
-
-	/**
-	 * Whether a submission would be emailed anywhere.
-	 *
-	 * Read statically, from the option `WC_Settings_API` writes, because
-	 * `Actions\Help` has to answer "is there anywhere to send this" while
-	 * deciding whether to draw the form — on a storefront request where
-	 * WooCommerce has not built its email registry and no instance of this
-	 * class exists. An unset option means enabled, matching the `enabled`
-	 * field's own default below.
-	 *
-	 * Deliberately not named `is_enabled()`: `WC_Email` already has an instance
-	 * method by that name, reading the same setting off a constructed instance,
-	 * and overriding it statically is not legal PHP. The two answer the same
-	 * question from different places — this one before there is an instance to
-	 * ask.
-	 *
-	 * @since 0.13.0
-	 *
-	 * @return bool
-	 */
-	public static function will_send(): bool {
-		$settings = get_option( self::SETTINGS_OPTION, array() );
-
-		if ( ! is_array( $settings ) || ! isset( $settings['enabled'] ) ) {
-			return true;
-		}
-
-		return 'no' !== $settings['enabled'];
 	}
 
 	/**
