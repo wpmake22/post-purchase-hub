@@ -42,11 +42,21 @@ final class SettingsShippingValues {
 	 * @return array<string, string>
 	 */
 	public static function available(): array {
-		if ( ! function_exists( 'WC' ) || ! isset( WC()->shipping ) ) {
+		if ( ! function_exists( 'WC' ) ) {
 			return array();
 		}
 
-		$methods = WC()->shipping()->get_shipping_methods();
+		// Guarded on the accessor, never on `isset( WC()->shipping )`: that
+		// property is served by WooCommerce's `__get()`, which `isset()` does
+		// not consult, so the check reads false on a perfectly healthy store
+		// and every per-method setting silently disappears from the screen.
+		$shipping = is_callable( array( WC(), 'shipping' ) ) ? WC()->shipping() : null;
+
+		if ( ! $shipping instanceof \WC_Shipping ) {
+			return array();
+		}
+
+		$methods = $shipping->get_shipping_methods();
 		$clean   = array();
 
 		foreach ( is_array( $methods ) ? $methods : array() as $id => $method ) {

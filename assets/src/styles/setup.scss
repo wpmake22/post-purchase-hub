@@ -19,6 +19,23 @@ $pph-muted: #50575e;
 $pph-line: #dcdcde;
 $pph-header: 64px;
 
+/**
+ * The wizard prints its own document, so wp-admin's stylesheet — and with it
+ * core's definition of this class — is never loaded here. Without it the
+ * visually-hidden labels in the header render as full-size text.
+ */
+.screen-reader-text {
+	border: 0;
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
 body.pph-setup-body {
 	background: #f0f0f1;
 	margin: 0;
