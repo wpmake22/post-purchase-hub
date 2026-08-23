@@ -1,0 +1,438 @@
+/**
+ * The setup wizard's own stylesheet.
+ *
+ * This is the one screen in the plugin that does not look like wp-admin, and
+ * deliberately: the page has no admin menu, no notices and no other plugin's
+ * banner on it, so there is nothing for a merchant to learn their way around
+ * and nothing to compete with the single question on the card.
+ *
+ * Colours are wp-admin's own (`#2271b1`, `#1d2327`, `#50575e`, `#dcdcde`) so
+ * the wizard still reads as part of WordPress rather than as a landing page
+ * that happens to live inside it. `wp-components` is loaded alongside this, so
+ * the controls inside the card are core's.
+ */
+
+$pph-accent: #2271b1;
+$pph-accent-dark: #135e96;
+$pph-ink: #1d2327;
+$pph-muted: #50575e;
+$pph-line: #dcdcde;
+$pph-header: 64px;
+
+body.pph-setup-body {
+	background: #f0f0f1;
+	margin: 0;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+}
+
+.pph-setup {
+	color: $pph-ink;
+	font-family: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	min-height: 100vh;
+
+	&--message {
+		align-items: center;
+		display: flex;
+		justify-content: center;
+	}
+
+	/* The fixed progress header. */
+	&__header {
+		align-items: center;
+		background: #fff;
+		border-bottom: 1px solid $pph-line;
+		box-sizing: border-box;
+		display: flex;
+		gap: 1.5rem;
+		height: $pph-header;
+		left: 0;
+		padding: 0 1.5rem;
+		position: fixed;
+		right: 0;
+		top: 0;
+		z-index: 10;
+	}
+
+	&__brand {
+		flex-shrink: 0;
+		font-size: 14px;
+		font-weight: 600;
+		margin: 0;
+
+		@media (max-width: 782px) {
+			display: none;
+		}
+	}
+
+	&__steps {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		list-style: none;
+		margin: 0 auto;
+		max-width: 720px;
+		padding: 0;
+	}
+
+	&__step {
+		align-items: center;
+		display: flex;
+		flex: 1;
+
+		&:last-child {
+			flex: 0 0 auto;
+		}
+	}
+
+	&__step-label {
+		color: inherit;
+		font-size: 13px;
+		white-space: nowrap;
+
+		@media (max-width: 960px) {
+			display: none;
+		}
+	}
+
+	&__step-button {
+		align-items: center;
+		background: none;
+		border: 0;
+		color: #8c8f94;
+		cursor: default;
+		display: flex;
+		flex-shrink: 0;
+		font: inherit;
+		gap: 0.5rem;
+		padding: 0;
+
+		&:not(:disabled) {
+			cursor: pointer;
+
+			&:hover .pph-setup__step-label {
+				color: $pph-ink;
+			}
+		}
+	}
+
+	&__step-marker {
+		align-items: center;
+		border: 2px solid currentcolor;
+		border-radius: 50%;
+		display: flex;
+		flex-shrink: 0;
+		font-size: 12px;
+		font-weight: 600;
+		height: 26px;
+		justify-content: center;
+		width: 26px;
+	}
+
+	&__step-line {
+		background: $pph-line;
+		flex: 1;
+		height: 2px;
+		margin: 0 0.75rem;
+		min-width: 1rem;
+	}
+
+	.pph-setup__step.is-current .pph-setup__step-button {
+		color: $pph-accent;
+		font-weight: 600;
+	}
+
+	.pph-setup__step.is-done .pph-setup__step-button {
+		color: $pph-accent;
+	}
+
+	.pph-setup__step.is-done .pph-setup__step-marker {
+		background: $pph-accent;
+		color: #fff;
+	}
+
+	.pph-setup__step.is-done .pph-setup__step-line,
+	.pph-setup__step.is-done + .pph-setup__step .pph-setup__step-line {
+		background: $pph-accent;
+	}
+
+	&__exit {
+		background: none;
+		border: 0;
+		color: #8c8f94;
+		cursor: pointer;
+		flex-shrink: 0;
+		font-size: 24px;
+		line-height: 1;
+		padding: 0.25rem 0.5rem;
+
+		&:hover {
+			color: $pph-ink;
+		}
+	}
+
+	/* The card. */
+	&__main {
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		padding: calc(#{$pph-header} + 2rem) 1rem 4rem;
+	}
+
+	&__card {
+		background: #fff;
+		border: 1px solid $pph-line;
+		border-radius: 6px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+		box-sizing: border-box;
+		max-width: 780px;
+		padding: 2rem 2.5rem;
+		width: 100%;
+
+		@media (max-width: 600px) {
+			padding: 1.5rem 1.25rem;
+		}
+	}
+
+	&__title {
+		font-size: 22px;
+		font-weight: 600;
+		line-height: 1.3;
+		margin: 0 0 0.5rem;
+	}
+
+	&__subheading {
+		font-size: 15px;
+		font-weight: 600;
+		margin: 2rem 0 0.75rem;
+	}
+
+	&__help {
+		color: $pph-muted;
+		margin: 0 0 1.5rem;
+	}
+
+	&__body > *:last-child {
+		margin-bottom: 0;
+	}
+
+	/* The radio cards used by the welcome and display screens. */
+	&__choices {
+		display: grid;
+		gap: 0.75rem;
+		margin: 0 0 1rem;
+	}
+
+	&__choice {
+		align-items: flex-start;
+		border: 1px solid $pph-line;
+		border-radius: 5px;
+		cursor: pointer;
+		display: flex;
+		gap: 0.75rem;
+		padding: 1rem;
+		transition: border-color 0.15s ease, background-color 0.15s ease;
+
+		&:hover {
+			border-color: #a7aaad;
+		}
+
+		&.is-selected {
+			background: #f0f6fc;
+			border-color: $pph-accent;
+		}
+
+		input {
+			margin: 0.2rem 0 0;
+		}
+	}
+
+	&__choice-body {
+		cursor: pointer;
+		display: block;
+		flex: 1;
+	}
+
+	&__choice-label {
+		display: block;
+		font-weight: 600;
+	}
+
+	&__choice-help {
+		color: $pph-muted;
+		display: block;
+		margin-top: 0.25rem;
+	}
+
+	/* Detected facts and warnings. */
+	&__detected {
+		background: #f6f7f7;
+		border-left: 4px solid $pph-accent;
+		margin: 0 0 1.5rem;
+		padding: 0.75rem 1rem;
+
+		&.is-missing {
+			border-left-color: #dba617;
+		}
+	}
+
+	&__warning {
+		background: #fcf9e8;
+		border-left: 4px solid #dba617;
+		margin: 0 0 1.5rem;
+		padding: 0.75rem 1rem;
+	}
+
+	&__note {
+		color: $pph-muted;
+		font-size: 13px;
+		margin: 1.5rem 0 0;
+	}
+
+	/* The stage map and the number fields. */
+	&__map {
+		display: grid;
+		gap: 0.75rem;
+
+		@media (min-width: 600px) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	&__map-row.is-detected label {
+		font-weight: 600;
+	}
+
+	&__field {
+		margin: 0 0 1rem;
+	}
+
+	&__field-label {
+		display: block;
+		font-weight: 600;
+		margin-bottom: 0.35rem;
+	}
+
+	&__field-inline {
+		align-items: center;
+		display: flex;
+		gap: 0.5rem;
+
+		input {
+			border: 1px solid #8c8f94;
+			border-radius: 3px;
+			padding: 0.35rem 0.5rem;
+			width: 6rem;
+		}
+	}
+
+	&__field-suffix {
+		color: $pph-muted;
+	}
+
+	&__disclosure {
+		border-top: 1px solid $pph-line;
+		margin-top: 1.5rem;
+		padding-top: 1rem;
+
+		summary {
+			cursor: pointer;
+			font-weight: 600;
+		}
+	}
+
+	&__toggles {
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	&__preview {
+		background: #fbfbfc;
+		border: 1px solid $pph-line;
+		border-radius: 5px;
+		padding: 1rem 1.25rem;
+	}
+
+	&__summary {
+		list-style: none;
+		margin: 0 0 1rem;
+		padding: 0;
+
+		li {
+			border-bottom: 1px solid #f0f0f1;
+			padding: 0.6rem 0;
+
+			&:last-child {
+				border-bottom: 0;
+			}
+		}
+	}
+
+	/* Buttons and the footer they sit in. */
+	&__footer {
+		align-items: center;
+		border-top: 1px solid $pph-line;
+		display: flex;
+		justify-content: space-between;
+		margin-top: 2rem;
+		padding-top: 1.25rem;
+	}
+
+	&__footer-actions {
+		align-items: center;
+		display: flex;
+		gap: 1rem;
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin: 1.5rem 0 0;
+	}
+
+	&__button {
+		background: $pph-accent;
+		border: 1px solid $pph-accent;
+		border-radius: 3px;
+		color: #fff;
+		cursor: pointer;
+		font: inherit;
+		font-weight: 500;
+		padding: 0.5rem 1.25rem;
+		text-decoration: none;
+
+		&:disabled {
+			cursor: default;
+			opacity: 0.6;
+		}
+
+		&:hover:not(:disabled) {
+			background: $pph-accent-dark;
+			border-color: $pph-accent-dark;
+			color: #fff;
+		}
+	}
+
+	&__link-button {
+		background: none;
+		border: 0;
+		color: $pph-muted;
+		cursor: pointer;
+		font: inherit;
+		padding: 0.5rem 0;
+		text-decoration: none;
+
+		&:disabled {
+			cursor: default;
+			opacity: 0.6;
+		}
+
+		&:hover:not(:disabled) {
+			color: $pph-accent;
+			text-decoration: underline;
+		}
+	}
+}

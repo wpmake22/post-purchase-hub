@@ -37,26 +37,18 @@ final class SetupState {
 	public const OPTION = 'pph_setup_state';
 
 	/**
-	 * First step.
+	 * The step a wizard that has never been opened starts on.
 	 *
-	 * @var int
+	 * @var string
 	 */
-	public const FIRST_STEP = 1;
+	public const FIRST_STEP = SetupSteps::WELCOME;
 
 	/**
-	 * Last question step. The screen after this one is the actions screen,
-	 * which completes setup.
+	 * The step that commits the drafts and opens the storefront.
 	 *
-	 * @var int
+	 * @var string
 	 */
-	public const LAST_STEP = 4;
-
-	/**
-	 * The step number of the actions screen that finishes setup.
-	 *
-	 * @var int
-	 */
-	public const FINAL_STEP = 5;
+	public const FINAL_STEP = SetupSteps::FINISH;
 
 	/**
 	 * Whether the storefront may render anything at all.
@@ -88,15 +80,20 @@ final class SetupState {
 	/**
 	 * The step the wizard should open on.
 	 *
+	 * Clamped against the chosen path, not merely against the list of steps
+	 * that exist: changing the welcome answer can remove the screen a merchant
+	 * was last on, and resuming onto a screen this path does not include would
+	 * strand them on a step with no way forward.
+	 *
 	 * @since 0.14.0
 	 *
-	 * @return int Between FIRST_STEP and FINAL_STEP.
+	 * @return string One of the step slugs of the current path.
 	 */
-	public static function current_step(): int {
+	public static function current_step(): string {
 		$state = self::state();
-		$step  = isset( $state['step'] ) ? (int) $state['step'] : self::FIRST_STEP;
+		$step  = isset( $state['step'] ) && is_string( $state['step'] ) ? $state['step'] : self::FIRST_STEP;
 
-		return min( self::FINAL_STEP, max( self::FIRST_STEP, $step ) );
+		return SetupSteps::clamp( self::path(), $step );
 	}
 
 	/**
@@ -104,12 +101,41 @@ final class SetupState {
 	 *
 	 * @since 0.14.0
 	 *
-	 * @param int $step Step reached.
+	 * @param string $step Step reached.
 	 * @return void
 	 */
-	public static function remember_step( int $step ): void {
+	public static function remember_step( string $step ): void {
 		$state         = self::state();
-		$state['step'] = min( self::FINAL_STEP, max( self::FIRST_STEP, $step ) );
+		$state['step'] = SetupSteps::clamp( self::path(), $step );
+
+		self::save( $state );
+	}
+
+	/**
+	 * Which walkthrough the merchant chose on the welcome screen.
+	 *
+	 * @since 0.15.0
+	 *
+	 * @return string
+	 */
+	public static function path(): string {
+		$state = self::state();
+		$path  = isset( $state['path'] ) && is_string( $state['path'] ) ? $state['path'] : SetupSteps::DEFAULT_PATH;
+
+		return SetupSteps::is_path( $path ) ? $path : SetupSteps::DEFAULT_PATH;
+	}
+
+	/**
+	 * Records the walkthrough the merchant chose.
+	 *
+	 * @since 0.15.0
+	 *
+	 * @param string $path Path slug.
+	 * @return void
+	 */
+	public static function remember_path( string $path ): void {
+		$state         = self::state();
+		$state['path'] = SetupSteps::is_path( $path ) ? $path : SetupSteps::DEFAULT_PATH;
 
 		self::save( $state );
 	}
@@ -158,7 +184,7 @@ final class SetupState {
 	public static function complete(): void {
 		$state = self::state();
 
-		$state['step']         = self::FINAL_STEP;
+		$state['step']         = SetupSteps::FINISH;
 		$state['completed_at'] = gmdate( 'Y-m-d H:i:s' );
 
 		self::save( $state );
@@ -198,7 +224,7 @@ final class SetupState {
 	public static function restart(): void {
 		$state = self::state();
 
-		$state['step'] = self::FIRST_STEP;
+		$state['step'] = SetupSteps::WELCOME;
 		unset( $state['completed_at'] );
 
 		self::save( $state );

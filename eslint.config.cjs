@@ -16,7 +16,11 @@ const wpConfig = require( '@wordpress/scripts/config/eslint.config.cjs' );
 module.exports = [
 	...wpConfig,
 	{
-		files: [ 'assets/src/js/**/*.js', 'pro/assets/src/js/**/*.js' ],
+		files: [
+			'assets/src/js/**/*.js',
+			'assets/src/setup/**/*.js',
+			'pro/assets/src/js/**/*.js',
+		],
 		languageOptions: {
 			globals: globals.browser,
 		},

@@ -93,12 +93,12 @@ final class Notices {
 		printf(
 			'<p><strong>%1$s</strong> %2$s</p>',
 			esc_html__( 'Post-Purchase Hub is installed.', 'post-purchase-hub' ),
-			esc_html__( 'Nothing is showing to your customers yet. The setup wizard takes about two minutes and asks four questions.', 'post-purchase-hub' )
+			esc_html__( 'Nothing is showing to your customers yet. The setup wizard takes about two minutes, and you can skip any question you are not sure about.', 'post-purchase-hub' )
 		);
 
 		printf(
 			'<p><a class="button button-primary" href="%1$s">%2$s</a>',
-			esc_url( Wizard::url() ),
+			esc_url( WizardPage::url() ),
 			esc_html__( 'Run the setup wizard', 'post-purchase-hub' )
 		);
 
@@ -231,7 +231,7 @@ final class Notices {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Deciding whether to draw a notice on a GET; not a state change.
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
 
-		return in_array( $page, array( Wizard::PAGE, SettingsPage::PAGE ), true );
+		return in_array( $page, array( WizardPage::PAGE, SettingsPage::PAGE ), true );
 	}
 
 	/**

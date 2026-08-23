@@ -50,6 +50,13 @@ const core = {
 		),
 		help: path.resolve( process.cwd(), 'assets', 'src', 'js', 'help.js' ),
 		admin: path.resolve( process.cwd(), 'assets', 'src', 'js', 'admin.js' ),
+		setup: path.resolve(
+			process.cwd(),
+			'assets',
+			'src',
+			'setup',
+			'index.js'
+		),
 	},
 	output: {
 		...defaultConfig.output,

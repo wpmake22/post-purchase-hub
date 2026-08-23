@@ -10,8 +10,12 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Admin;
 
 /**
- * Loads the admin stylesheet and the confirmation script on four screens, and
- * nowhere else in wp-admin.
+ * Loads the admin stylesheet and the confirmation script on this plugin's own
+ * screens, and nowhere else in wp-admin.
+ *
+ * The setup wizard is deliberately not in the list: it prints its own document
+ * and exits before `admin_enqueue_scripts` fires, and it carries its own bundle
+ * (`Admin\WizardPage`).
  *
  * The same discipline `Frontend\Assets` applies to the storefront: a plugin
  * that ships one global admin stylesheet slows down every screen of somebody
@@ -95,7 +99,7 @@ final class Assets {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Deciding whether one stylesheet is needed on an admin GET; the value is only ever compared against a fixed list.
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
 
-		$ours = in_array( $page, array( SettingsPage::PAGE, Wizard::PAGE, Menu::REQUESTS_PAGE ), true );
+		$ours = in_array( $page, array( SettingsPage::PAGE, Menu::REQUESTS_PAGE ), true );
 
 		/**
 		 * Filters whether this plugin's admin assets load on this screen.

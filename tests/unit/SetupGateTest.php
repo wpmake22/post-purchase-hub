@@ -12,6 +12,7 @@ namespace PostPurchaseHub\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Install\SetupState;
 use PostPurchaseHub\Plugin;
+use PostPurchaseHub\Rest\SetupController;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
 
 require_once dirname( __DIR__ ) . '/stubs/wp-functions.php';
@@ -117,12 +118,31 @@ final class SetupGateTest extends TestCase {
 	 * No customer-facing REST route exists before setup: a button that is not
 	 * drawn is not a control if the route behind it still answers.
 	 *
+	 * The wizard's own routes are the deliberate exception — they are how a
+	 * store stops being unconfigured — so the assertion is that nothing *else*
+	 * is registered, and that every route that is carries an administrator-only
+	 * permission callback rather than a customer-facing one.
+	 *
 	 * @return void
 	 */
-	public function test_an_unconfigured_store_registers_no_rest_routes(): void {
+	public function test_an_unconfigured_store_registers_only_the_wizard_routes(): void {
 		( new Plugin() )->register_rest_routes();
 
-		$this->assertSame( array(), FakeWordPress::$rest_routes );
+		$this->assertNotSame( array(), FakeWordPress::$rest_routes, 'The wizard has to be reachable before setup, or setup can never happen.' );
+
+		foreach ( FakeWordPress::$rest_routes as $route ) {
+			$this->assertStringStartsWith(
+				SetupController::ROUTE,
+				$route['route'],
+				'Only the setup wizard may register a route before setup completes.'
+			);
+
+			$this->assertSame(
+				array( 'authorise' ),
+				array( array_slice( (array) $route['args']['permission_callback'], 1, 1 )[0] ),
+				'Every wizard route is gated on the same administrator check.'
+			);
+		}
 	}
 
 	/**

@@ -11,6 +11,7 @@ namespace PostPurchaseHub\Tests\Unit\Install;
 
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Install\SetupState;
+use PostPurchaseHub\Install\SetupSteps;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
 
 require_once dirname( __DIR__, 2 ) . '/stubs/wp-functions.php';
@@ -100,23 +101,51 @@ final class SetupStateTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_step_is_remembered(): void {
-		SetupState::remember_step( 3 );
+		SetupState::remember_step( SetupSteps::TRACKING );
 
-		$this->assertSame( 3, SetupState::current_step() );
+		$this->assertSame( SetupSteps::TRACKING, SetupState::current_step() );
 		$this->assertFalse( SetupState::is_complete(), 'Reaching a step is not finishing setup.' );
 	}
 
 	/**
-	 * A step number outside the wizard is clamped rather than trusted.
+	 * A step slug the wizard does not have is refused rather than trusted.
 	 *
 	 * @return void
 	 */
-	public function test_the_step_is_clamped(): void {
-		SetupState::remember_step( 99 );
-		$this->assertSame( SetupState::FINAL_STEP, SetupState::current_step() );
+	public function test_an_unknown_step_falls_back_to_the_first(): void {
+		SetupState::remember_step( 'definitely-not-a-step' );
 
-		SetupState::remember_step( -5 );
-		$this->assertSame( SetupState::FIRST_STEP, SetupState::current_step() );
+		$this->assertSame( SetupSteps::WELCOME, SetupState::current_step() );
+	}
+
+	/**
+	 * A step this path does not include cannot be resumed onto: answering the
+	 * welcome screen can remove screens further along, and landing on one of
+	 * those would strand a merchant on a step with no way forward.
+	 *
+	 * @return void
+	 */
+	public function test_a_step_outside_the_chosen_path_is_clamped(): void {
+		SetupState::remember_path( SetupSteps::PATH_ACTIONS );
+		SetupState::remember_step( SetupSteps::STATUSES );
+
+		$this->assertSame( SetupSteps::WELCOME, SetupState::current_step() );
+	}
+
+	/**
+	 * The path is remembered, and an unknown one reads as the default rather
+	 * than as a wizard with no steps at all.
+	 *
+	 * @return void
+	 */
+	public function test_the_path_is_remembered_and_defended(): void {
+		$this->assertSame( SetupSteps::DEFAULT_PATH, SetupState::path() );
+
+		SetupState::remember_path( SetupSteps::PATH_TIMELINE );
+		$this->assertSame( SetupSteps::PATH_TIMELINE, SetupState::path() );
+
+		SetupState::remember_path( 'not-a-path' );
+		$this->assertSame( SetupSteps::DEFAULT_PATH, SetupState::path() );
 	}
 
 	/**
@@ -197,7 +226,7 @@ final class SetupStateTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_option_is_not_autoloaded(): void {
-		SetupState::remember_step( 2 );
+		SetupState::remember_step( SetupSteps::STATUSES );
 
 		$this->assertArrayHasKey( SetupState::OPTION, FakeWordPress::$non_autoloaded_options );
 	}

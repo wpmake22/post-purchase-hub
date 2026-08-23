@@ -24,10 +24,8 @@ use PostPurchaseHub\Admin\HealthPanel;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\Notices;
 use PostPurchaseHub\Admin\SettingsPage;
-use PostPurchaseHub\Admin\Wizard;
+use PostPurchaseHub\Admin\WizardPage;
 use PostPurchaseHub\Admin\WizardPreview;
-use PostPurchaseHub\Admin\WizardScreen;
-use PostPurchaseHub\Admin\WizardSteps;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
@@ -58,6 +56,8 @@ use PostPurchaseHub\Rest\HelpController;
 use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
+use PostPurchaseHub\Rest\SetupContext;
+use PostPurchaseHub\Rest\SetupController;
 use PostPurchaseHub\Security\GuestAccess;
 use PostPurchaseHub\Security\GuestLookupService;
 use PostPurchaseHub\Security\OrderLookup;
@@ -501,23 +501,23 @@ final class Services {
 		);
 
 		$plugin->set(
-			'wizard_steps',
-			static function ( Plugin $plugin ): WizardSteps {
-				return new WizardSteps( $plugin->wizard_preview() );
+			'setup_context',
+			static function ( Plugin $plugin ): SetupContext {
+				return new SetupContext( $plugin->stage_map(), $plugin->health_panel(), $plugin->wizard_preview() );
 			}
 		);
 
 		$plugin->set(
-			'wizard_screen',
-			static function ( Plugin $plugin ): WizardScreen {
-				return new WizardScreen( $plugin->wizard_steps() );
+			'setup_controller',
+			static function ( Plugin $plugin ): SetupController {
+				return new SetupController( $plugin->setup_context() );
 			}
 		);
 
 		$plugin->set(
-			'wizard',
-			static function ( Plugin $plugin ): Wizard {
-				return new Wizard( $plugin->stage_map(), $plugin->health_panel(), $plugin->wizard_screen() );
+			'wizard_page',
+			static function (): WizardPage {
+				return new WizardPage();
 			}
 		);
 

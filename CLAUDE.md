@@ -74,7 +74,7 @@ src/
   Rest/                 controllers + permission callbacks
   Emails/               WC_Email subclasses
   Frontend/             Renderer, TemplateLoader, Shortcodes, Blocks, Assets, GuestContext
-  Admin/                Menu, RequestListTable, RequestDetail, SettingsPage, Wizard, Notices, OrderMetabox
+  Admin/                Menu, RequestListTable, RequestDetail, SettingsPage, WizardPage, Notices, OrderMetabox
   Support/              Logger, Cache, Dates
   CLI/                  WP-CLI commands
 templates/              logic-free, theme-overridable via yourtheme/post-purchase-hub/
@@ -93,7 +93,9 @@ bin/verify-build.php        inspects the built zips for leakage
 
 `Timeline/`, `Actions/` and `Requests/` are separate domains. They communicate through services and never reach into each other's storage.
 
-Deliberate non-choices — do not introduce these: DI framework, template engine, React admin, custom post types, custom taxonomies, custom capabilities, Action Scheduler (v1), `admin-ajax`, runtime vendor packages.
+Deliberate non-choices — do not introduce these: DI framework, template engine, custom post types, custom taxonomies, custom capabilities, Action Scheduler (v1), `admin-ajax`, runtime vendor packages.
+
+**React is admitted in exactly one place: the setup wizard.** `assets/src/setup/` is a React app on a page of its own (`Admin\WizardPage`) driven by `Rest\SetupController` (`pph/v1/setup`), and it replaced the `admin-post.php` form wizard deliberately — the earlier one was not intuitive enough to carry a feature the whole storefront is gated on. It uses only WordPress core externals (`@wordpress/element`, `components`, `api-fetch`, `i18n`), never a bundled UI framework: nothing in this plugin's zips may ship React or a component library of its own. The settings screen, the request queue and every other admin surface stay server-rendered PHP — do not "modernise" them to match.
 
 ---
 

@@ -23,10 +23,8 @@ use PostPurchaseHub\Admin\HealthPanel;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\Notices;
 use PostPurchaseHub\Admin\SettingsPage;
-use PostPurchaseHub\Admin\Wizard;
+use PostPurchaseHub\Admin\WizardPage;
 use PostPurchaseHub\Admin\WizardPreview;
-use PostPurchaseHub\Admin\WizardScreen;
-use PostPurchaseHub\Admin\WizardSteps;
 use PostPurchaseHub\Admin\OrderMetabox;
 use PostPurchaseHub\Admin\RequestActionController;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
@@ -61,6 +59,8 @@ use PostPurchaseHub\Rest\HelpController;
 use PostPurchaseHub\Rest\LookupController;
 use PostPurchaseHub\Rest\ReorderController;
 use PostPurchaseHub\Rest\RequestsController;
+use PostPurchaseHub\Rest\SetupContext;
+use PostPurchaseHub\Rest\SetupController;
 use PostPurchaseHub\Security\GuestAccess;
 use PostPurchaseHub\Security\GuestLookupService;
 use PostPurchaseHub\Security\OrderLookup;
@@ -732,33 +732,33 @@ final class Plugin {
 	}
 
 	/**
-	 * Returns the wizard's question bodies.
+	 * Returns the reference data the wizard's screens draw from.
 	 *
-	 * @since 0.14.0
-	 * @return WizardSteps
+	 * @since 0.15.0
+	 * @return SetupContext
 	 */
-	public function wizard_steps(): WizardSteps {
-		return $this->typed( 'wizard_steps', WizardSteps::class );
+	public function setup_context(): SetupContext {
+		return $this->typed( 'setup_context', SetupContext::class );
 	}
 
 	/**
-	 * Returns the wizard's screen chrome.
+	 * Returns the wizard's REST controller.
 	 *
-	 * @since 0.14.0
-	 * @return WizardScreen
+	 * @since 0.15.0
+	 * @return SetupController
 	 */
-	public function wizard_screen(): WizardScreen {
-		return $this->typed( 'wizard_screen', WizardScreen::class );
+	public function setup_controller(): SetupController {
+		return $this->typed( 'setup_controller', SetupController::class );
 	}
 
 	/**
-	 * Returns the setup wizard.
+	 * Returns the admin page the wizard mounts into.
 	 *
-	 * @since 0.14.0
-	 * @return Wizard
+	 * @since 0.15.0
+	 * @return WizardPage
 	 */
-	public function wizard(): Wizard {
-		return $this->typed( 'wizard', Wizard::class );
+	public function wizard_page(): WizardPage {
+		return $this->typed( 'wizard_page', WizardPage::class );
 	}
 
 	/**
@@ -1088,7 +1088,7 @@ final class Plugin {
 			$this->order_metabox()->register();
 			$this->request_action_controller()->register();
 			$this->settings_page()->register();
-			$this->wizard()->register();
+			$this->wizard_page()->register();
 			$this->notices()->register();
 			$this->admin_assets()->register();
 
@@ -1122,6 +1122,12 @@ final class Plugin {
 	 * @return void
 	 */
 	public function register_rest_routes(): void {
+		// The wizard's own routes are outside the gate, and have to be: they are
+		// how an unconfigured store stops being one. Their permission callback
+		// is `manage_woocommerce`, so what sits outside the gate is an
+		// administrator-only surface, never a customer-facing one.
+		$this->setup_controller()->register_routes();
+
 		// Same gate as the storefront, for the same reason and one more: an
 		// unconfigured store must not expose customer-facing mutation
 		// endpoints either. A button that is not drawn is not a control if the

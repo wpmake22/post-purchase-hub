@@ -11,7 +11,7 @@ namespace PostPurchaseHub\Tests\Unit\Admin;
 
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Admin\Notices;
-use PostPurchaseHub\Admin\Wizard;
+use PostPurchaseHub\Admin\WizardPage;
 use PostPurchaseHub\Install\SetupState;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
 use PostPurchaseHub\Tests\Unit\Support\WPDieException;
@@ -91,7 +91,7 @@ final class NoticesTest extends TestCase {
 		$html = $this->render();
 
 		$this->assertStringContainsString( 'data-pph-setup-notice', $html );
-		$this->assertStringContainsString( Wizard::PAGE, $html );
+		$this->assertStringContainsString( WizardPage::PAGE, $html );
 		$this->assertStringNotContainsString( '<script>', $html );
 		$this->assertStringContainsString( 'method="post"', $html, 'Dismissal is a POST: nothing this plugin does mutates on a GET.' );
 	}
@@ -136,7 +136,7 @@ final class NoticesTest extends TestCase {
 	 * @return void
 	 */
 	public function test_it_stays_off_our_own_screens(): void {
-		$_GET = array( 'page' => Wizard::PAGE );
+		$_GET = array( 'page' => WizardPage::PAGE );
 
 		$this->assertSame( '', $this->render() );
 	}
