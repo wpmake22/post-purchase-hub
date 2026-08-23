@@ -22,6 +22,7 @@ use PostPurchaseHub\Admin\Assets as AdminAssets;
 use PostPurchaseHub\Admin\HealthPanel;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\Notices;
+use PostPurchaseHub\Admin\SettingsLayout;
 use PostPurchaseHub\Admin\SettingsPage;
 use PostPurchaseHub\Admin\WizardPage;
 use PostPurchaseHub\Admin\WizardPreview;
@@ -719,6 +720,16 @@ final class Plugin {
 	 */
 	public function settings_page(): SettingsPage {
 		return $this->typed( 'settings_page', SettingsPage::class );
+	}
+
+	/**
+	 * Returns the settings screen's chrome.
+	 *
+	 * @since 0.15.0
+	 * @return SettingsLayout
+	 */
+	public function settings_layout(): SettingsLayout {
+		return $this->typed( 'settings_layout', SettingsLayout::class );
 	}
 
 	/**

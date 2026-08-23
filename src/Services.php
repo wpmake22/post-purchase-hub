@@ -23,7 +23,9 @@ use PostPurchaseHub\Admin\Assets as AdminAssets;
 use PostPurchaseHub\Admin\HealthPanel;
 use PostPurchaseHub\Admin\Menu;
 use PostPurchaseHub\Admin\Notices;
+use PostPurchaseHub\Admin\SettingsLayout;
 use PostPurchaseHub\Admin\SettingsPage;
+use PostPurchaseHub\Admin\SettingsSidebar;
 use PostPurchaseHub\Admin\WizardPage;
 use PostPurchaseHub\Admin\WizardPreview;
 use PostPurchaseHub\Admin\OrderMetabox;
@@ -487,9 +489,16 @@ final class Services {
 		);
 
 		$plugin->set(
+			'settings_layout',
+			static function ( Plugin $plugin ): SettingsLayout {
+				return new SettingsLayout( $plugin->health_panel(), new SettingsSidebar() );
+			}
+		);
+
+		$plugin->set(
 			'settings_page',
 			static function ( Plugin $plugin ): SettingsPage {
-				return new SettingsPage( $plugin->stage_map(), $plugin->health_panel() );
+				return new SettingsPage( $plugin->stage_map(), $plugin->settings_layout() );
 			}
 		);
 

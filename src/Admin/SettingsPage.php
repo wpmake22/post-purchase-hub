@@ -17,6 +17,7 @@ use PostPurchaseHub\Timeline\StageMapConfig;
  * WooCommerce → Post-Purchase Hub → Settings, on the Settings API.
  *
  * One option (`pph_settings`), six tabs, and one sanitisation pass per save.
+ * `SettingsLayout` draws the two-pane chrome around whatever this routes to.
  * The tabs post only their own fields, so `SettingsSanitizer::sanitize_tab()`
  * merges over what is stored rather than replacing it — otherwise saving the
  * Timeline tab would blank the Actions tab, which is the classic
@@ -69,10 +70,10 @@ final class SettingsPage {
 	 *
 	 * @since 0.14.0
 	 *
-	 * @param StageMap    $stages Supplies the stage list and detected statuses the Timeline tab offers.
-	 * @param HealthPanel $health Drawn on the General tab, where a merchant looks first when something is wrong.
+	 * @param StageMap       $stages Supplies the stage list and detected statuses the Timeline tab offers.
+	 * @param SettingsLayout $layout Draws the sidebar, the cards and the save bar.
 	 */
-	public function __construct( private StageMap $stages, private HealthPanel $health ) {}
+	public function __construct( private StageMap $stages, private SettingsLayout $layout ) {}
 
 	/**
 	 * Wires the menu entry and the Settings API registration.
@@ -170,50 +171,17 @@ final class SettingsPage {
 			wp_die( esc_html__( 'You do not have permission to change these settings.', 'post-purchase-hub' ) );
 		}
 
-		$tab      = self::current_tab();
-		$settings = self::stored();
+		$tab = self::current_tab();
 
-		echo '<div class="wrap pph-settings">';
-		printf( '<h1>%s</h1>', esc_html__( 'Post-Purchase Hub', 'post-purchase-hub' ) );
+		$this->layout->open( $tab );
 
-		settings_errors();
-		$this->render_tab_nav( $tab );
-
-		if ( 'general' === $tab ) {
-			$this->health->render();
-		}
-
-		if ( 'emails' === $tab ) {
-			self::render_emails_tab();
+		if ( array() === SettingsFields::for_tab( $tab ) ) {
+			$this->render_signpost_tab( $tab );
 		} else {
-			$this->render_form( $tab, $settings );
+			$this->render_form( $tab );
 		}
 
-		echo '</div>';
-	}
-
-	/**
-	 * The tab strip.
-	 *
-	 * @since 0.14.0
-	 *
-	 * @param string $current Current tab slug.
-	 * @return void
-	 */
-	private function render_tab_nav( string $current ): void {
-		echo '<nav class="nav-tab-wrapper pph-settings__tabs" data-pph-settings-tabs>';
-
-		foreach ( SettingsFields::tab_labels() as $tab => $label ) {
-			printf(
-				'<a href="%1$s" class="nav-tab%2$s" data-pph-settings-tab="%3$s">%4$s</a>',
-				esc_url( self::tab_url( $tab ) ),
-				$tab === $current ? ' nav-tab-active' : '',
-				esc_attr( $tab ),
-				esc_html( $label )
-			);
-		}
-
-		echo '</nav>';
+		$this->layout->close();
 	}
 
 	/**
@@ -221,36 +189,50 @@ final class SettingsPage {
 	 *
 	 * @since 0.14.0
 	 *
-	 * @param string               $tab      Tab slug.
-	 * @param array<string, mixed> $settings Stored settings.
+	 * @param string $tab Tab slug.
 	 * @return void
 	 */
-	private function render_form( string $tab, array $settings ): void {
-		$fields = SettingsFields::for_tab( $tab );
-
-		if ( array() === $fields ) {
-			return;
-		}
-
+	private function render_form( string $tab ): void {
 		echo '<form method="post" action="' . esc_url( admin_url( 'options.php' ) ) . '" data-pph-settings-form>';
 
 		settings_fields( self::GROUP_PREFIX . $tab );
 
 		printf( '<input type="hidden" name="%1$s" value="%2$s" />', esc_attr( self::TAB_FIELD ), esc_attr( $tab ) );
 
-		echo '<table class="form-table" role="presentation"><tbody>';
+		$this->layout->render_sections( $tab, new SettingsRenderer( $this->stages, self::stored() ) );
 
-		$renderer = new SettingsRenderer( $this->stages, $settings );
+		echo '<div class="pph-settings__save">';
 
-		foreach ( $fields as $key => $field ) {
-			$renderer->render_row( (string) $key, $field );
+		submit_button( __( 'Save changes', 'post-purchase-hub' ), 'primary', 'submit', false );
+
+		echo '</div></form>';
+	}
+
+	/**
+	 * A tab that configures nothing itself, and says where its settings live.
+	 *
+	 * @since 0.15.0
+	 *
+	 * @param string $tab Tab slug.
+	 * @return void
+	 */
+	private function render_signpost_tab( string $tab ): void {
+		echo '<div class="pph-settings__cards" data-pph-settings-cards>';
+
+		if ( 'emails' === $tab ) {
+			$this->layout->open_card(
+				SettingsLayout::anchor( $tab, 'emails' ),
+				__( 'Where these emails are configured', 'post-purchase-hub' ),
+				'',
+				'emails'
+			);
+
+			self::render_emails_tab();
+
+			SettingsLayout::close_card();
 		}
 
-		echo '</tbody></table>';
-
-		submit_button();
-
-		echo '</form>';
+		echo '</div>';
 	}
 
 	/**
@@ -273,7 +255,7 @@ final class SettingsPage {
 		);
 
 		printf(
-			'<p><a class="button" href="%1$s">%2$s</a></p>',
+			'<p><a class="button button-secondary" href="%1$s">%2$s</a></p>',
 			esc_url( admin_url( 'admin.php?page=wc-settings&tab=email' ) ),
 			esc_html__( 'Open WooCommerce email settings', 'post-purchase-hub' )
 		);

@@ -70,16 +70,29 @@ final class HealthPanel {
 	 * Renders the panel.
 	 *
 	 * @since 0.14.0
+	 *
+	 * @param string $anchor Element id, so the settings sidebar can link to it.
 	 * @return void
 	 */
-	public function render(): void {
-		echo '<div class="pph-health" data-pph-health>';
-		printf( '<h2>%s</h2>', esc_html__( 'Status', 'post-purchase-hub' ) );
-		echo '<table class="widefat striped pph-health__table"><tbody>';
+	public function render( string $anchor = 'pph-general-status' ): void {
+		printf(
+			'<section class="pph-settings__card pph-health" id="%s" data-pph-health data-pph-settings-section="status">',
+			esc_attr( $anchor )
+		);
+
+		echo '<div class="pph-settings__card-header">';
+		printf( '<h3>%s</h3>', esc_html__( 'Status', 'post-purchase-hub' ) );
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'What this store looks like to the plugin right now. Nothing here is a setting — it is what the other tabs have added up to.', 'post-purchase-hub' )
+		);
+		echo '</div>';
+
+		echo '<div class="pph-settings__card-body pph-health__rows">';
 
 		foreach ( $this->rows() as $row ) {
 			printf(
-				'<tr data-pph-health-row="%1$s" data-pph-health-state="%2$s"><th scope="row">%3$s</th><td>%4$s</td></tr>',
+				'<div class="pph-health__row" data-pph-health-row="%1$s" data-pph-health-state="%2$s"><span class="pph-health__dot" aria-hidden="true"></span><span class="pph-health__label">%3$s</span><span class="pph-health__value">%4$s</span></div>',
 				esc_attr( $row['id'] ),
 				esc_attr( $row['state'] ),
 				esc_html( $row['label'] ),
@@ -87,7 +100,7 @@ final class HealthPanel {
 			);
 		}
 
-		echo '</tbody></table></div>';
+		echo '</div></section>';
 	}
 
 	/**

@@ -452,6 +452,61 @@ if ( ! function_exists( 'esc_html__' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_attr__' ) ) {
+	/**
+	 * Translates and escapes for an attribute.
+	 *
+	 * @since 0.15.0
+	 *
+	 * @param string $text   Text.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	function esc_attr__( $text, $domain = 'default' ): string { // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment -- A shim, not a translation call.
+		unset( $domain );
+
+		return htmlspecialchars( (string) $text, ENT_QUOTES );
+	}
+}
+
+if ( ! function_exists( 'sanitize_html_class' ) ) {
+	/**
+	 * Reduces a string to what may appear in a class attribute.
+	 *
+	 * @since 0.15.0
+	 *
+	 * @param string $class    Candidate class name.
+	 * @param string $fallback Returned when nothing survives.
+	 * @return string
+	 */
+	function sanitize_html_class( $class, $fallback = '' ): string { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound -- Matches WordPress core's own parameter name.
+		$clean = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $class );
+
+		return '' === (string) $clean ? (string) $fallback : (string) $clean;
+	}
+}
+
+if ( ! function_exists( 'wp_kses' ) ) {
+	/**
+	 * Stands in for core's HTML filter.
+	 *
+	 * The real implementation is a parser; the unit suite only needs markup to
+	 * come back intact so a screen's output can be asserted against. Anything
+	 * that depends on tags actually being stripped is an integration test.
+	 *
+	 * @since 0.15.0
+	 *
+	 * @param string                             $content       Markup.
+	 * @param array<string, array<string, bool>> $allowed_html Allowed tags.
+	 * @return string
+	 */
+	function wp_kses( $content, $allowed_html = array() ): string {
+		unset( $allowed_html );
+
+		return (string) $content;
+	}
+}
+
 if ( ! function_exists( 'locate_template' ) ) {
 	/**
 	 * Resolves a template name against the fake theme.

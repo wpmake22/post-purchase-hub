@@ -45,7 +45,7 @@ final class SettingsMatrixRenderer {
 	 * @return void
 	 */
 	public function statuses( string $key, array $selected ): void {
-		echo '<fieldset class="pph-settings__group">';
+		echo '<fieldset class="pph-settings__group pph-settings__group--inline">';
 
 		foreach ( SettingsStatusValues::all() as $slug => $label ) {
 			printf(
@@ -73,13 +73,13 @@ final class SettingsMatrixRenderer {
 		$stages = $this->stage_choices();
 		$live   = $this->stages->status_map();
 
-		echo '<table class="pph-settings__map widefat striped"><tbody>';
+		echo '<div class="pph-settings__map">';
 
 		foreach ( SettingsStatusValues::all() as $slug => $label ) {
 			$current = $stored[ $slug ] ?? ( $live[ $slug ] ?? StageMapConfig::HIDDEN );
 
-			echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>';
-			printf( '<select name="%1$s">', esc_attr( SettingsRenderer::name( $key ) . '[' . $slug . ']' ) );
+			echo '<div class="pph-settings__map-row"><span class="pph-settings__map-label">' . esc_html( $label ) . '</span>';
+			printf( '<select name="%1$s" aria-label="%2$s">', esc_attr( SettingsRenderer::name( $key ) . '[' . $slug . ']' ), esc_attr( $label ) );
 
 			foreach ( $stages as $stage => $stage_label ) {
 				printf(
@@ -90,10 +90,10 @@ final class SettingsMatrixRenderer {
 				);
 			}
 
-			echo '</select></td></tr>';
+			echo '</select></div>';
 		}
 
-		echo '</tbody></table>';
+		echo '</div>';
 	}
 
 	/**
@@ -129,7 +129,7 @@ final class SettingsMatrixRenderer {
 	public function weekdays( string $key, array $selected ): void {
 		$selected = array_map( 'intval', $selected );
 
-		echo '<fieldset class="pph-settings__group">';
+		echo '<fieldset class="pph-settings__group pph-settings__group--inline">';
 
 		foreach ( self::weekday_labels() as $day => $label ) {
 			printf(
@@ -176,23 +176,24 @@ final class SettingsMatrixRenderer {
 		$methods = SettingsShippingValues::available();
 
 		if ( array() === $methods ) {
-			printf( '<p class="description">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'post-purchase-hub' ) );
+			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'post-purchase-hub' ) );
 
 			return;
 		}
 
-		echo '<table class="pph-settings__map widefat striped"><tbody>';
+		echo '<div class="pph-settings__map">';
 
 		foreach ( $methods as $method => $label ) {
 			printf(
-				'<tr><th scope="row">%1$s</th><td><input type="number" class="small-text" name="%2$s" value="%3$s" min="0" max="60" step="1" /></td></tr>',
+				'<div class="pph-settings__map-row"><span class="pph-settings__map-label">%1$s</span><input type="number" class="pph-settings__number" name="%2$s" value="%3$s" min="0" max="60" step="1" aria-label="%4$s" /></div>',
 				esc_html( $label ),
 				esc_attr( SettingsRenderer::name( $key ) . '[' . $method . ']' ),
-				esc_attr( isset( $stored[ $method ] ) ? (string) (int) $stored[ $method ] : '' )
+				esc_attr( isset( $stored[ $method ] ) ? (string) (int) $stored[ $method ] : '' ),
+				esc_attr( $label )
 			);
 		}
 
-		echo '</tbody></table>';
+		echo '</div>';
 	}
 
 	/**
@@ -208,18 +209,18 @@ final class SettingsMatrixRenderer {
 		$methods = SettingsShippingValues::available();
 
 		if ( array() === $methods ) {
-			printf( '<p class="description">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'post-purchase-hub' ) );
+			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'post-purchase-hub' ) );
 
 			return;
 		}
 
-		echo '<table class="pph-settings__map widefat striped"><tbody>';
+		echo '<div class="pph-settings__map">';
 
 		foreach ( $methods as $method => $label ) {
 			$range = isset( $stored[ $method ] ) && is_array( $stored[ $method ] ) ? $stored[ $method ] : array();
 
 			printf(
-				'<tr><th scope="row">%1$s</th><td><input type="number" class="small-text" name="%2$s" value="%3$s" min="0" max="60" step="1" aria-label="%6$s" /> – <input type="number" class="small-text" name="%4$s" value="%5$s" min="0" max="60" step="1" aria-label="%7$s" /></td></tr>',
+				'<div class="pph-settings__map-row"><span class="pph-settings__map-label">%1$s</span><span class="pph-settings__range"><input type="number" class="pph-settings__number" name="%2$s" value="%3$s" min="0" max="60" step="1" aria-label="%6$s" /><span aria-hidden="true">–</span><input type="number" class="pph-settings__number" name="%4$s" value="%5$s" min="0" max="60" step="1" aria-label="%7$s" /></span></div>',
 				esc_html( $label ),
 				esc_attr( SettingsRenderer::name( $key ) . '[' . $method . '][min]' ),
 				esc_attr( isset( $range['min'] ) ? (string) (int) $range['min'] : '' ),
@@ -230,7 +231,7 @@ final class SettingsMatrixRenderer {
 			);
 		}
 
-		echo '</tbody></table>';
+		echo '</div>';
 	}
 
 	/**
@@ -245,13 +246,13 @@ final class SettingsMatrixRenderer {
 	public function action_toggles( string $key, array $stored ): void {
 		$descriptions = ActionAvailability::descriptions();
 
-		echo '<fieldset class="pph-settings__group">';
+		echo '<fieldset class="pph-settings__group pph-settings__group--actions">';
 
 		foreach ( ActionAvailability::labels() as $action_id => $label ) {
 			$enabled = ! isset( $stored[ $action_id ] ) || (bool) $stored[ $action_id ];
 
 			printf(
-				'<label class="pph-settings__option"><input type="checkbox" name="%1$s" value="1" %2$s /> <strong>%3$s</strong></label><p class="description">%4$s</p>',
+				'<div class="pph-settings__action"><label class="pph-switch"><input type="checkbox" name="%1$s" value="1" %2$s /><span class="pph-switch__track" aria-hidden="true"></span><span class="pph-switch__label">%3$s</span></label><p class="pph-settings__help">%4$s</p></div>',
 				esc_attr( SettingsRenderer::name( $key ) . '[' . $action_id . ']' ),
 				checked( $enabled, true, false ),
 				esc_html( $label ),

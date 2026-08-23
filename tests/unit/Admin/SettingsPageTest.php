@@ -12,6 +12,9 @@ namespace PostPurchaseHub\Tests\Unit\Admin;
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Admin\HealthPanel;
 use PostPurchaseHub\Admin\SettingsFields;
+use PostPurchaseHub\Admin\SettingsLayout;
+use PostPurchaseHub\Admin\SettingsSections;
+use PostPurchaseHub\Admin\SettingsSidebar;
 use PostPurchaseHub\Admin\SettingsPage;
 use PostPurchaseHub\Admin\TemplateConflictScanner;
 use PostPurchaseHub\Install\Schema;
@@ -65,7 +68,10 @@ final class SettingsPageTest extends TestCase {
 
 		$this->page = new SettingsPage(
 			new StageMap( new StatusDetector( $cache ) ),
-			new HealthPanel( new TemplateConflictScanner( $cache ), new Detector( $cache, array() ) )
+			new SettingsLayout(
+				new HealthPanel( new TemplateConflictScanner( $cache ), new Detector( $cache, array() ) ),
+				new SettingsSidebar()
+			)
 		);
 	}
 
@@ -231,6 +237,102 @@ final class SettingsPageTest extends TestCase {
 
 			$this->assertStringContainsString( 'data-pph-confirm', $html, $tab . ' asks before its risky setting takes effect.' );
 		}
+	}
+
+	/**
+	 * Every tab draws the two-pane shell: the rail listing all six tabs, the
+	 * search box, and the open tab's own heading.
+	 *
+	 * @return void
+	 */
+	public function test_every_tab_draws_the_navigation_shell(): void {
+		foreach ( SettingsFields::TABS as $tab ) {
+			$_GET = array( 'tab' => $tab );
+
+			ob_start();
+			$this->page->render();
+			$html = (string) ob_get_clean();
+
+			$this->assertStringContainsString( 'data-pph-settings-sidebar', $html, $tab . ' draws the rail.' );
+			$this->assertStringContainsString( 'data-pph-settings-search', $html, $tab . ' can be searched.' );
+
+			foreach ( array_keys( SettingsFields::tab_labels() ) as $other ) {
+				$this->assertStringContainsString(
+					'data-pph-settings-tab="' . $other . '"',
+					$html,
+					'Every tab stays reachable from ' . $tab . '.'
+				);
+			}
+		}
+	}
+
+	/**
+	 * Every field a tab declares lands on a card, and every card the sidebar
+	 * links to exists on the page for that link to reach.
+	 *
+	 * This is the assertion that catches a setting added to `SettingsFields`
+	 * and forgotten in `SettingsSections`: it would render — the sweep-up card
+	 * sees to that — but it must still render somewhere.
+	 *
+	 * @return void
+	 */
+	public function test_every_field_lands_on_a_card(): void {
+		foreach ( SettingsFields::TABS as $tab ) {
+			$_GET = array( 'tab' => $tab );
+
+			ob_start();
+			$this->page->render();
+			$html = (string) ob_get_clean();
+
+			foreach ( array_keys( SettingsFields::for_tab( $tab ) ) as $key ) {
+				$this->assertStringContainsString(
+					'data-pph-settings-field="' . $key . '"',
+					$html,
+					$key . ' is missing from the ' . $tab . ' tab.'
+				);
+			}
+
+			foreach ( SettingsSections::for_tab( $tab ) as $section ) {
+				$this->assertStringContainsString(
+					'id="' . SettingsLayout::anchor( $tab, $section['id'] ) . '"',
+					$html,
+					$section['id'] . ' has a sidebar link but no card.'
+				);
+			}
+		}
+	}
+
+	/**
+	 * A boolean is a switch that says which way it is set, and says it from the
+	 * stored value rather than from JavaScript.
+	 *
+	 * @return void
+	 */
+	public function test_a_boolean_renders_as_a_labelled_switch(): void {
+		$_GET = array( 'tab' => 'advanced' );
+
+		ob_start();
+		$this->page->render();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'pph-switch', $html );
+		$this->assertStringContainsString( 'data-pph-switch-states', $html );
+	}
+
+	/**
+	 * Every field carries the words the search box matches on, lowercased, so
+	 * filtering never has to read the rendered markup back.
+	 *
+	 * @return void
+	 */
+	public function test_fields_carry_their_search_terms(): void {
+		$_GET = array( 'tab' => 'timeline' );
+
+		ob_start();
+		$this->page->render();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'data-pph-settings-terms="handling time', $html );
 	}
 
 	/**
