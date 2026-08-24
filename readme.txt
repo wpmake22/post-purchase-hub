@@ -68,6 +68,18 @@ fills in what can be derived from the dates WooCommerce does store.
 Yes. All order data is read and written through WooCommerce's CRUD layer, and
 the test suite runs against both storage engines.
 
+== Screenshots ==
+
+1. Every order gets a progress timeline on the customer's own account page, with an estimated delivery date wherever you have set shipping times.
+2. The My Account order list gains a Progress column, and shows only the actions that actually apply to each order.
+3. Customers ask to cancel and you approve or decline. Nothing is cancelled automatically, and the plugin never issues a refund.
+4. The request queue: every cancellation request waiting on a decision, with the order it belongs to and the reason the customer gave.
+5. A setup wizard that asks what you need and skips what you do not. Nothing reaches your storefront until you finish it.
+6. The settings screen, with a status panel that says plainly whether everything is working.
+7. Map your own order statuses onto the stages customers see, and set handling and transit times per shipping method.
+8. Choose what customers can do for themselves, and the rules around cancellation requests.
+9. Guest order lookup: customers without an account reach their order through a secure link emailed to the address already on it.
+
 == Changelog ==
 
 = 0.1.0 =

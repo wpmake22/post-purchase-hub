@@ -294,8 +294,18 @@ function dev_excludes(): array {
 		'.gitignore',
 		'.editorconfig',
 		'.distignore',
+		// WP.org serves banners, icons and screenshots from the `assets/`
+		// directory of its own SVN repository, never from the plugin zip. They
+		// were shipping to every installation as dead weight.
+		'.wordpress-org',
 		'.wp-env.json',
+		'.wp-env.hpos.json',
 		'.wp-env.override.json',
+		'.wp-env.ci.json',
+		// Tooling caches. `.phpcs.cache` alone was the largest single file in
+		// the artifact, several times the size of the plugin.
+		'.phpcs.cache',
+		'.phpunit.result.cache',
 		'node_modules',
 		'vendor',
 		'dist',
@@ -311,11 +321,14 @@ function dev_excludes(): array {
 		'phpstan.neon.dist',
 		'phpunit.xml',
 		'phpunit.xml.dist',
+		'phpunit-integration.xml.dist',
 		'package.json',
 		'package-lock.json',
 		'webpack.config.js',
 		'CLAUDE.md',
 		'CHANGELOG.md',
+		'SECURITY.md',
+		'composer.lock',
 	);
 }
 

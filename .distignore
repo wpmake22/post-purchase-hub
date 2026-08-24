@@ -1,4 +1,11 @@
 # Everything here is development-only and must not reach the WP.org build.
+#
+# bin/build.php keeps the authoritative list in dev_excludes(); this file
+# mirrors it for tooling that reads .distignore instead. DistIgnoreParityTest
+# fails the suite if the two drift apart.
+#
+# composer.json is deliberately absent: the build ships a rewritten,
+# per-edition copy of it rather than excluding it.
 /.git
 /.github
 /.claude
@@ -19,7 +26,6 @@
 .wp-env.ci.json
 CLAUDE.md
 SECURITY.md
-composer.json
 composer.lock
 package.json
 package-lock.json
