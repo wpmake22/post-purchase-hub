@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Admin;
 
 use PostPurchaseHub\Requests\Request;
+use PostPurchaseHub\Requests\RequestLabels;
 use PostPurchaseHub\Requests\RequestQuery;
 use PostPurchaseHub\Requests\RequestRepository;
 
@@ -270,8 +271,20 @@ final class RequestListTable extends \WP_List_Table {
 		echo '<form method="get" class="pph-request-filters">';
 		printf( '<input type="hidden" name="page" value="%s">', esc_attr( Menu::REQUESTS_PAGE ) );
 
-		self::render_select( 'type', __( 'All types', 'post-purchase-hub' ), Request::types(), $filters['type'] ?? '' );
-		self::render_select( 'status', __( 'All statuses', 'post-purchase-hub' ), Request::statuses(), $filters['status'] ?? '' );
+		self::render_select(
+			'type',
+			__( 'All types', 'post-purchase-hub' ),
+			Request::types(),
+			$filters['type'] ?? '',
+			array( RequestLabels::class, 'type' )
+		);
+		self::render_select(
+			'status',
+			__( 'All statuses', 'post-purchase-hub' ),
+			Request::statuses(),
+			$filters['status'] ?? '',
+			array( RequestLabels::class, 'status' )
+		);
 
 		printf( '<button type="submit" class="button">%s</button>', esc_html__( 'Filter', 'post-purchase-hub' ) );
 		echo '</form>';
@@ -286,9 +299,10 @@ final class RequestListTable extends \WP_List_Table {
 	 * @param string   $all     Label for "no filter".
 	 * @param string[] $options Option values.
 	 * @param string   $current Currently selected value.
+	 * @param callable $label   Turns one option slug into its human label.
 	 * @return void
 	 */
-	private static function render_select( string $name, string $all, array $options, string $current ): void {
+	private static function render_select( string $name, string $all, array $options, string $current, callable $label ): void {
 		printf( '<select name="%s">', esc_attr( $name ) );
 		printf( '<option value="">%s</option>', esc_html( $all ) );
 
@@ -297,7 +311,7 @@ final class RequestListTable extends \WP_List_Table {
 				'<option value="%s"%s>%s</option>',
 				esc_attr( $option ),
 				selected( $current, $option, false ),
-				esc_html( $option )
+				esc_html( (string) $label( $option ) )
 			);
 		}
 
@@ -349,11 +363,11 @@ final class RequestListTable extends \WP_List_Table {
 
 		switch ( $column_name ) {
 			case 'type':
-				return esc_html( $item->type );
+				return esc_html( RequestLabels::type( $item->type ) );
 			case 'reason':
-				return esc_html( (string) $item->reason_code );
+				return esc_html( RequestLabels::reason( $item->type, $item->reason_code ) );
 			case 'status':
-				return esc_html( $item->status );
+				return esc_html( RequestLabels::status( $item->status ) );
 			default:
 				return '';
 		}
