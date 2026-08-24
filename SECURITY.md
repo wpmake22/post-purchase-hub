@@ -16,7 +16,7 @@ priority class of issue we handle.
 Please report privately — do not open a public GitHub issue, and do not post
 details in the WordPress.org support forum.
 
-- Email: security@themegrill.com
+- Email: security@wpmake.net
 - Include: affected version, WordPress and WooCommerce versions, whether HPOS is
   enabled, reproduction steps, and the impact you were able to demonstrate.
 - Please do not test against stores you do not own.

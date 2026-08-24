@@ -6,14 +6,14 @@
  *
  * @wordpress-plugin
  * Plugin Name:          Post-Purchase Hub for WooCommerce
- * Plugin URI:           https://themegrill.com/
+ * Plugin URI:           https://wpmake.net/
  * Description:          Order timeline, self-service post-purchase actions and a merchant request queue for WooCommerce stores.
- * Version:              0.1.0
+ * Version:              1.0.0
  * Requires at least:    6.5
  * Requires PHP:         8.1
  * Requires Plugins:     woocommerce
- * Author:               ThemeGrill
- * Author URI:           https://themegrill.com/
+ * Author:               WPMake
+ * Author URI:           https://wpmake.net/
  * License:              GPL-2.0-or-later
  * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:          post-purchase-hub
@@ -33,7 +33,7 @@ if ( defined( 'PPH_VERSION' ) ) {
 	return;
 }
 
-define( 'PPH_VERSION', '0.1.0' );
+define( 'PPH_VERSION', '1.0.0' );
 define( 'PPH_PLUGIN_FILE', __FILE__ );
 define( 'PPH_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PPH_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

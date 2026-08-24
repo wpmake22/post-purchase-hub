@@ -1,5 +1,5 @@
 {
-	"name": "themegrill/post-purchase-hub",
+	"name": "wpmake/post-purchase-hub",
 	"description": "Post-Purchase Hub for WooCommerce — order timeline, self-service actions and a merchant request queue.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
