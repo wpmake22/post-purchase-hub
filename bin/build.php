@@ -333,6 +333,20 @@ function dev_excludes(): array {
 }
 
 /**
+ * Filenames dropped wherever they appear, rather than at a fixed path.
+ *
+ * WordPress.org's Plugin Check rejects a plugin containing hidden files, and
+ * these two turn up anywhere: `.gitkeep` wherever an empty directory once
+ * needed tracking, `.DS_Store` wherever macOS Finder has opened a folder. A
+ * path list cannot express "anywhere", so the copier matches on the name.
+ *
+ * @return string[]
+ */
+function hidden_filenames(): array {
+	return array( '.DS_Store', '.gitkeep', 'Thumbs.db', '.keep' );
+}
+
+/**
  * Paths excluded for a specific edition.
  *
  * @param string $edition free|pro.
@@ -364,6 +378,10 @@ function copy_tree( string $from, string $to, array $excludes ): int {
 			new RecursiveDirectoryIterator( $from, FilesystemIterator::SKIP_DOTS ),
 			static function ( $current ) use ( $from, $excludes ) {
 				$rel = ltrim( str_replace( '\\', '/', substr( $current->getPathname(), strlen( $from ) ) ), '/' );
+
+				if ( in_array( $current->getFilename(), hidden_filenames(), true ) ) {
+					return false;
+				}
 
 				if ( isset( $excludes[ $rel ] ) ) {
 					return false;

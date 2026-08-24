@@ -83,9 +83,18 @@ final class DistIgnoreParityTest extends TestCase {
 	 *
 	 * @return array<int, string>
 	 */
-	private function build_excludes(): array {
+	private function build_source(): string {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading a file from this repository, not a remote URL.
-		$source = (string) file_get_contents( $this->root() . '/bin/build.php' );
+		return (string) file_get_contents( $this->root() . '/bin/build.php' );
+	}
+
+	/**
+	 * The paths `bin/build.php` excludes.
+	 *
+	 * @return array<int, string>
+	 */
+	private function build_excludes(): array {
+		$source = $this->build_source();
 
 		$start = strpos( $source, 'function dev_excludes(): array {' );
 
@@ -148,6 +157,41 @@ final class DistIgnoreParityTest extends TestCase {
 			$this->distignore_paths(),
 			'The build ships a rewritten composer.json; .distignore must not claim otherwise.'
 		);
+	}
+
+	/**
+	 * The build drops hidden files wherever they appear, not just at fixed
+	 * paths.
+	 *
+	 * WordPress.org's Plugin Check treats any hidden file in the artifact as an
+	 * error, and it found fourteen: a `.gitkeep` in every directory that had
+	 * once been empty, and a `.DS_Store` in every directory macOS Finder had
+	 * opened. Neither can be expressed as a path, because both turn up anywhere.
+	 *
+	 * @return void
+	 */
+	public function test_hidden_filenames_are_dropped_by_name(): void {
+		$source = $this->build_source();
+
+		$this->assertStringContainsString(
+			'function hidden_filenames(): array',
+			$source,
+			'bin/build.php must declare the hidden-filename filter.'
+		);
+
+		$this->assertStringContainsString(
+			'in_array( $current->getFilename(), hidden_filenames(), true )',
+			$source,
+			'The copier must consult hidden_filenames() as it walks the tree.'
+		);
+
+		foreach ( array( '.DS_Store', '.gitkeep' ) as $name ) {
+			$this->assertStringContainsString(
+				"'" . $name . "'",
+				$source,
+				$name . ' must be in the hidden-filename list.'
+			);
+		}
 	}
 
 	/**

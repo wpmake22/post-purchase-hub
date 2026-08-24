@@ -14,6 +14,12 @@ use PostPurchaseHub\Requests\RequestLabels;
 use PostPurchaseHub\Requests\RequestQuery;
 use PostPurchaseHub\Requests\RequestRepository;
 
+// This is the one class file in the plugin that executes at file scope: it has
+// to pull in core's list-table class before extending it. That makes it the one
+// file a direct request could actually run, so it is the one that needs the
+// guard - every other file here only declares a class.
+defined( 'ABSPATH' ) || exit;
+
 if ( ! class_exists( '\WP_List_Table' ) && defined( 'ABSPATH' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
