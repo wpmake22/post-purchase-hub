@@ -50,7 +50,7 @@ final class PluginHeaderTest extends TestCase {
 	 */
 	private function main_file(): string {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading a file from this repository, not a remote URL.
-		return (string) file_get_contents( $this->root() . '/post-purchase-hub.php' );
+		return (string) file_get_contents( $this->root() . '/wpmake-post-purchase-hub.php' );
 	}
 
 	/**
@@ -129,7 +129,7 @@ final class PluginHeaderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_text_domain_is_the_slug(): void {
-		$this->assertSame( 'post-purchase-hub', $this->header( 'Text Domain' ) );
+		$this->assertSame( 'wpmake-post-purchase-hub', $this->header( 'Text Domain' ) );
 	}
 
 	/**

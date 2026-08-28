@@ -378,7 +378,7 @@ final class GuestLookupService {
 	 * @return string
 	 */
 	public static function accepted_message(): string {
-		return __( 'If that order exists, we have emailed a secure link to the address on file for it. The link opens the order without a password.', 'post-purchase-hub' );
+		return __( 'If that order exists, we have emailed a secure link to the address on file for it. The link opens the order without a password.', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -389,7 +389,7 @@ final class GuestLookupService {
 	 * @return string
 	 */
 	public static function throttled_message(): string {
-		return __( 'Too many attempts. Please wait a few minutes and try again.', 'post-purchase-hub' );
+		return __( 'Too many attempts. Please wait a few minutes and try again.', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -400,6 +400,6 @@ final class GuestLookupService {
 	 * @return string
 	 */
 	public static function unavailable_message(): string {
-		return __( 'Order lookup is not available on this store.', 'post-purchase-hub' );
+		return __( 'Order lookup is not available on this store.', 'wpmake-post-purchase-hub' );
 	}
 }

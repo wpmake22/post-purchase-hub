@@ -2,7 +2,7 @@
 /**
  * Orders with their timelines.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/orders-list.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/orders-list.php.
  *
  * @package PostPurchaseHub
  * @version 0.4.0
@@ -29,7 +29,7 @@ endif;
 					<?php
 					printf(
 						/* translators: %s: order number, without a leading hash. */
-						esc_html__( 'Order %s', 'post-purchase-hub' ),
+						esc_html__( 'Order %s', 'wpmake-post-purchase-hub' ),
 						esc_html( $pph_order['number'] )
 					);
 					?>

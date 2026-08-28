@@ -2,7 +2,7 @@
 /**
  * New request admin email (plain text).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/plain/admin-new-request.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/plain/admin-new-request.php.
  *
  * @package PostPurchaseHub
  * @version 0.10.0
@@ -28,22 +28,22 @@ echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 echo sprintf(
 	/* translators: %s: order number. */
-	esc_html__( 'A customer has raised a request against order #%s.', 'post-purchase-hub' ),
+	esc_html__( 'A customer has raised a request against order #%s.', 'wpmake-post-purchase-hub' ),
 	esc_html( $order instanceof WC_Order ? $order->get_order_number() : (string) $request->order_id )
 ) . "\n\n";
 
 if ( null !== $reason_label ) {
-	echo esc_html__( 'Reason:', 'post-purchase-hub' ) . ' ' . esc_html( $reason_label ) . "\n\n";
+	echo esc_html__( 'Reason:', 'wpmake-post-purchase-hub' ) . ' ' . esc_html( $reason_label ) . "\n\n";
 }
 
 if ( null !== $request->customer_note ) {
-	echo esc_html__( 'Customer note:', 'post-purchase-hub' ) . "\n\n";
+	echo esc_html__( 'Customer note:', 'wpmake-post-purchase-hub' ) . "\n\n";
 	echo "----------\n\n";
 	echo esc_html( $request->customer_note ) . "\n\n";
 	echo "----------\n\n";
 }
 
-echo esc_html__( 'Review this request:', 'post-purchase-hub' ) . ' ' . esc_url( $queue_url ) . "\n\n";
+echo esc_html__( 'Review this request:', 'wpmake-post-purchase-hub' ) . ' ' . esc_url( $queue_url ) . "\n\n";
 
 if ( $order instanceof WC_Order ) {
 	do_action( 'woocommerce_email_order_details', $order, $sent_to_admin, $plain_text, $email );

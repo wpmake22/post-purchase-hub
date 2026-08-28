@@ -80,7 +80,7 @@ final class NoPdfGeneratorTest extends TestCase {
 	private function files(): array {
 		$files = array();
 
-		foreach ( array( 'composer.json', 'composer.lock', 'package.json', 'post-purchase-hub.php' ) as $manifest ) {
+		foreach ( array( 'composer.json', 'composer.lock', 'package.json', 'wpmake-post-purchase-hub.php' ) as $manifest ) {
 			$path = $this->root() . '/' . $manifest;
 
 			if ( is_readable( $path ) ) {

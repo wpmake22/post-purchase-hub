@@ -238,7 +238,7 @@ final class Assets {
 			'pphLookup',
 			array(
 				'restUrl'      => rest_url( LookupController::NAMESPACE . LookupController::ROUTE ),
-				'errorMessage' => __( 'That could not be submitted. Please check your connection and try again.', 'post-purchase-hub' ),
+				'errorMessage' => __( 'That could not be submitted. Please check your connection and try again.', 'wpmake-post-purchase-hub' ),
 			)
 		);
 	}

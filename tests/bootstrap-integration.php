@@ -62,7 +62,7 @@ function pph_tests_load_plugins(): void {
 	require_once $pph_woo_file;
 
 	// The main plugin file is delivered by M01; until then the suite boots WooCommerce only.
-	$pph_plugin_file = dirname( __DIR__ ) . '/post-purchase-hub.php';
+	$pph_plugin_file = dirname( __DIR__ ) . '/wpmake-post-purchase-hub.php';
 
 	if ( file_exists( $pph_plugin_file ) ) {
 		require_once $pph_plugin_file;

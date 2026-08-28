@@ -245,7 +245,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 		) {
 			showError(
 				reasonError,
-				__( 'Please choose a reason.', 'post-purchase-hub' )
+				__( 'Please choose a reason.', 'wpmake-post-purchase-hub' )
 			);
 			reasonField.focus();
 
@@ -334,7 +334,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 				'Your cancellation request has been received. We usually respond within %d hour.',
 				'Your cancellation request has been received. We usually respond within %d hours.',
 				hours,
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			),
 			hours
 		);
@@ -395,7 +395,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 		if ( label ) {
 			label.textContent = __(
 				'Cancellation requested',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			);
 		}
 
@@ -406,7 +406,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 					'We usually respond within %d hour.',
 					'We usually respond within %d hours.',
 					hours,
-					'post-purchase-hub'
+					'wpmake-post-purchase-hub'
 				),
 				hours
 			);
@@ -438,7 +438,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 				? data.message
 				: __(
 						'Something went wrong. Please try again.',
-						'post-purchase-hub'
+						'wpmake-post-purchase-hub'
 				  );
 		const reference =
 			data && data.data && data.data.reference ? data.data.reference : '';
@@ -448,7 +448,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 			reference
 				? sprintf(
 						/* translators: 1: error message, 2: support reference id. */
-						__( '%1$s (reference: %2$s)', 'post-purchase-hub' ),
+						__( '%1$s (reference: %2$s)', 'wpmake-post-purchase-hub' ),
 						message,
 						reference
 				  )

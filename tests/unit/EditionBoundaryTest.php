@@ -37,7 +37,7 @@ final class EditionBoundaryTest extends TestCase {
 	 * @return array<int, string>
 	 */
 	private function core_files(): array {
-		$files = array( $this->root() . '/post-purchase-hub.php', $this->root() . '/uninstall.php' );
+		$files = array( $this->root() . '/wpmake-post-purchase-hub.php', $this->root() . '/uninstall.php' );
 
 		$iterator = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator( $this->root() . '/src', \FilesystemIterator::SKIP_DOTS )
@@ -85,7 +85,7 @@ final class EditionBoundaryTest extends TestCase {
 	 */
 	public function test_core_never_branches_on_edition(): void {
 		foreach ( $this->core_files() as $path ) {
-			if ( $this->root() . '/post-purchase-hub.php' === $path ) {
+			if ( $this->root() . '/wpmake-post-purchase-hub.php' === $path ) {
 				// The helper is declared there; the rule is about src/ using it.
 				continue;
 			}

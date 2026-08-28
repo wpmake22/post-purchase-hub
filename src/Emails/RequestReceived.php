@@ -38,8 +38,8 @@ final class RequestReceived extends AbstractEmail {
 	public function __construct() {
 		$this->id             = 'pph_request_received';
 		$this->customer_email = true;
-		$this->title          = __( 'Request received', 'post-purchase-hub' );
-		$this->description    = __( 'Sent to the customer the moment they raise a cancellation request, confirming it was received and when to expect a reply.', 'post-purchase-hub' );
+		$this->title          = __( 'Request received', 'wpmake-post-purchase-hub' );
+		$this->description    = __( 'Sent to the customer the moment they raise a cancellation request, confirming it was received and when to expect a reply.', 'wpmake-post-purchase-hub' );
 		$this->email_group    = 'order-changes';
 		$this->template_html  = 'emails/request-received.php';
 		$this->template_plain = 'emails/plain/request-received.php';
@@ -57,14 +57,14 @@ final class RequestReceived extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_subject(): string {
-		return __( 'We received your request about order {order_number}', 'post-purchase-hub' );
+		return __( 'We received your request about order {order_number}', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function get_default_heading(): string {
-		return __( 'We received your request', 'post-purchase-hub' );
+		return __( 'We received your request', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -141,7 +141,7 @@ final class RequestReceived extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_additional_content(): string {
-		return __( 'Thanks for your patience while we take a look.', 'post-purchase-hub' );
+		return __( 'Thanks for your patience while we take a look.', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -164,10 +164,10 @@ final class RequestReceived extends AbstractEmail {
 			$days = (int) ( $hours / 24 );
 
 			/* translators: %d: number of days. */
-			return sprintf( _n( '%d day', '%d days', $days, 'post-purchase-hub' ), $days );
+			return sprintf( _n( '%d day', '%d days', $days, 'wpmake-post-purchase-hub' ), $days );
 		}
 
 		/* translators: %d: number of hours. */
-		return sprintf( _n( '%d hour', '%d hours', $hours, 'post-purchase-hub' ), $hours );
+		return sprintf( _n( '%d hour', '%d hours', $hours, 'wpmake-post-purchase-hub' ), $hours );
 	}
 }

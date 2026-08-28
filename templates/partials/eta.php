@@ -2,7 +2,7 @@
 /**
  * Estimated delivery range.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/eta.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/eta.php.
  *
  * @package PostPurchaseHub
  * @version 0.5.0
@@ -20,7 +20,7 @@ if ( empty( $eta['visible'] ) ) {
 ?>
 <p class="pph-eta" data-pph-eta>
 	<span class="pph-eta__label" data-pph-eta-label>
-		<?php esc_html_e( 'Estimated delivery:', 'post-purchase-hub' ); ?>
+		<?php esc_html_e( 'Estimated delivery:', 'wpmake-post-purchase-hub' ); ?>
 	</span>
 
 	<time

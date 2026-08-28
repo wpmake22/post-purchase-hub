@@ -1,4 +1,4 @@
-=== Post-Purchase Hub for WooCommerce ===
+=== WPMake Post-Purchase Hub for WooCommerce ===
 Contributors: wpmakedev
 Tags: woocommerce, orders, order tracking, order status, cancel order
 Requires at least: 6.5
@@ -17,7 +17,7 @@ order?** The customer already has the answer in their account — an order statu
 like "processing" — but that word means nothing to them. So they write to you,
 and you answer by hand.
 
-Post-Purchase Hub turns that status into something a customer can actually read:
+WPMake Post-Purchase Hub turns that status into something a customer can actually read:
 a stage-by-stage timeline on the order page they already visit, with a delivery
 estimate where you have told it your shipping times. Then it gives them the few
 things they would otherwise have emailed you about — cancelling, reordering,
@@ -138,13 +138,35 @@ or your customers leaves your server, because nothing is ever sent anywhere.
 Order data is read and written only through WooCommerce's own CRUD layer, and the
 plugin never writes to another plugin's data.
 
+= Source code and build tools =
+
+The plugin is GPL, and everything it ships can be read and rebuilt. The zip
+contains the unminified source of every compiled asset alongside the compiled
+files themselves:
+
+* `assets/src/` — the JavaScript and SCSS sources for every bundle in
+  `assets/build/`, including the setup wizard's React app.
+* `webpack.config.js` and `package.json` — the build configuration and the
+  script that runs it.
+
+To rebuild the compiled assets from the sources in the zip:
+
+`npm install && npm run build`
+
+The build uses [@wordpress/scripts](https://www.npmjs.com/package/@wordpress/scripts),
+WordPress's own webpack configuration, and no other bundler. Nothing is
+obfuscated, and no compiled file has a source that is not in the zip.
+
+Development happens at https://github.com/wpmake22/post-purchase-hub, where the
+PHP source, the test suites and the release script live as well.
+
 Install it, spend two minutes in the wizard, and stop answering the same email.
 
 == Installation ==
 
 **From your WordPress dashboard**
 
-1. Go to **Plugins → Add New** and search for "Post-Purchase Hub".
+1. Go to **Plugins → Add New** and search for "WPMake Post-Purchase Hub".
 2. Click **Install Now**, then **Activate**.
 
 **Uploading the zip**

@@ -24,7 +24,7 @@ export default function Stepper( { steps, current, onStepClick, onExit } ) {
 	return (
 		<header className="pph-setup__header" data-pph-wizard-progress>
 			<p className="pph-setup__brand">
-				{ __( 'Post-Purchase Hub', 'post-purchase-hub' ) }
+				{ __( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ) }
 			</p>
 
 			<ol className="pph-setup__steps">
@@ -82,14 +82,14 @@ export default function Stepper( { steps, current, onStepClick, onExit } ) {
 					/* translators: %s: number of steps in the wizard. */
 					__(
 						'Leave setup. You can come back and finish all %s steps later.',
-						'post-purchase-hub'
+						'wpmake-post-purchase-hub'
 					),
 					steps.length
 				) }
 			>
 				<span aria-hidden="true">×</span>
 				<span className="screen-reader-text">
-					{ __( 'Leave setup', 'post-purchase-hub' ) }
+					{ __( 'Leave setup', 'wpmake-post-purchase-hub' ) }
 				</span>
 			</button>
 		</header>

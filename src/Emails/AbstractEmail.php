@@ -18,7 +18,7 @@ use PostPurchaseHub\Frontend\TemplateLoader;
  * Two things live here rather than being repeated per class:
  *
  * 1. Template resolution through this plugin's own theme-override convention
- *    (`yourtheme/post-purchase-hub/emails/...`) rather than WooCommerce's
+ *    (`yourtheme/wpmake-post-purchase-hub/emails/...`) rather than WooCommerce's
  *    (`yourtheme/woocommerce/emails/...`), so a merchant who already overrides
  *    our timeline and action partials finds our emails in the same place.
  * 2. Order-derived locale switching. `WC_Email::setup_locale()` always
@@ -52,7 +52,7 @@ abstract class AbstractEmail extends \WC_Email {
 
 	/**
 	 * The template-path argument every `wc_get_template_html()` call here uses,
-	 * so a theme override lands at `yourtheme/post-purchase-hub/emails/...`
+	 * so a theme override lands at `yourtheme/wpmake-post-purchase-hub/emails/...`
 	 * rather than the WooCommerce convention this plugin's other templates
 	 * already depart from (`Frontend\TemplateLoader::THEME_DIRECTORY`).
 	 *
@@ -138,9 +138,9 @@ abstract class AbstractEmail extends \WC_Email {
 	final protected function enabled_field(): array {
 		return array(
 			'enabled' => array(
-				'title'   => __( 'Enable/Disable', 'post-purchase-hub' ),
+				'title'   => __( 'Enable/Disable', 'wpmake-post-purchase-hub' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable this email notification', 'post-purchase-hub' ),
+				'label'   => __( 'Enable this email notification', 'wpmake-post-purchase-hub' ),
 				'default' => 'yes',
 			),
 		);
@@ -157,10 +157,10 @@ abstract class AbstractEmail extends \WC_Email {
 	final protected function recipient_field( string $default_recipient ): array {
 		return array(
 			'recipient' => array(
-				'title'       => __( 'Recipient(s)', 'post-purchase-hub' ),
+				'title'       => __( 'Recipient(s)', 'wpmake-post-purchase-hub' ),
 				'type'        => 'text',
 				/* translators: %s: default recipient address. */
-				'description' => sprintf( __( 'Comma-separated. Defaults to %s.', 'post-purchase-hub' ), '<code>' . esc_attr( $default_recipient ) . '</code>' ),
+				'description' => sprintf( __( 'Comma-separated. Defaults to %s.', 'wpmake-post-purchase-hub' ), '<code>' . esc_attr( $default_recipient ) . '</code>' ),
 				'placeholder' => '',
 				'default'     => '',
 				'desc_tip'    => true,
@@ -180,13 +180,13 @@ abstract class AbstractEmail extends \WC_Email {
 			? ''
 			: sprintf(
 				/* translators: %s: list of placeholders */
-				__( 'Available placeholders: %s', 'post-purchase-hub' ),
+				__( 'Available placeholders: %s', 'wpmake-post-purchase-hub' ),
 				'<code>' . implode( '</code>, <code>', array_keys( $this->placeholders ) ) . '</code>'
 			);
 
 		return array(
 			'subject'            => array(
-				'title'       => __( 'Subject', 'post-purchase-hub' ),
+				'title'       => __( 'Subject', 'wpmake-post-purchase-hub' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
 				'description' => $placeholder_text,
@@ -194,7 +194,7 @@ abstract class AbstractEmail extends \WC_Email {
 				'default'     => '',
 			),
 			'heading'            => array(
-				'title'       => __( 'Email heading', 'post-purchase-hub' ),
+				'title'       => __( 'Email heading', 'wpmake-post-purchase-hub' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
 				'description' => $placeholder_text,
@@ -202,18 +202,18 @@ abstract class AbstractEmail extends \WC_Email {
 				'default'     => '',
 			),
 			'additional_content' => array(
-				'title'       => __( 'Additional content', 'post-purchase-hub' ),
-				'description' => __( 'Text to appear below the main email content.', 'post-purchase-hub' ) . ' ' . $placeholder_text,
+				'title'       => __( 'Additional content', 'wpmake-post-purchase-hub' ),
+				'description' => __( 'Text to appear below the main email content.', 'wpmake-post-purchase-hub' ) . ' ' . $placeholder_text,
 				'css'         => 'width:400px; height: 75px;',
-				'placeholder' => __( 'N/A', 'post-purchase-hub' ),
+				'placeholder' => __( 'N/A', 'wpmake-post-purchase-hub' ),
 				'type'        => 'textarea',
 				'default'     => $this->get_default_additional_content(),
 				'desc_tip'    => true,
 			),
 			'email_type'         => array(
-				'title'       => __( 'Email type', 'post-purchase-hub' ),
+				'title'       => __( 'Email type', 'wpmake-post-purchase-hub' ),
 				'type'        => 'select',
-				'description' => __( 'Choose which format of email to send.', 'post-purchase-hub' ),
+				'description' => __( 'Choose which format of email to send.', 'wpmake-post-purchase-hub' ),
 				'default'     => 'html',
 				'class'       => 'email_type wc-enhanced-select',
 				'options'     => $this->get_email_type_options(),

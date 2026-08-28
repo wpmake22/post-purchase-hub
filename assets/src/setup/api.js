@@ -141,7 +141,7 @@ export function messageFor( error ) {
 
 	return __(
 		'Something went wrong saving that. Nothing has been changed on your store — try again.',
-		'post-purchase-hub'
+		'wpmake-post-purchase-hub'
 	);
 }
 

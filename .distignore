@@ -6,11 +6,14 @@
 #
 # composer.json is deliberately absent: the build ships a rewritten,
 # per-edition copy of it rather than excluding it.
+#
+# assets/src, package.json and webpack.config.js are deliberately absent too:
+# WP.org guideline 4 requires the source of every compiled asset, and the tools
+# that build it, to be publicly available, so both now ship in the artifact.
 /.git
 /.github
 /.claude
 /.wordpress-org
-/assets/src
 /docs
 /tests
 /node_modules
@@ -27,7 +30,6 @@
 CLAUDE.md
 SECURITY.md
 composer.lock
-package.json
 package-lock.json
 phpcs.xml.dist
 phpstan.neon.dist

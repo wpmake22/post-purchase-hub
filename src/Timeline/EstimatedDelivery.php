@@ -463,7 +463,7 @@ final class EstimatedDelivery {
 
 		return sprintf(
 			/* translators: 1: earliest estimated delivery date, 2: latest estimated delivery date. */
-			__( '%1$s – %2$s', 'post-purchase-hub' ),
+			__( '%1$s – %2$s', 'wpmake-post-purchase-hub' ),
 			$start_label,
 			$end_label
 		);

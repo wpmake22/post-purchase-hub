@@ -57,7 +57,7 @@ final class PendingCancellationBranch {
 		}
 
 		return array(
-			'label'         => __( 'Cancellation requested', 'post-purchase-hub' ),
+			'label'         => __( 'Cancellation requested', 'wpmake-post-purchase-hub' ),
 			'timestamp_utc' => $pending->created_at,
 			'note'          => self::expected_response_note(),
 		);
@@ -89,14 +89,14 @@ final class PendingCancellationBranch {
 		if ( $days >= 1 && 0 === $hours % 24 ) {
 			return sprintf(
 				/* translators: %d: number of days. */
-				_n( 'We usually respond within %d day.', 'We usually respond within %d days.', $days, 'post-purchase-hub' ),
+				_n( 'We usually respond within %d day.', 'We usually respond within %d days.', $days, 'wpmake-post-purchase-hub' ),
 				$days
 			);
 		}
 
 		return sprintf(
 			/* translators: %d: number of hours. */
-			_n( 'We usually respond within %d hour.', 'We usually respond within %d hours.', $hours, 'post-purchase-hub' ),
+			_n( 'We usually respond within %d hour.', 'We usually respond within %d hours.', $hours, 'wpmake-post-purchase-hub' ),
 			$hours
 		);
 	}

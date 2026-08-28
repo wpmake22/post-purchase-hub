@@ -7,7 +7,7 @@
  *   php bin/build.php --version=1.2.0 --edition=free
  *   php bin/build.php --edition=pro --out=dist
  *
- * Both zips contain a folder named `post-purchase-hub/` so the Pro build upgrades
+ * Both zips contain a folder named `wpmake-post-purchase-hub/` so the Pro build upgrades
  * the free plugin in place rather than installing alongside it.
  *
  * @package PostPurchaseHub
@@ -15,8 +15,8 @@
 
 declare( strict_types = 1 );
 
-const SLUG      = 'post-purchase-hub';
-const MAIN_FILE = 'post-purchase-hub.php';
+const SLUG      = 'wpmake-post-purchase-hub';
+const MAIN_FILE = 'wpmake-post-purchase-hub.php';
 
 $root = dirname( __DIR__ );
 $args = parse_args( $argv );
@@ -219,7 +219,7 @@ function rewrite_main_file( string $file, string $edition, string $version ): vo
 		if ( ! preg_match( '/^\s*\*\s*Update URI:/m', $src ) ) {
 			$src = preg_replace(
 				'/^(\s*\*\s*Version:\s*.+)$/m',
-				"\${1}\n * Update URI:        https://example.com/post-purchase-hub-pro",
+				"\${1}\n * Update URI:        https://example.com/wpmake-post-purchase-hub-pro",
 				$src,
 				1
 			);
@@ -314,17 +314,19 @@ function dev_excludes(): array {
 		'tests',
 		'pro/tests',
 		'free/tests',
-		'assets/src',
-		'pro/assets/src',
-		'free/assets/src',
+		// `assets/src`, `package.json` and `webpack.config.js` are deliberately
+		// absent from this list. WP.org guideline 4 requires the source of every
+		// compiled asset, and the build tools that produce it, to be publicly
+		// available; the first review of 1.0.0 flagged all nine bundles in
+		// `assets/build` as minified files with no matching source. Shipping the
+		// ~150KB of sources inside the artifact answers that without depending
+		// on the repository being public.
 		'phpcs.xml.dist',
 		'phpstan.neon.dist',
 		'phpunit.xml',
 		'phpunit.xml.dist',
 		'phpunit-integration.xml.dist',
-		'package.json',
 		'package-lock.json',
-		'webpack.config.js',
 		'CLAUDE.md',
 		'CHANGELOG.md',
 		'SECURITY.md',

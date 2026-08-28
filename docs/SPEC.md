@@ -1,8 +1,8 @@
 # Post-Purchase Hub for WooCommerce — Product & Engineering Specification
 
 **Document status:** Phase 0 deliverable (pre-implementation)
-**Working plugin name:** Post-Purchase Hub for WooCommerce
-**Slug:** `post-purchase-hub` · **Text domain:** `post-purchase-hub` · **Prefix:** `pph_` · **Namespace:** `PostPurchaseHub\`
+**Working plugin name:** WPMake Post-Purchase Hub for WooCommerce
+**Slug:** `wpmake-post-purchase-hub` · **Text domain:** `wpmake-post-purchase-hub` · **Prefix:** `pph_` · **Namespace:** `PostPurchaseHub\`
 **Target:** WordPress 6.5+ · PHP 8.1+ · WooCommerce (latest − 2) · HPOS-first
 
 > Naming note: WP.org and Woo trademark policy forbids leading with "WooCommerce". "Post-Purchase Hub for WooCommerce" is compliant; "WooCommerce Post-Purchase Hub" is not.
@@ -349,7 +349,7 @@ Carrier APIs · own PDF engine as v1 scope · automatic gateway refunds · walle
 - `pph/v1` REST: `POST /requests`, `GET /orders/{id}/timeline`, `POST /lookup`, `POST /reorder`
 - Filters: `pph_timeline_stages`, `pph_status_stage_map`, `pph_action_eligibility`, `pph_estimated_delivery`, `pph_tracking_adapters`, `pph_request_reasons`, `pph_locate_template`
 - Actions: `pph_request_created`, `pph_request_approved`, `pph_request_declined`
-- Template overrides via theme directory (`yourtheme/post-purchase-hub/`)
+- Template overrides via theme directory (`yourtheme/wpmake-post-purchase-hub/`)
 - WP-CLI: `wp pph backfill-timeline`, `wp pph cleanup`
 
 ## Security
@@ -417,8 +417,8 @@ Public REST API for headless/mobile · white-label + agency multisite licensing 
 # PHASE 5 — TECHNICAL ARCHITECTURE
 
 ```
-post-purchase-hub/
-├── post-purchase-hub.php          # Header, PHP/WP/Woo guards, HPOS declaration, bootstrap only
+wpmake-post-purchase-hub/
+├── wpmake-post-purchase-hub.php          # Header, PHP/WP/Woo guards, HPOS declaration, bootstrap only
 ├── uninstall.php                  # Retention-aware teardown
 ├── readme.txt                     # WP.org
 ├── composer.json                  # Dev-only deps (PHPCS, PHPStan, stubs, PHPUnit). No runtime vendor.
@@ -539,7 +539,7 @@ Indexes: `PRIMARY(id)` · `KEY request_id (request_id)` · `KEY product_id (prod
 
 **Why two tables now rather than a JSON column.** 1.0 only ever writes whole-order cancellations, so a JSON blob would suffice today. But 1.1's item-level returns and 1.1's "top returned products" report both need item-granular queries, and retrofitting normalisation onto shipped JSON is a migration with a data-quality tail. Creating the second table at install with zero rows in 1.0 costs nothing and removes a known future migration. This is the one place where anticipating a roadmap item is cheaper than deferring.
 
-**Where the event log lives.** Not a third table. Request lifecycle events append to `pph_requests.admin_note`? No — that loses structure. They go to **Woo order notes** (merchant-visible, already searchable, already in the order's audit trail) plus, for security events only, the plugin's `Logger` writing to `WC_Logger` (`post-purchase-hub` source, respects Woo's log retention). Rationale: a bespoke log table would duplicate two systems the merchant already checks, and log tables are the #1 cause of runaway plugin table growth.
+**Where the event log lives.** Not a third table. Request lifecycle events append to `pph_requests.admin_note`? No — that loses structure. They go to **Woo order notes** (merchant-visible, already searchable, already in the order's audit trail) plus, for security events only, the plugin's `Logger` writing to `WC_Logger` (`wpmake-post-purchase-hub` source, respects Woo's log retention). Rationale: a bespoke log table would duplicate two systems the merchant already checks, and log tables are the #1 cause of runaway plugin table growth.
 
 **Explicitly not stored anywhere:** signed tokens (HMAC-verified statelessly), timeline stages (derived), estimated delivery (cached in order meta, recomputable), tracking numbers (owned by other plugins), plaintext customer emails beyond what Woo already stores.
 
@@ -787,7 +787,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 ## Milestone 01 — Plugin Foundation
 **Goal:** an installable, standards-clean plugin that does nothing visible.
 **Tasks:** 1) Main file with header, PHP/WP/Woo guards and graceful bail. 2) Composer PSR-4 autoload + dev deps (PHPCS/WPCS, PHPStan + Woo stubs, PHPUnit, wp-env). 3) `Plugin` container with lazy service factories. 4) Activator/Deactivator (no data loss on deactivate). 5) HPOS `custom_order_tables` declaration. 6) `Support\Logger` (WC_Logger) and `Support\Cache`. 7) CI workflow.
-**Files:** `post-purchase-hub.php`, `composer.json`, `src/Plugin.php`, `src/Install/{Activator,Deactivator}.php`, `src/Support/{Logger,Cache}.php`, `.github/workflows/ci.yml`, `phpcs.xml.dist`, `phpstan.neon.dist`.
+**Files:** `wpmake-post-purchase-hub.php`, `composer.json`, `src/Plugin.php`, `src/Install/{Activator,Deactivator}.php`, `src/Support/{Logger,Cache}.php`, `.github/workflows/ci.yml`, `phpcs.xml.dist`, `phpstan.neon.dist`.
 **Acceptance:** activates/deactivates with zero notices across the matrix; bails with an admin notice if Woo is absent; PHPCS + PHPStan clean.
 **Tests:** activation integration test; "Woo missing" bail test.
 

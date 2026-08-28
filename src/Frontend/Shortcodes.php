@@ -116,7 +116,7 @@ final class Shortcodes {
 
 		if ( 0 === $customer_id ) {
 			return '<p class="pph-orders__empty" data-pph-orders-empty>'
-				. esc_html__( 'Sign in to see your orders.', 'post-purchase-hub' )
+				. esc_html__( 'Sign in to see your orders.', 'wpmake-post-purchase-hub' )
 				. '</p>';
 		}
 

@@ -2,7 +2,7 @@
 /**
  * Request declined email (plain text).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/plain/request-declined.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/plain/request-declined.php.
  *
  * Deliberately never prints `$request->admin_note` — see the HTML template's
  * docblock.
@@ -29,12 +29,12 @@ echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 if ( $order instanceof WC_Order && '' !== $order->get_billing_first_name() ) {
 	/* translators: %s: customer first name. */
-	echo sprintf( esc_html__( 'Hi %s,', 'post-purchase-hub' ), esc_html( $order->get_billing_first_name() ) ) . "\n\n";
+	echo sprintf( esc_html__( 'Hi %s,', 'wpmake-post-purchase-hub' ), esc_html( $order->get_billing_first_name() ) ) . "\n\n";
 } else {
-	echo esc_html__( 'Hi,', 'post-purchase-hub' ) . "\n\n";
+	echo esc_html__( 'Hi,', 'wpmake-post-purchase-hub' ) . "\n\n";
 }
 
-echo esc_html__( "We looked into your request and, unfortunately, we're not able to action it. Your order is unchanged.", 'post-purchase-hub' ) . "\n\n";
+echo esc_html__( "We looked into your request and, unfortunately, we're not able to action it. Your order is unchanged.", 'wpmake-post-purchase-hub' ) . "\n\n";
 
 if ( $order instanceof WC_Order ) {
 	do_action( 'woocommerce_email_order_details', $order, $sent_to_admin, $plain_text, $email );

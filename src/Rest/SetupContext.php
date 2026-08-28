@@ -85,7 +85,7 @@ final class SetupContext {
 	 * @return array<string, string>
 	 */
 	private function stage_choices(): array {
-		$choices = array( StageMapConfig::HIDDEN => __( '— not shown to customers —', 'post-purchase-hub' ) );
+		$choices = array( StageMapConfig::HIDDEN => __( '— not shown to customers —', 'wpmake-post-purchase-hub' ) );
 
 		foreach ( $this->stages->stages() as $stage => $label ) {
 			$choices[ (string) $stage ] = (string) $label;
@@ -181,10 +181,10 @@ final class SetupContext {
 		$message = '' !== $plugin
 			? sprintf(
 				/* translators: %s: name of the detected tracking plugin. */
-				__( '%s is installed, and its tracking numbers will be read from it rather than duplicated here.', 'post-purchase-hub' ),
+				__( '%s is installed, and its tracking numbers will be read from it rather than duplicated here.', 'wpmake-post-purchase-hub' ),
 				$plugin
 			)
-			: __( 'No tracking plugin found. Your customers will see estimated delivery dates instead, which is the honest answer — though a real tracking number deflects more questions than an estimate does.', 'post-purchase-hub' );
+			: __( 'No tracking plugin found. Your customers will see estimated delivery dates instead, which is the honest answer — though a real tracking number deflects more questions than an estimate does.', 'wpmake-post-purchase-hub' );
 
 		return array(
 			'plugin'     => $plugin,
@@ -204,7 +204,7 @@ final class SetupContext {
 	private function conflict_warning(): string {
 		foreach ( $this->health->rows() as $row ) {
 			if ( 'templates' === $row['id'] && HealthPanel::OK !== $row['state'] ) {
-				return $row['value'] . ' ' . __( 'Full replacement stays switched off while that is true, so choosing it here changes nothing until the conflict is resolved.', 'post-purchase-hub' );
+				return $row['value'] . ' ' . __( 'Full replacement stays switched off while that is true, so choosing it here changes nothing until the conflict is resolved.', 'wpmake-post-purchase-hub' );
 			}
 		}
 

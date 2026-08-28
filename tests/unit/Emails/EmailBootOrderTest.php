@@ -74,7 +74,7 @@ final class EmailBootOrderTest extends TestCase {
 	 * @return array<int, string>
 	 */
 	private function shipped_files(): array {
-		$files = array( $this->root() . '/post-purchase-hub.php', $this->root() . '/uninstall.php' );
+		$files = array( $this->root() . '/wpmake-post-purchase-hub.php', $this->root() . '/uninstall.php' );
 
 		foreach ( array( '/src', '/free/src', '/pro/src' ) as $directory ) {
 			$path = $this->root() . $directory;

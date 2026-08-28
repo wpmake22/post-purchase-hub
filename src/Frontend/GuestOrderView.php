@@ -133,13 +133,13 @@ final class GuestOrderView {
 		$state = isset( $_GET[ GuestContext::STATE_PARAM ] ) ? sanitize_key( wp_unslash( $_GET[ GuestContext::STATE_PARAM ] ) ) : '';
 
 		if ( GuestContext::STATE_EXPIRED === $state ) {
-			return __( 'That order link has expired or is no longer valid. Request a new one and we will email it to the address on the order.', 'post-purchase-hub' );
+			return __( 'That order link has expired or is no longer valid. Request a new one and we will email it to the address on the order.', 'wpmake-post-purchase-hub' );
 		}
 
 		if ( GuestContext::STATE_READY === $state ) {
 			// The exchange succeeded but no context reached this request, which
 			// leaves one explanation: the browser did not keep the cookie.
-			return __( 'Your browser did not keep the session cookie this order link needs. Enable cookies for this site and open the link again.', 'post-purchase-hub' );
+			return __( 'Your browser did not keep the session cookie this order link needs. Enable cookies for this site and open the link again.', 'wpmake-post-purchase-hub' );
 		}
 
 		return '';

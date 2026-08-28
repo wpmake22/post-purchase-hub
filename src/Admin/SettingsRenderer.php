@@ -165,8 +165,8 @@ final class SettingsRenderer {
 		// Both words travel with the control so the admin script can keep the
 		// label honest as the switch is flipped, without a second translation
 		// of "On" living in JavaScript.
-		$on  = __( 'On', 'post-purchase-hub' );
-		$off = __( 'Off', 'post-purchase-hub' );
+		$on  = __( 'On', 'wpmake-post-purchase-hub' );
+		$off = __( 'Off', 'wpmake-post-purchase-hub' );
 
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- checked() is core's own attribute helper and confirm_attribute() returns markup it built with esc_attr(); every other value here is escaped inline.
 		printf(

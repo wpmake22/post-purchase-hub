@@ -24,11 +24,11 @@ export default function Actions( { actions, value, onChange } ) {
 		<Question
 			title={ __(
 				'What should customers be able to do?',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 			help={ __(
 				'You can change any of this later. Cancellation is always a request you approve or decline — this plugin never cancels an order by itself, and never issues a refund.',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 		>
 			<div className="pph-setup__toggles">

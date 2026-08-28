@@ -2,7 +2,7 @@
 /**
  * Request received email (plain text).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/plain/request-received.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/plain/request-received.php.
  *
  * @package PostPurchaseHub
  * @version 0.10.0
@@ -27,18 +27,18 @@ echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 if ( $order instanceof WC_Order && '' !== $order->get_billing_first_name() ) {
 	/* translators: %s: customer first name. */
-	echo sprintf( esc_html__( 'Hi %s,', 'post-purchase-hub' ), esc_html( $order->get_billing_first_name() ) ) . "\n\n";
+	echo sprintf( esc_html__( 'Hi %s,', 'wpmake-post-purchase-hub' ), esc_html( $order->get_billing_first_name() ) ) . "\n\n";
 } else {
-	echo esc_html__( 'Hi,', 'post-purchase-hub' ) . "\n\n";
+	echo esc_html__( 'Hi,', 'wpmake-post-purchase-hub' ) . "\n\n";
 }
 
-echo esc_html__( "We received your request and a member of our team will get back to you. Here's what to expect:", 'post-purchase-hub' ) . "\n\n";
+echo esc_html__( "We received your request and a member of our team will get back to you. Here's what to expect:", 'wpmake-post-purchase-hub' ) . "\n\n";
 
 /* translators: %s: expected response time, e.g. "24 hours". */
-echo sprintf( esc_html__( 'Expected response time: %s.', 'post-purchase-hub' ), esc_html( $response_time_text ) ) . "\n\n";
+echo sprintf( esc_html__( 'Expected response time: %s.', 'wpmake-post-purchase-hub' ), esc_html( $response_time_text ) ) . "\n\n";
 
 if ( null !== $request->customer_note ) {
-	echo esc_html__( 'What you told us:', 'post-purchase-hub' ) . "\n\n";
+	echo esc_html__( 'What you told us:', 'wpmake-post-purchase-hub' ) . "\n\n";
 	echo "----------\n\n";
 	echo esc_html( $request->customer_note ) . "\n\n";
 	echo "----------\n\n";

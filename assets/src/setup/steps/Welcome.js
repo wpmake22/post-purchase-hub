@@ -24,17 +24,17 @@ export default function Welcome( { choices, value, onChange, store } ) {
 	const title = store
 		? sprintf(
 				/* translators: %s: the store's name. */
-				__( 'Let’s get %s set up', 'post-purchase-hub' ),
+				__( 'Let’s get %s set up', 'wpmake-post-purchase-hub' ),
 				store
 		  )
-		: __( 'Let’s get your store set up', 'post-purchase-hub' );
+		: __( 'Let’s get your store set up', 'wpmake-post-purchase-hub' );
 
 	return (
 		<Question
 			title={ title }
 			help={ __(
 				'Nothing is showing to your customers yet, and nothing will change until you finish. Pick what matters most and this asks only the questions that go with it — every answer is changeable later on the settings screen.',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 		>
 			<div className="pph-setup__choices" role="radiogroup">

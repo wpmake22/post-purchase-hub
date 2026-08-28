@@ -49,7 +49,7 @@ test.describe("Guest order lookup", () => {
 	let lookupPage;
 
 	test.beforeAll(async ({ requestUtils }) => {
-		await requestUtils.activatePlugin("post-purchase-hub");
+		await requestUtils.activatePlugin("wpmake-post-purchase-hub-for-woocommerce");
 		await completeSetup(requestUtils);
 
 		lookupPage = await requestUtils.createPage({
@@ -151,7 +151,7 @@ test.describe("Signed order links", () => {
 		page,
 		requestUtils,
 	}) => {
-		await requestUtils.activatePlugin("post-purchase-hub");
+		await requestUtils.activatePlugin("wpmake-post-purchase-hub-for-woocommerce");
 
 		// A token minted by the plugin's own CLI, so the spec exercises the same
 		// wire format the emails use rather than a hand-rolled one.

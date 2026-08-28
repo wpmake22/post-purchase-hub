@@ -138,7 +138,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_the_plugin_bootstrapped_on_this_site(): void {
-		$this->assertNotFalse( has_action( 'init', array( Plugin::instance(), 'load_textdomain' ) ) );
+		$this->assertNotFalse( has_action( 'init', array( Plugin::instance(), 'register_rendering' ) ) );
 	}
 
 	/**

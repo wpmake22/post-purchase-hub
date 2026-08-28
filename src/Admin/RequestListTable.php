@@ -79,14 +79,14 @@ final class RequestListTable extends \WP_List_Table {
 	 */
 	public function get_columns(): array {
 		return array(
-			'request'  => __( 'Request', 'post-purchase-hub' ),
-			'order'    => __( 'Order', 'post-purchase-hub' ),
-			'customer' => __( 'Customer', 'post-purchase-hub' ),
-			'type'     => __( 'Type', 'post-purchase-hub' ),
-			'reason'   => __( 'Reason', 'post-purchase-hub' ),
-			'age'      => __( 'Age', 'post-purchase-hub' ),
-			'status'   => __( 'Status', 'post-purchase-hub' ),
-			'actions'  => __( 'Actions', 'post-purchase-hub' ),
+			'request'  => __( 'Request', 'wpmake-post-purchase-hub' ),
+			'order'    => __( 'Order', 'wpmake-post-purchase-hub' ),
+			'customer' => __( 'Customer', 'wpmake-post-purchase-hub' ),
+			'type'     => __( 'Type', 'wpmake-post-purchase-hub' ),
+			'reason'   => __( 'Reason', 'wpmake-post-purchase-hub' ),
+			'age'      => __( 'Age', 'wpmake-post-purchase-hub' ),
+			'status'   => __( 'Status', 'wpmake-post-purchase-hub' ),
+			'actions'  => __( 'Actions', 'wpmake-post-purchase-hub' ),
 		);
 	}
 
@@ -256,7 +256,7 @@ final class RequestListTable extends \WP_List_Table {
 	 */
 	public function render_page(): void {
 		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'Post-Purchase Hub', 'post-purchase-hub' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ) . '</h1>';
 		$this->render_filters();
 		echo '<form method="get">';
 		printf( '<input type="hidden" name="page" value="%s">', esc_attr( Menu::REQUESTS_PAGE ) );
@@ -279,20 +279,20 @@ final class RequestListTable extends \WP_List_Table {
 
 		self::render_select(
 			'type',
-			__( 'All types', 'post-purchase-hub' ),
+			__( 'All types', 'wpmake-post-purchase-hub' ),
 			Request::types(),
 			$filters['type'] ?? '',
 			array( RequestLabels::class, 'type' )
 		);
 		self::render_select(
 			'status',
-			__( 'All statuses', 'post-purchase-hub' ),
+			__( 'All statuses', 'wpmake-post-purchase-hub' ),
 			Request::statuses(),
 			$filters['status'] ?? '',
 			array( RequestLabels::class, 'status' )
 		);
 
-		printf( '<button type="submit" class="button">%s</button>', esc_html__( 'Filter', 'post-purchase-hub' ) );
+		printf( '<button type="submit" class="button">%s</button>', esc_html__( 'Filter', 'wpmake-post-purchase-hub' ) );
 		echo '</form>';
 	}
 
@@ -333,9 +333,9 @@ final class RequestListTable extends \WP_List_Table {
 	public function no_items(): void {
 		printf(
 			'%s<br><a href="%s">%s</a>',
-			esc_html__( 'No requests yet. When a customer asks to cancel an order, it appears here.', 'post-purchase-hub' ),
+			esc_html__( 'No requests yet. When a customer asks to cancel an order, it appears here.', 'wpmake-post-purchase-hub' ),
 			esc_url( self::my_account_orders_url() ),
-			esc_html__( 'Preview the customer-facing order page', 'post-purchase-hub' )
+			esc_html__( 'Preview the customer-facing order page', 'wpmake-post-purchase-hub' )
 		);
 	}
 
@@ -412,7 +412,7 @@ final class RequestListTable extends \WP_List_Table {
 
 		if ( ! $order instanceof \WC_Order ) {
 			/* translators: %d: order id. */
-			return sprintf( esc_html__( '#%d (not found)', 'post-purchase-hub' ), $item->order_id );
+			return sprintf( esc_html__( '#%d (not found)', 'wpmake-post-purchase-hub' ), $item->order_id );
 		}
 
 		return sprintf( '<a href="%s">#%s</a>', esc_url( $order->get_edit_order_url() ), esc_html( $order->get_order_number() ) );
@@ -454,7 +454,7 @@ final class RequestListTable extends \WP_List_Table {
 		}
 
 		/* translators: %s: human-readable time, e.g. "3 hours". */
-		return sprintf( esc_html__( '%s ago', 'post-purchase-hub' ), esc_html( human_time_diff( $created ) ) );
+		return sprintf( esc_html__( '%s ago', 'wpmake-post-purchase-hub' ), esc_html( human_time_diff( $created ) ) );
 	}
 
 	/**
@@ -471,12 +471,12 @@ final class RequestListTable extends \WP_List_Table {
 			return sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( admin_url( 'admin.php?page=' . Menu::REQUESTS_PAGE . '&request_id=' . $item->id ) ),
-				esc_html__( 'View', 'post-purchase-hub' )
+				esc_html__( 'View', 'wpmake-post-purchase-hub' )
 			);
 		}
 
-		return $this->action_form( $item, RequestActionController::APPROVE_ACTION, __( 'Approve', 'post-purchase-hub' ) )
-			. ' ' . $this->action_form( $item, RequestActionController::DECLINE_ACTION, __( 'Decline', 'post-purchase-hub' ) );
+		return $this->action_form( $item, RequestActionController::APPROVE_ACTION, __( 'Approve', 'wpmake-post-purchase-hub' ) )
+			. ' ' . $this->action_form( $item, RequestActionController::DECLINE_ACTION, __( 'Decline', 'wpmake-post-purchase-hub' ) );
 	}
 
 	/**

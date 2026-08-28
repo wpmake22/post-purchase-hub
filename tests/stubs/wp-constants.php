@@ -35,7 +35,7 @@ define( 'YEAR_IN_SECONDS', 31536000 );
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 
 /*
- * This plugin's own path constants. post-purchase-hub.php is analysed, but
+ * This plugin's own path constants. wpmake-post-purchase-hub.php is analysed, but
  * PHPStan only registers a define() whose value is a constant expression, and
  * these are computed from plugin_dir_path() and plugin_dir_url(). Values are
  * irrelevant — only the fact that the constants exist, and their type.

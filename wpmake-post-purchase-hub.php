@@ -1,11 +1,11 @@
 <?php
 /**
- * Post-Purchase Hub for WooCommerce
+ * WPMake Post-Purchase Hub for WooCommerce
  *
  * @package PostPurchaseHub
  *
  * @wordpress-plugin
- * Plugin Name:          Post-Purchase Hub for WooCommerce
+ * Plugin Name:          WPMake Post-Purchase Hub for WooCommerce
  * Description:          Order timeline, self-service post-purchase actions and a merchant request queue for WooCommerce stores.
  * Version:              1.0.0
  * Requires at least:    6.5
@@ -15,7 +15,7 @@
  * Author URI:           https://wpmake.net/
  * License:              GPL-2.0-or-later
  * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:          post-purchase-hub
+ * Text Domain:          wpmake-post-purchase-hub
  * Domain Path:          /languages
  * WC requires at least: 10.9
  * WC tested up to:      11.0
@@ -156,7 +156,7 @@ function pph_requirement_failures( string $php_version, string $wp_version, ?str
 	if ( version_compare( $php_version, PPH_MINIMUM_PHP, '<' ) ) {
 		$failures[] = sprintf(
 			/* translators: 1: minimum required PHP version, 2: PHP version running on this site */
-			__( 'Post-Purchase Hub for WooCommerce requires PHP %1$s or later. This site runs PHP %2$s.', 'post-purchase-hub' ),
+			__( 'WPMake Post-Purchase Hub for WooCommerce requires PHP %1$s or later. This site runs PHP %2$s.', 'wpmake-post-purchase-hub' ),
 			PPH_MINIMUM_PHP,
 			$php_version
 		);
@@ -165,25 +165,25 @@ function pph_requirement_failures( string $php_version, string $wp_version, ?str
 	if ( version_compare( $wp_version, PPH_MINIMUM_WP, '<' ) ) {
 		$failures[] = sprintf(
 			/* translators: 1: minimum required WordPress version, 2: WordPress version running on this site */
-			__( 'Post-Purchase Hub for WooCommerce requires WordPress %1$s or later. This site runs WordPress %2$s.', 'post-purchase-hub' ),
+			__( 'WPMake Post-Purchase Hub for WooCommerce requires WordPress %1$s or later. This site runs WordPress %2$s.', 'wpmake-post-purchase-hub' ),
 			PPH_MINIMUM_WP,
 			$wp_version
 		);
 	}
 
 	if ( null === $wc_version ) {
-		$failures[] = __( 'Post-Purchase Hub for WooCommerce requires WooCommerce to be installed and active.', 'post-purchase-hub' );
+		$failures[] = __( 'WPMake Post-Purchase Hub for WooCommerce requires WooCommerce to be installed and active.', 'wpmake-post-purchase-hub' );
 	} elseif ( version_compare( $wc_version, PPH_MINIMUM_WC, '<' ) ) {
 		$failures[] = sprintf(
 			/* translators: 1: minimum required WooCommerce version, 2: WooCommerce version running on this site */
-			__( 'Post-Purchase Hub for WooCommerce requires WooCommerce %1$s or later. This site runs WooCommerce %2$s.', 'post-purchase-hub' ),
+			__( 'WPMake Post-Purchase Hub for WooCommerce requires WooCommerce %1$s or later. This site runs WooCommerce %2$s.', 'wpmake-post-purchase-hub' ),
 			PPH_MINIMUM_WC,
 			$wc_version
 		);
 	}
 
 	if ( ! $autoloaded ) {
-		$failures[] = __( 'Post-Purchase Hub for WooCommerce is missing its autoloader. Reinstall the plugin from a release package.', 'post-purchase-hub' );
+		$failures[] = __( 'WPMake Post-Purchase Hub for WooCommerce is missing its autoloader. Reinstall the plugin from a release package.', 'wpmake-post-purchase-hub' );
 	}
 
 	return $failures;

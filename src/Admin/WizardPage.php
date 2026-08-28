@@ -94,8 +94,8 @@ final class WizardPage {
 	public function add_page(): void {
 		add_submenu_page(
 			'',
-			__( 'Post-Purchase Hub setup', 'post-purchase-hub' ),
-			__( 'Setup', 'post-purchase-hub' ),
+			__( 'Post-Purchase Hub setup', 'wpmake-post-purchase-hub' ),
+			__( 'Setup', 'wpmake-post-purchase-hub' ),
 			self::CAPABILITY,
 			self::PAGE,
 			'__return_null'
@@ -114,7 +114,7 @@ final class WizardPage {
 		}
 
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You do not have permission to run setup.', 'post-purchase-hub' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You do not have permission to run setup.', 'wpmake-post-purchase-hub' ), '', array( 'response' => 403 ) );
 		}
 
 		$this->enqueue();
@@ -162,7 +162,7 @@ final class WizardPage {
 
 		wp_style_add_data( self::HANDLE, 'rtl', 'replace' );
 
-		wp_set_script_translations( self::HANDLE, 'post-purchase-hub' );
+		wp_set_script_translations( self::HANDLE, 'wpmake-post-purchase-hub' );
 
 		wp_add_inline_script(
 			self::HANDLE,
@@ -185,7 +185,7 @@ final class WizardPage {
 			'nonce'      => wp_create_nonce( 'wp_rest' ),
 			'exitUrl'    => SettingsPage::url(),
 			'dashboard'  => admin_url( 'admin.php?page=' . Menu::REQUESTS_PAGE ),
-			'pluginName' => __( 'Post-Purchase Hub', 'post-purchase-hub' ),
+			'pluginName' => __( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ),
 			'storeName'  => wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES ),
 		);
 	}
@@ -203,7 +203,7 @@ final class WizardPage {
 		<head>
 			<meta charset="<?php bloginfo( 'charset' ); ?>" />
 			<meta name="viewport" content="width=device-width, initial-scale=1" />
-			<title><?php esc_html_e( 'Set up Post-Purchase Hub', 'post-purchase-hub' ); ?></title>
+			<title><?php esc_html_e( 'Set up Post-Purchase Hub', 'wpmake-post-purchase-hub' ); ?></title>
 			<?php
 			wp_print_styles();
 			wp_print_head_scripts();

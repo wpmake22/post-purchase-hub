@@ -51,10 +51,10 @@ final class RequestDetail {
 		if ( null === $request ) {
 			printf(
 				'<h1>%s</h1><p>%s</p><p><a href="%s">%s</a></p>',
-				esc_html__( 'Request not found', 'post-purchase-hub' ),
-				esc_html__( 'This request no longer exists.', 'post-purchase-hub' ),
+				esc_html__( 'Request not found', 'wpmake-post-purchase-hub' ),
+				esc_html__( 'This request no longer exists.', 'wpmake-post-purchase-hub' ),
 				esc_url( admin_url( 'admin.php?page=' . Menu::REQUESTS_PAGE ) ),
-				esc_html__( '&larr; Back to requests', 'post-purchase-hub' )
+				esc_html__( '&larr; Back to requests', 'wpmake-post-purchase-hub' )
 			);
 			echo '</div>';
 
@@ -90,12 +90,12 @@ final class RequestDetail {
 		printf(
 			'<p><a href="%s">%s</a></p>',
 			esc_url( admin_url( 'admin.php?page=' . Menu::REQUESTS_PAGE ) ),
-			esc_html__( '&larr; Back to requests', 'post-purchase-hub' )
+			esc_html__( '&larr; Back to requests', 'wpmake-post-purchase-hub' )
 		);
 
 		printf(
 			/* translators: %d: order number. */
-			'<h1>' . esc_html__( 'Cancellation request for order #%d', 'post-purchase-hub' ) . '</h1>',
+			'<h1>' . esc_html__( 'Cancellation request for order #%d', 'wpmake-post-purchase-hub' ) . '</h1>',
 			(int) $request->order_id
 		);
 
@@ -103,11 +103,11 @@ final class RequestDetail {
 			printf(
 				'<p><a href="%s">%s</a></p>',
 				esc_url( $order->get_edit_order_url() ),
-				esc_html__( 'View order', 'post-purchase-hub' )
+				esc_html__( 'View order', 'wpmake-post-purchase-hub' )
 			);
 		}
 
-		printf( '<p><strong>%s</strong> %s</p>', esc_html__( 'Status:', 'post-purchase-hub' ), esc_html( RequestLabels::status( $request->status ) ) );
+		printf( '<p><strong>%s</strong> %s</p>', esc_html__( 'Status:', 'wpmake-post-purchase-hub' ), esc_html( RequestLabels::status( $request->status ) ) );
 	}
 
 	/**
@@ -123,7 +123,7 @@ final class RequestDetail {
 			return;
 		}
 
-		echo '<h2>' . esc_html__( 'Items', 'post-purchase-hub' ) . '</h2><ul>';
+		echo '<h2>' . esc_html__( 'Items', 'wpmake-post-purchase-hub' ) . '</h2><ul>';
 
 		foreach ( $order->get_items() as $item ) {
 			printf( '<li>%s &times; %s</li>', esc_html( (string) $item->get_quantity() ), esc_html( $item->get_name() ) );
@@ -141,15 +141,15 @@ final class RequestDetail {
 	 * @return void
 	 */
 	private function render_customer_input( Request $request ): void {
-		echo '<h2>' . esc_html__( 'Customer', 'post-purchase-hub' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Customer', 'wpmake-post-purchase-hub' ) . '</h2>';
 		$reason = RequestLabels::reason( $request->type, $request->reason_code );
 
 		if ( '' !== $reason ) {
-			printf( '<p><strong>%s</strong> %s</p>', esc_html__( 'Reason:', 'post-purchase-hub' ), esc_html( $reason ) );
+			printf( '<p><strong>%s</strong> %s</p>', esc_html__( 'Reason:', 'wpmake-post-purchase-hub' ), esc_html( $reason ) );
 		}
 
 		if ( null !== $request->customer_note && '' !== $request->customer_note ) {
-			printf( '<p><strong>%s</strong> %s</p>', esc_html__( 'Note:', 'post-purchase-hub' ), esc_html( $request->customer_note ) );
+			printf( '<p><strong>%s</strong> %s</p>', esc_html__( 'Note:', 'wpmake-post-purchase-hub' ), esc_html( $request->customer_note ) );
 		}
 	}
 
@@ -162,16 +162,16 @@ final class RequestDetail {
 	 * @return void
 	 */
 	private function render_actions( Request $request ): void {
-		echo '<h2>' . esc_html__( 'Decision', 'post-purchase-hub' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Decision', 'wpmake-post-purchase-hub' ) . '</h2>';
 
 		printf(
 			'<textarea name="admin_note" form="pph-approve-%1$d" placeholder="%2$s"></textarea>',
 			(int) $request->id,
-			esc_attr__( 'Internal note (not shown to the customer)', 'post-purchase-hub' )
+			esc_attr__( 'Internal note (not shown to the customer)', 'wpmake-post-purchase-hub' )
 		);
 
-		$this->render_form( $request, RequestActionController::APPROVE_ACTION, __( 'Approve', 'post-purchase-hub' ), 'pph-approve-' . $request->id );
-		$this->render_form( $request, RequestActionController::DECLINE_ACTION, __( 'Decline', 'post-purchase-hub' ), 'pph-decline-' . $request->id );
+		$this->render_form( $request, RequestActionController::APPROVE_ACTION, __( 'Approve', 'wpmake-post-purchase-hub' ), 'pph-approve-' . $request->id );
+		$this->render_form( $request, RequestActionController::DECLINE_ACTION, __( 'Decline', 'wpmake-post-purchase-hub' ), 'pph-decline-' . $request->id );
 	}
 
 	/**
@@ -209,7 +209,7 @@ final class RequestDetail {
 			return;
 		}
 
-		echo '<h2>' . esc_html__( 'History for this order', 'post-purchase-hub' ) . '</h2><ul>';
+		echo '<h2>' . esc_html__( 'History for this order', 'wpmake-post-purchase-hub' ) . '</h2><ul>';
 
 		foreach ( $history as $past ) {
 			printf(

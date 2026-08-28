@@ -120,21 +120,21 @@ final class HelpView {
 			'element_id'         => Help::element_id( $order ),
 			'order_id'           => $context->order_id,
 			'heading'            => Help::label(),
-			'intro'              => __( 'Send the store a message about this order. What we already know about it is attached, so you do not have to explain it again.', 'post-purchase-hub' ),
-			'context_heading'    => __( 'Attached to your message', 'post-purchase-hub' ),
+			'intro'              => __( 'Send the store a message about this order. What we already know about it is attached, so you do not have to explain it again.', 'wpmake-post-purchase-hub' ),
+			'context_heading'    => __( 'Attached to your message', 'wpmake-post-purchase-hub' ),
 			'summary'            => $this->summary_rows( $context ),
 			'items'              => $context->items,
 			'items_note'         => $this->items_note( $context ),
-			'topic_label'        => __( 'What is this about?', 'post-purchase-hub' ),
+			'topic_label'        => __( 'What is this about?', 'wpmake-post-purchase-hub' ),
 			'topics'             => HelpTopics::labels(),
-			'message_label'      => __( 'Your message', 'post-purchase-hub' ),
+			'message_label'      => __( 'Your message', 'wpmake-post-purchase-hub' ),
 			'message_hint'       => sprintf(
 				/* translators: %d: maximum number of characters. */
-				__( 'Up to %d characters.', 'post-purchase-hub' ),
+				__( 'Up to %d characters.', 'wpmake-post-purchase-hub' ),
 				Help::MESSAGE_MAX_LENGTH
 			),
 			'message_max_length' => Help::MESSAGE_MAX_LENGTH,
-			'submit_label'       => __( 'Send message', 'post-purchase-hub' ),
+			'submit_label'       => __( 'Send message', 'wpmake-post-purchase-hub' ),
 		);
 	}
 
@@ -148,10 +148,10 @@ final class HelpView {
 	 */
 	private function summary_rows( HelpContext $context ): array {
 		$candidates = array(
-			array( __( 'Order', 'post-purchase-hub' ), '#' . $context->order_number ),
-			array( __( 'Status', 'post-purchase-hub' ), $context->status_label ),
-			array( __( 'Progress', 'post-purchase-hub' ), $context->timeline_state ),
-			array( __( 'Placed', 'post-purchase-hub' ), $context->placed_on ),
+			array( __( 'Order', 'wpmake-post-purchase-hub' ), '#' . $context->order_number ),
+			array( __( 'Status', 'wpmake-post-purchase-hub' ), $context->status_label ),
+			array( __( 'Progress', 'wpmake-post-purchase-hub' ), $context->timeline_state ),
+			array( __( 'Placed', 'wpmake-post-purchase-hub' ), $context->placed_on ),
 		);
 
 		$rows = array();
@@ -189,7 +189,7 @@ final class HelpView {
 				'and %d more item on this order',
 				'and %d more items on this order',
 				$context->items_omitted,
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			),
 			$context->items_omitted
 		);

@@ -157,7 +157,7 @@ import { __, sprintf } from '@wordpress/i18n';
 				? data.message
 				: __(
 						'Your cart could not be updated. Please try again.',
-						'post-purchase-hub'
+						'wpmake-post-purchase-hub'
 				  );
 		const reference =
 			data && data.data && data.data.reference ? data.data.reference : '';
@@ -167,7 +167,7 @@ import { __, sprintf } from '@wordpress/i18n';
 			reference
 				? sprintf(
 						/* translators: 1: error message, 2: support reference id. */
-						__( '%1$s (reference: %2$s)', 'post-purchase-hub' ),
+						__( '%1$s (reference: %2$s)', 'wpmake-post-purchase-hub' ),
 						message,
 						reference
 				  )

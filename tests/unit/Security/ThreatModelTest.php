@@ -52,7 +52,7 @@ final class ThreatModelTest extends TestCase {
 	private function shipped(): array {
 		$files = array();
 
-		foreach ( array( 'post-purchase-hub.php', 'uninstall.php' ) as $file ) {
+		foreach ( array( 'wpmake-post-purchase-hub.php', 'uninstall.php' ) as $file ) {
 			$files[ $file ] = $this->read( $this->root() . '/' . $file );
 		}
 

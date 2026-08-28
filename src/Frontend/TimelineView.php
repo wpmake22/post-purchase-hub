@@ -135,11 +135,11 @@ final class TimelineView {
 	private static function state_label( string $state ): string {
 		switch ( $state ) {
 			case TimelineStage::STATE_COMPLETE:
-				return _x( 'Done', 'order timeline stage state', 'post-purchase-hub' );
+				return _x( 'Done', 'order timeline stage state', 'wpmake-post-purchase-hub' );
 			case TimelineStage::STATE_CURRENT:
-				return _x( 'In progress', 'order timeline stage state', 'post-purchase-hub' );
+				return _x( 'In progress', 'order timeline stage state', 'wpmake-post-purchase-hub' );
 			default:
-				return _x( 'Not yet', 'order timeline stage state', 'post-purchase-hub' );
+				return _x( 'Not yet', 'order timeline stage state', 'wpmake-post-purchase-hub' );
 		}
 	}
 
@@ -151,7 +151,7 @@ final class TimelineView {
 	 * @return string
 	 */
 	private static function notice(): string {
-		return __( 'This order was placed before detailed tracking was switched on, so exact dates are not available.', 'post-purchase-hub' );
+		return __( 'This order was placed before detailed tracking was switched on, so exact dates are not available.', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

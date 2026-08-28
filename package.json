@@ -1,5 +1,5 @@
 {
-	"name": "post-purchase-hub",
+	"name": "wpmake-post-purchase-hub",
 	"version": "1.0.0",
 	"description": "Build tooling for Post-Purchase Hub for WooCommerce.",
 	"license": "GPL-2.0-or-later",

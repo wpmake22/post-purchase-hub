@@ -131,7 +131,7 @@ final class HelpContextBuilder {
 
 			$lines[] = sprintf(
 				/* translators: 1: quantity ordered, 2: product name. */
-				_x( '%1$d × %2$s', 'order item summary line', 'post-purchase-hub' ),
+				_x( '%1$d × %2$s', 'order item summary line', 'wpmake-post-purchase-hub' ),
 				$item->get_quantity(),
 				$item->get_name()
 			);

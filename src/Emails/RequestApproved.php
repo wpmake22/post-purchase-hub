@@ -36,8 +36,8 @@ final class RequestApproved extends AbstractEmail {
 	public function __construct() {
 		$this->id             = 'pph_request_approved';
 		$this->customer_email = true;
-		$this->title          = __( 'Request approved', 'post-purchase-hub' );
-		$this->description    = __( 'Sent to the customer once a staff member approves their cancellation request.', 'post-purchase-hub' );
+		$this->title          = __( 'Request approved', 'wpmake-post-purchase-hub' );
+		$this->description    = __( 'Sent to the customer once a staff member approves their cancellation request.', 'wpmake-post-purchase-hub' );
 		$this->email_group    = 'order-changes';
 		$this->template_html  = 'emails/request-approved.php';
 		$this->template_plain = 'emails/plain/request-approved.php';
@@ -54,14 +54,14 @@ final class RequestApproved extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_subject(): string {
-		return __( 'Your request for order {order_number} has been approved', 'post-purchase-hub' );
+		return __( 'Your request for order {order_number} has been approved', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function get_default_heading(): string {
-		return __( 'Your request has been approved', 'post-purchase-hub' );
+		return __( 'Your request has been approved', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -135,7 +135,7 @@ final class RequestApproved extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_additional_content(): string {
-		return __( 'If a refund applies, it will be processed separately and you will receive a confirmation from us.', 'post-purchase-hub' );
+		return __( 'If a refund applies, it will be processed separately and you will receive a confirmation from us.', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

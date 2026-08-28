@@ -37,8 +37,8 @@ final class NewRequestAdmin extends AbstractEmail {
 	public function __construct() {
 		$this->id             = 'pph_admin_new_request';
 		$this->customer_email = false;
-		$this->title          = __( 'New request', 'post-purchase-hub' );
-		$this->description    = __( 'Sent to the store when a customer raises a cancellation request.', 'post-purchase-hub' );
+		$this->title          = __( 'New request', 'wpmake-post-purchase-hub' );
+		$this->description    = __( 'Sent to the store when a customer raises a cancellation request.', 'wpmake-post-purchase-hub' );
 		$this->email_group    = 'orders';
 		$this->template_html  = 'emails/admin-new-request.php';
 		$this->template_plain = 'emails/plain/admin-new-request.php';
@@ -57,14 +57,14 @@ final class NewRequestAdmin extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_subject(): string {
-		return __( '[{site_title}] New request for order {order_number}', 'post-purchase-hub' );
+		return __( '[{site_title}] New request for order {order_number}', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function get_default_heading(): string {
-		return __( 'A customer has raised a request', 'post-purchase-hub' );
+		return __( 'A customer has raised a request', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

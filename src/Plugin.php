@@ -842,8 +842,6 @@ final class Plugin {
 
 		$this->registered = true;
 
-		add_action( 'init', array( $this, 'load_textdomain' ) );
-
 		// Priority 20: this method itself runs on plugins_loaded, and the schema
 		// check has to land after every plugin has had its chance to load.
 		add_action( 'plugins_loaded', array( $this, 'check_schema' ), 20 );
@@ -1193,18 +1191,5 @@ final class Plugin {
 		}
 
 		$this->mailer()->admin_digest()->maybe_send();
-	}
-
-	/**
-	 * Loads the bundled translations.
-	 *
-	 * The Pro distribution is not hosted on WordPress.org, so its translations
-	 * ship inside the plugin and have to be registered explicitly.
-	 *
-	 * @since 0.1.0
-	 * @return void
-	 */
-	public function load_textdomain(): void {
-		load_plugin_textdomain( 'post-purchase-hub', false, dirname( plugin_basename( PPH_PLUGIN_FILE ) ) . '/languages' );
 	}
 }

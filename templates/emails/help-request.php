@@ -2,7 +2,7 @@
 /**
  * Customer help request admin email (HTML).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/help-request.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/help-request.php.
  *
  * @package PostPurchaseHub
  * @version 0.13.0
@@ -30,7 +30,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	<?php
 	printf(
 		/* translators: 1: customer name, 2: order number. */
-		esc_html__( '%1$s has asked for help with order #%2$s.', 'post-purchase-hub' ),
+		esc_html__( '%1$s has asked for help with order #%2$s.', 'wpmake-post-purchase-hub' ),
 		esc_html( $help->customer_name ),
 		esc_html( $help->order_number )
 	);
@@ -38,7 +38,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 </p>
 
 <p>
-	<strong><?php esc_html_e( 'About:', 'post-purchase-hub' ); ?></strong>
+	<strong><?php esc_html_e( 'About:', 'wpmake-post-purchase-hub' ); ?></strong>
 	<?php echo esc_html( $help->topic_label ); ?>
 </p>
 
@@ -49,27 +49,27 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	?>
 </blockquote>
 
-<h2><?php esc_html_e( 'Order context', 'post-purchase-hub' ); ?></h2>
+<h2><?php esc_html_e( 'Order context', 'wpmake-post-purchase-hub' ); ?></h2>
 
 <ul>
 	<li>
-		<strong><?php esc_html_e( 'Status:', 'post-purchase-hub' ); ?></strong>
+		<strong><?php esc_html_e( 'Status:', 'wpmake-post-purchase-hub' ); ?></strong>
 		<?php echo esc_html( $help->status_label ); ?>
 	</li>
 	<?php if ( '' !== $help->timeline_state ) : ?>
 	<li>
-		<strong><?php esc_html_e( 'Timeline:', 'post-purchase-hub' ); ?></strong>
+		<strong><?php esc_html_e( 'Timeline:', 'wpmake-post-purchase-hub' ); ?></strong>
 		<?php echo esc_html( $help->timeline_state ); ?>
 	</li>
 	<?php endif; ?>
 	<?php if ( '' !== $help->placed_on ) : ?>
 	<li>
-		<strong><?php esc_html_e( 'Placed:', 'post-purchase-hub' ); ?></strong>
+		<strong><?php esc_html_e( 'Placed:', 'wpmake-post-purchase-hub' ); ?></strong>
 		<?php echo esc_html( $help->placed_on ); ?>
 	</li>
 	<?php endif; ?>
 	<li>
-		<strong><?php esc_html_e( 'Reply to:', 'post-purchase-hub' ); ?></strong>
+		<strong><?php esc_html_e( 'Reply to:', 'wpmake-post-purchase-hub' ); ?></strong>
 		<?php echo esc_html( $help->customer_email ); ?>
 	</li>
 </ul>
@@ -84,7 +84,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 			<?php
 			printf(
 				/* translators: %d: number of further items on the order, not listed. */
-				esc_html( _n( 'and %d more item', 'and %d more items', $help->items_omitted, 'post-purchase-hub' ) ),
+				esc_html( _n( 'and %d more item', 'and %d more items', $help->items_omitted, 'wpmake-post-purchase-hub' ) ),
 				absint( $help->items_omitted )
 			);
 			?>
@@ -95,7 +95,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <?php if ( '' !== $help->admin_url ) : ?>
 <p>
-	<a href="<?php echo esc_url( $help->admin_url ); ?>"><?php esc_html_e( 'Open this order', 'post-purchase-hub' ); ?></a>
+	<a href="<?php echo esc_url( $help->admin_url ); ?>"><?php esc_html_e( 'Open this order', 'wpmake-post-purchase-hub' ); ?></a>
 </p>
 <?php endif; ?>
 

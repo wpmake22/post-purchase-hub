@@ -56,7 +56,7 @@ final class SettingsLayout {
 
 		printf(
 			'<h1 class="screen-reader-text">%s</h1>',
-			esc_html__( 'Post-Purchase Hub settings', 'post-purchase-hub' )
+			esc_html__( 'Post-Purchase Hub settings', 'wpmake-post-purchase-hub' )
 		);
 
 		settings_errors();
@@ -95,7 +95,7 @@ final class SettingsLayout {
 
 		printf(
 			'<button type="button" class="pph-settings__burger" data-pph-settings-burger aria-expanded="false"><span class="screen-reader-text">%1$s</span>%2$s</button>',
-			esc_html__( 'Show settings navigation', 'post-purchase-hub' ),
+			esc_html__( 'Show settings navigation', 'wpmake-post-purchase-hub' ),
 			wp_kses( SettingsIcons::menu(), SettingsIcons::allowed_tags() )
 		);
 
@@ -148,7 +148,7 @@ final class SettingsLayout {
 
 		printf(
 			'<p class="pph-settings__empty" data-pph-settings-empty hidden>%s</p>',
-			esc_html__( 'No settings on this tab match your search.', 'post-purchase-hub' )
+			esc_html__( 'No settings on this tab match your search.', 'wpmake-post-purchase-hub' )
 		);
 
 		echo '</div>';

@@ -2,7 +2,7 @@
 /**
  * Compact timeline state for the orders list.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/timeline-summary.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/timeline-summary.php.
  *
  * Deliberately one line. This renders inside a table cell that every theme
  * styles differently, so it adds a phrase rather than a layout.

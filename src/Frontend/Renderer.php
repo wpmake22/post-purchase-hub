@@ -143,7 +143,7 @@ final class Renderer {
 			return array();
 		}
 
-		$label    = _x( 'Progress', 'orders list column', 'post-purchase-hub' );
+		$label    = _x( 'Progress', 'orders list column', 'wpmake-post-purchase-hub' );
 		$position = array_search( 'order-status', array_keys( $columns ), true );
 
 		if ( false === $position ) {
@@ -300,7 +300,7 @@ final class Renderer {
 				'orders'     => $rows,
 				'empty_text' => is_string( $empty_text ) && '' !== $empty_text
 					? $empty_text
-					: __( 'No orders yet.', 'post-purchase-hub' ),
+					: __( 'No orders yet.', 'wpmake-post-purchase-hub' ),
 			)
 		);
 	}

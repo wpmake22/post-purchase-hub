@@ -24,11 +24,11 @@ export default function Tracking( { tracking } ) {
 		<Question
 			title={ __(
 				'Where does tracking come from?',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 			help={ __(
 				'This plugin never invents tracking data. It shows a delivery estimate until something real exists, and then gets out of the way.',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 		>
 			<p
@@ -48,7 +48,7 @@ export default function Tracking( { tracking } ) {
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						{ __( 'Browse tracking plugins', 'post-purchase-hub' ) }
+						{ __( 'Browse tracking plugins', 'wpmake-post-purchase-hub' ) }
 					</a>
 				</p>
 			) }

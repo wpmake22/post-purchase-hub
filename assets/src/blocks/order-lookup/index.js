@@ -17,7 +17,7 @@ function Edit() {
 			<p>
 				{ __(
 					'Order lookup — a customer enters an order number and billing email, and a secure link is emailed to the address on the order.',
-					'post-purchase-hub'
+					'wpmake-post-purchase-hub'
 				) }
 			</p>
 		</div>

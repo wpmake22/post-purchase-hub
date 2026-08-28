@@ -74,8 +74,8 @@ final class HelpRequest extends AbstractEmail {
 	public function __construct() {
 		$this->id             = self::ID;
 		$this->customer_email = false;
-		$this->title          = __( 'Customer needs help', 'post-purchase-hub' );
-		$this->description    = __( 'Sent to the store when a customer submits the help form on an order.', 'post-purchase-hub' );
+		$this->title          = __( 'Customer needs help', 'wpmake-post-purchase-hub' );
+		$this->description    = __( 'Sent to the store when a customer submits the help form on an order.', 'wpmake-post-purchase-hub' );
 		$this->email_group    = 'orders';
 		$this->template_html  = 'emails/help-request.php';
 		$this->template_plain = 'emails/plain/help-request.php';
@@ -94,14 +94,14 @@ final class HelpRequest extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_subject(): string {
-		return __( '[{site_title}] Help needed with order {order_number}', 'post-purchase-hub' );
+		return __( '[{site_title}] Help needed with order {order_number}', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function get_default_heading(): string {
-		return __( 'A customer has asked for help', 'post-purchase-hub' );
+		return __( 'A customer has asked for help', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

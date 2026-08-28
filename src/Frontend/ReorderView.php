@@ -222,16 +222,16 @@ final class ReorderView {
 			'cart_items'    => $this->cart->item_count(),
 			'can_confirm'   => $plan->has_addable(),
 			'default_mode'  => ReorderOptions::default_mode(),
-			'merge_label'   => __( 'Add these to my current cart', 'post-purchase-hub' ),
-			'replace_label' => __( 'Replace what is in my cart', 'post-purchase-hub' ),
-			'confirm_label' => __( 'Add to cart', 'post-purchase-hub' ),
+			'merge_label'   => __( 'Add these to my current cart', 'wpmake-post-purchase-hub' ),
+			'replace_label' => __( 'Replace what is in my cart', 'wpmake-post-purchase-hub' ),
+			'confirm_label' => __( 'Add to cart', 'wpmake-post-purchase-hub' ),
 			'unavailable'   => $plan->nothing_available()
-				? __( 'None of the items on this order can be bought again right now. Your cart has not been changed.', 'post-purchase-hub' )
+				? __( 'None of the items on this order can be bought again right now. Your cart has not been changed.', 'wpmake-post-purchase-hub' )
 				: '',
 			'capped_notice' => $plan->was_capped()
 				? sprintf(
 					/* translators: %d: number of items checked. */
-					__( 'This order has more items than we can check at once. The first %d were checked; the rest are listed below but will not be added — you can buy those from their product pages.', 'post-purchase-hub' ),
+					__( 'This order has more items than we can check at once. The first %d were checked; the rest are listed below but will not be added — you can buy those from their product pages.', 'wpmake-post-purchase-hub' ),
 					$plan->item_cap
 				)
 				: '',
@@ -270,22 +270,22 @@ final class ReorderView {
 	private function status_label( ReorderLine $line ): string {
 		switch ( $line->outcome ) {
 			case ReorderLine::OUTCOME_ADDED:
-				return __( 'Will be added', 'post-purchase-hub' );
+				return __( 'Will be added', 'wpmake-post-purchase-hub' );
 			case ReorderLine::OUTCOME_QUANTITY_REDUCED:
 				return sprintf(
 					/* translators: 1: quantity originally bought, 2: quantity available now. */
-					__( 'Only %2$d of %1$d still available — adding %2$d', 'post-purchase-hub' ),
+					__( 'Only %2$d of %1$d still available — adding %2$d', 'wpmake-post-purchase-hub' ),
 					$line->requested_quantity,
 					$line->quantity
 				);
 			case ReorderLine::OUTCOME_OUT_OF_STOCK:
-				return __( 'Out of stock — not added', 'post-purchase-hub' );
+				return __( 'Out of stock — not added', 'wpmake-post-purchase-hub' );
 			case ReorderLine::OUTCOME_VARIATION_CHANGED:
-				return __( 'This option is no longer available — not added', 'post-purchase-hub' );
+				return __( 'This option is no longer available — not added', 'wpmake-post-purchase-hub' );
 			case ReorderLine::OUTCOME_NOT_CHECKED:
-				return __( 'Not checked — not added', 'post-purchase-hub' );
+				return __( 'Not checked — not added', 'wpmake-post-purchase-hub' );
 			default:
-				return __( 'No longer sold — not added', 'post-purchase-hub' );
+				return __( 'No longer sold — not added', 'wpmake-post-purchase-hub' );
 		}
 	}
 
@@ -307,7 +307,7 @@ final class ReorderView {
 
 		return sprintf(
 			/* translators: 1: price paid before, 2: price now, 3: signed difference. */
-			__( 'Price changed: was %1$s, now %2$s (%3$s each)', 'post-purchase-hub' ),
+			__( 'Price changed: was %1$s, now %2$s (%3$s each)', 'wpmake-post-purchase-hub' ),
 			$this->money( (float) $line->original_price, $order ),
 			$this->money( (float) $line->current_price, $order ),
 			( $delta > 0 ? '+' : '-' ) . $this->money( abs( $delta ), $order )

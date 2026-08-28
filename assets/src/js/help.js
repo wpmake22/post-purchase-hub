@@ -83,7 +83,7 @@ import { __ } from '@wordpress/i18n';
 				? data.message
 				: __(
 						'That could not be sent. Please try again.',
-						'post-purchase-hub'
+						'wpmake-post-purchase-hub'
 				  );
 
 		const reference =
@@ -122,7 +122,7 @@ import { __ } from '@wordpress/i18n';
 				error,
 				__(
 					'Please tell us what you need help with.',
-					'post-purchase-hub'
+					'wpmake-post-purchase-hub'
 				)
 			);
 
@@ -172,7 +172,7 @@ import { __ } from '@wordpress/i18n';
 							? data.message
 							: __(
 									'Thanks — your message is on its way to the store.',
-									'post-purchase-hub'
+									'wpmake-post-purchase-hub'
 							  )
 					);
 

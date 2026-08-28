@@ -247,7 +247,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 		 */
 		return (string) apply_filters(
 			'pph_request_reconciliation_note',
-			__( 'Order was cancelled through another route while this request was still open; closed automatically, no separate transition made.', 'post-purchase-hub' )
+			__( 'Order was cancelled through another route while this request was still open; closed automatically, no separate transition made.', 'wpmake-post-purchase-hub' )
 		);
 	}
 
@@ -306,7 +306,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 			'pph_request_note',
 			sprintf(
 				/* translators: 1: request type label, 2: request id. */
-				__( 'Customer requested %1$s (request #%2$d).', 'post-purchase-hub' ),
+				__( 'Customer requested %1$s (request #%2$d).', 'wpmake-post-purchase-hub' ),
 				self::type_label( $request->type ),
 				$request->id
 			),
@@ -325,13 +325,13 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 	private static function type_label( string $type ): string {
 		switch ( $type ) {
 			case Request::TYPE_CANCELLATION:
-				return __( 'a cancellation', 'post-purchase-hub' );
+				return __( 'a cancellation', 'wpmake-post-purchase-hub' );
 			case Request::TYPE_RETURN:
-				return __( 'a return', 'post-purchase-hub' );
+				return __( 'a return', 'wpmake-post-purchase-hub' );
 			case Request::TYPE_HELP:
-				return __( 'help', 'post-purchase-hub' );
+				return __( 'help', 'wpmake-post-purchase-hub' );
 			default:
-				return __( 'a request', 'post-purchase-hub' );
+				return __( 'a request', 'wpmake-post-purchase-hub' );
 		}
 	}
 }

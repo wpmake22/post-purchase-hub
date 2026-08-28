@@ -2,7 +2,7 @@
 /**
  * Daily admin digest email (plain text).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/plain/admin-digest.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/plain/admin-digest.php.
  *
  * @package PostPurchaseHub
  * @version 0.10.0
@@ -27,17 +27,17 @@ echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 echo sprintf(
 	/* translators: %d: number of requests created since the previous digest. */
-	esc_html( _n( '%d new request since your last digest.', '%d new requests since your last digest.', $new_count, 'post-purchase-hub' ) ),
+	esc_html( _n( '%d new request since your last digest.', '%d new requests since your last digest.', $new_count, 'wpmake-post-purchase-hub' ) ),
 	(int) $new_count
 ) . "\n\n";
 
 echo sprintf(
 	/* translators: %d: number of currently pending requests. */
-	esc_html( _n( '%d request is currently pending.', '%d requests are currently pending.', $pending_count, 'post-purchase-hub' ) ),
+	esc_html( _n( '%d request is currently pending.', '%d requests are currently pending.', $pending_count, 'wpmake-post-purchase-hub' ) ),
 	(int) $pending_count
 ) . "\n\n";
 
-echo esc_html__( 'Open the request queue:', 'post-purchase-hub' ) . ' ' . esc_url( $queue_url ) . "\n\n";
+echo esc_html__( 'Open the request queue:', 'wpmake-post-purchase-hub' ) . ' ' . esc_url( $queue_url ) . "\n\n";
 
 if ( $additional_content ) {
 	echo esc_html( wp_strip_all_tags( wptexturize( $additional_content ) ) );

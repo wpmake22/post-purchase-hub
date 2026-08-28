@@ -57,7 +57,7 @@ final class OrderMetabox {
 		foreach ( self::order_screen_ids() as $screen_id ) {
 			add_meta_box(
 				self::ID,
-				__( 'Post-Purchase Hub', 'post-purchase-hub' ),
+				__( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ),
 				array( $this, 'render' ),
 				$screen_id,
 				'side'
@@ -93,7 +93,7 @@ final class OrderMetabox {
 		$requests = $order_id > 0 ? $this->requests->find_by_order( $order_id ) : array();
 
 		if ( ! $requests ) {
-			echo '<p>' . esc_html__( 'No requests for this order.', 'post-purchase-hub' ) . '</p>';
+			echo '<p>' . esc_html__( 'No requests for this order.', 'wpmake-post-purchase-hub' ) . '</p>';
 
 			return;
 		}
@@ -114,7 +114,7 @@ final class OrderMetabox {
 		printf(
 			'<p><a href="%s">%s</a></p>',
 			esc_url( admin_url( 'admin.php?page=' . Menu::REQUESTS_PAGE . '&order_id=' . $order_id ) ),
-			esc_html__( 'View in the request queue', 'post-purchase-hub' )
+			esc_html__( 'View in the request queue', 'wpmake-post-purchase-hub' )
 		);
 	}
 }

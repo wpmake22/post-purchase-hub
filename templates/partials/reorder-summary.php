@@ -6,7 +6,7 @@
  * the outcome it will have, and — only when something can actually be added —
  * the confirmation that submits to `pph/v1/reorder`.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/reorder-summary.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/reorder-summary.php.
  *
  * @package PostPurchaseHub
  * @version 0.12.0
@@ -37,14 +37,14 @@ if ( empty( $reorder['lines'] ) ) {
 	class="pph-reorder"
 	data-pph-reorder
 	data-pph-order-id="<?php echo esc_attr( (string) $reorder['order_id'] ); ?>"
-	aria-label="<?php esc_attr_e( 'Buy these again', 'post-purchase-hub' ); ?>"
+	aria-label="<?php esc_attr_e( 'Buy these again', 'wpmake-post-purchase-hub' ); ?>"
 >
 	<h3 class="pph-reorder__heading">
-		<?php esc_html_e( 'Before we add these to your cart', 'post-purchase-hub' ); ?>
+		<?php esc_html_e( 'Before we add these to your cart', 'wpmake-post-purchase-hub' ); ?>
 	</h3>
 
 	<p class="pph-reorder__intro" data-pph-reorder-intro>
-		<?php esc_html_e( 'Nothing has been added yet. Here is what has changed since you ordered.', 'post-purchase-hub' ); ?>
+		<?php esc_html_e( 'Nothing has been added yet. Here is what has changed since you ordered.', 'wpmake-post-purchase-hub' ); ?>
 	</p>
 
 	<ul class="pph-reorder__lines" data-pph-reorder-lines>
@@ -63,7 +63,7 @@ if ( empty( $reorder['lines'] ) ) {
 					echo esc_html(
 						sprintf(
 							/* translators: %d: quantity on the original order. */
-							__( 'Ordered: %d', 'post-purchase-hub' ),
+							__( 'Ordered: %d', 'wpmake-post-purchase-hub' ),
 							$pph_line['requested']
 						)
 					);
@@ -82,7 +82,7 @@ if ( empty( $reorder['lines'] ) ) {
 
 				<?php if ( '' !== $pph_line['url'] ) : ?>
 					<a class="pph-reorder__link" href="<?php echo esc_url( $pph_line['url'] ); ?>" data-pph-reorder-link>
-						<?php esc_html_e( 'Choose options', 'post-purchase-hub' ); ?>
+						<?php esc_html_e( 'Choose options', 'wpmake-post-purchase-hub' ); ?>
 					</a>
 				<?php endif; ?>
 			</li>
@@ -116,7 +116,7 @@ if ( empty( $reorder['lines'] ) ) {
 									'You already have %d item in your cart.',
 									'You already have %d items in your cart.',
 									$reorder['cart_items'],
-									'post-purchase-hub'
+									'wpmake-post-purchase-hub'
 								),
 								$reorder['cart_items']
 							)

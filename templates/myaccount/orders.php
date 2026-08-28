@@ -7,7 +7,7 @@
  * ours meet — and it does nothing with them but hand them over. The markup
  * lives in partials/orders-list.php, which is where a theme should override it.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/myaccount/orders.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/myaccount/orders.php.
  *
  * @package PostPurchaseHub
  * @version 0.4.0
@@ -33,5 +33,5 @@ do_action(
 	( isset( $has_orders ) && $has_orders && isset( $customer_orders->orders ) && is_array( $customer_orders->orders ) )
 		? $customer_orders->orders
 		: array(),
-	__( 'No order has been made yet.', 'post-purchase-hub' )
+	__( 'No order has been made yet.', 'wpmake-post-purchase-hub' )
 );

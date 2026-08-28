@@ -155,7 +155,7 @@ final class Help {
 		if ( ! self::has_destination() ) {
 			return EligibilityResult::denied(
 				self::REASON_NO_DESTINATION,
-				__( 'Messages about orders are not being accepted at the moment.', 'post-purchase-hub' )
+				__( 'Messages about orders are not being accepted at the moment.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
@@ -289,14 +289,14 @@ final class Help {
 		if ( null === $topic ) {
 			return EligibilityResult::denied(
 				self::REASON_UNKNOWN_TOPIC,
-				__( 'Please choose what your message is about.', 'post-purchase-hub' )
+				__( 'Please choose what your message is about.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
 		if ( '' === $message ) {
 			return EligibilityResult::denied(
 				self::REASON_EMPTY_MESSAGE,
-				__( 'Please tell us what you need help with.', 'post-purchase-hub' )
+				__( 'Please tell us what you need help with.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
@@ -311,7 +311,7 @@ final class Help {
 	 * @return string
 	 */
 	public static function label(): string {
-		return __( 'Get help with this order', 'post-purchase-hub' );
+		return __( 'Get help with this order', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

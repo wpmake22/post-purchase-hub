@@ -2339,7 +2339,7 @@ if ( ! defined( 'PPH_PLUGIN_DIR' ) ) {
 }
 
 if ( ! defined( 'PPH_PLUGIN_URL' ) ) {
-	define( 'PPH_PLUGIN_URL', 'https://example.test/wp-content/plugins/post-purchase-hub/' );
+	define( 'PPH_PLUGIN_URL', 'https://example.test/wp-content/plugins/wpmake-post-purchase-hub/' );
 }
 
 if ( ! defined( 'PPH_VERSION' ) ) {

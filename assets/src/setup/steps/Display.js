@@ -31,11 +31,11 @@ export default function Display( {
 		<Question
 			title={ __(
 				'How should this appear on your order pages?',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 			help={ __(
 				'Additive adds these sections to the pages your theme already draws. Full replacement takes the order page over, which looks different in every theme — and is the single biggest source of support tickets for plugins like this one.',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 		>
 			{ conflict && (
@@ -78,7 +78,7 @@ export default function Display( {
 			</div>
 
 			<h2 className="pph-setup__subheading">
-				{ __( 'What your customers will see', 'post-purchase-hub' ) }
+				{ __( 'What your customers will see', 'wpmake-post-purchase-hub' ) }
 			</h2>
 
 			<div

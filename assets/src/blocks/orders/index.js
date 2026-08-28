@@ -18,7 +18,7 @@ function Edit() {
 			<p>
 				{ __(
 					'Order timeline — each signed-in customer sees their own orders here.',
-					'post-purchase-hub'
+					'wpmake-post-purchase-hub'
 				) }
 			</p>
 		</div>

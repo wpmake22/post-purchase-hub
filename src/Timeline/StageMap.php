@@ -117,10 +117,10 @@ final class StageMap {
 	 */
 	public function branches(): array {
 		return array(
-			self::ON_HOLD   => _x( 'On hold', 'order timeline stage', 'post-purchase-hub' ),
-			self::CANCELLED => _x( 'Cancelled', 'order timeline stage', 'post-purchase-hub' ),
-			self::REFUNDED  => _x( 'Refunded', 'order timeline stage', 'post-purchase-hub' ),
-			self::FAILED    => _x( 'Failed', 'order timeline stage', 'post-purchase-hub' ),
+			self::ON_HOLD   => _x( 'On hold', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::CANCELLED => _x( 'Cancelled', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::REFUNDED  => _x( 'Refunded', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::FAILED    => _x( 'Failed', 'order timeline stage', 'wpmake-post-purchase-hub' ),
 		);
 	}
 
@@ -256,12 +256,12 @@ final class StageMap {
 	 */
 	private static function default_stages(): array {
 		return array(
-			self::PLACED           => _x( 'Placed', 'order timeline stage', 'post-purchase-hub' ),
-			self::CONFIRMED        => _x( 'Confirmed', 'order timeline stage', 'post-purchase-hub' ),
-			self::PACKED           => _x( 'Packed', 'order timeline stage', 'post-purchase-hub' ),
-			self::SHIPPED          => _x( 'Shipped', 'order timeline stage', 'post-purchase-hub' ),
-			self::OUT_FOR_DELIVERY => _x( 'Out for delivery', 'order timeline stage', 'post-purchase-hub' ),
-			self::DELIVERED        => _x( 'Delivered', 'order timeline stage', 'post-purchase-hub' ),
+			self::PLACED           => _x( 'Placed', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::CONFIRMED        => _x( 'Confirmed', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::PACKED           => _x( 'Packed', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::SHIPPED          => _x( 'Shipped', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::OUT_FOR_DELIVERY => _x( 'Out for delivery', 'order timeline stage', 'wpmake-post-purchase-hub' ),
+			self::DELIVERED        => _x( 'Delivered', 'order timeline stage', 'wpmake-post-purchase-hub' ),
 		);
 	}
 

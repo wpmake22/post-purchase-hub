@@ -2,7 +2,7 @@
 /**
  * Order timeline.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/timeline.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/timeline.php.
  *
  * @package PostPurchaseHub
  * @version 0.4.0
@@ -28,7 +28,7 @@ $pph_heading_id = 'pph-timeline-heading-' . (int) $timeline['order_id'];
 	aria-labelledby="<?php echo esc_attr( $pph_heading_id ); ?>"
 >
 	<h2 class="pph-timeline__heading" id="<?php echo esc_attr( $pph_heading_id ); ?>">
-		<?php esc_html_e( 'Order progress', 'post-purchase-hub' ); ?>
+		<?php esc_html_e( 'Order progress', 'wpmake-post-purchase-hub' ); ?>
 	</h2>
 
 	<ol class="pph-timeline__stages" data-pph-timeline-stages>

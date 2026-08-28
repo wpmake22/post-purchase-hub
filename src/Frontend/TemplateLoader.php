@@ -33,7 +33,7 @@ final class TemplateLoader {
 	 *
 	 * @var string
 	 */
-	public const THEME_DIRECTORY = 'post-purchase-hub';
+	public const THEME_DIRECTORY = 'wpmake-post-purchase-hub';
 
 	/**
 	 * Every template this plugin will render, relative to templates/.

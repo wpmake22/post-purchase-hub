@@ -85,17 +85,45 @@ final class RequestActionController {
 		add_action(
 			'admin_post_' . self::APPROVE_ACTION,
 			function (): void {
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified inside approve() before anything else runs.
-				$this->approve( $_POST );
+				$this->approve( self::posted() );
 			}
 		);
 
 		add_action(
 			'admin_post_' . self::DECLINE_ACTION,
 			function (): void {
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified inside decline() before anything else runs.
-				$this->decline( $_POST );
+				$this->decline( self::posted() );
 			}
+		);
+	}
+
+	/**
+	 * The submitted form, unslashed and sanitised field by field.
+	 *
+	 * Nothing downstream ever sees `$_POST`. The form has exactly four fields,
+	 * so they are read by name and given the narrowest sanitiser each can take
+	 * rather than passing the superglobal along and sanitising at each use.
+	 *
+	 * The nonce is sanitised here even though `wp_verify_nonce()` compares it
+	 * against a hash it computes itself: it is pluggable, and a plugin that
+	 * replaces it inherits whatever this hands over.
+	 *
+	 * @since 1.0.0
+	 * @return array<string, string|int>
+	 */
+	private static function posted(): array {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- this is the boundary that collects the nonce; authorise() verifies it before anything acts on the rest.
+		$raw = wp_unslash( $_POST );
+
+		if ( ! is_array( $raw ) ) {
+			return array();
+		}
+
+		return array(
+			'_wpnonce'         => isset( $raw['_wpnonce'] ) && is_scalar( $raw['_wpnonce'] ) ? sanitize_text_field( (string) $raw['_wpnonce'] ) : '',
+			'_wp_http_referer' => isset( $raw['_wp_http_referer'] ) && is_scalar( $raw['_wp_http_referer'] ) ? esc_url_raw( (string) $raw['_wp_http_referer'] ) : '',
+			'request_id'       => isset( $raw['request_id'] ) && is_scalar( $raw['request_id'] ) ? absint( $raw['request_id'] ) : 0,
+			'admin_note'       => isset( $raw['admin_note'] ) && is_scalar( $raw['admin_note'] ) ? sanitize_text_field( (string) $raw['admin_note'] ) : '',
 		);
 	}
 
@@ -203,17 +231,19 @@ final class RequestActionController {
 	private function authorise( array $params ): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die(
-				esc_html__( 'You do not have permission to manage cancellation requests.', 'post-purchase-hub' ),
+				esc_html__( 'You do not have permission to manage cancellation requests.', 'wpmake-post-purchase-hub' ),
 				'',
 				array( 'response' => 403 )
 			);
 		}
 
-		$nonce = isset( $params['_wpnonce'] ) && is_scalar( $params['_wpnonce'] ) ? (string) $params['_wpnonce'] : '';
+		$nonce = isset( $params['_wpnonce'] ) && is_scalar( $params['_wpnonce'] )
+			? sanitize_text_field( (string) $params['_wpnonce'] )
+			: '';
 
 		if ( ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
 			wp_die(
-				esc_html__( 'This link has expired. Please go back and try again.', 'post-purchase-hub' ),
+				esc_html__( 'This link has expired. Please go back and try again.', 'wpmake-post-purchase-hub' ),
 				'',
 				array( 'response' => 403 )
 			);
@@ -247,7 +277,7 @@ final class RequestActionController {
 			return null;
 		}
 
-		$note = sanitize_text_field( wp_unslash( (string) $params['admin_note'] ) );
+		$note = sanitize_text_field( (string) $params['admin_note'] );
 
 		return '' === $note ? null : $note;
 	}
@@ -271,8 +301,8 @@ final class RequestActionController {
 	 * @return void
 	 */
 	private function redirect( array $params ): void {
-		$referer = isset( $params['_wp_http_referer'] ) && is_scalar( $params['_wp_http_referer'] )
-			? (string) $params['_wp_http_referer']
+		$referer = isset( $params['_wp_http_referer'] ) && is_scalar( $params['_wp_http_referer'] ) && '' !== $params['_wp_http_referer']
+			? esc_url_raw( (string) $params['_wp_http_referer'] )
 			: admin_url( 'admin.php?page=' . Menu::REQUESTS_PAGE );
 
 		wp_safe_redirect( $referer );

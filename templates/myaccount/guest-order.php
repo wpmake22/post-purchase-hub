@@ -8,7 +8,7 @@
  * needs to know which order they are looking at — the account pages that
  * surround a logged-in customer are not here to tell them.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/myaccount/guest-order.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/myaccount/guest-order.php.
  *
  * @package PostPurchaseHub
  * @version 0.11.0
@@ -30,7 +30,7 @@ defined( 'ABSPATH' ) || exit;
 		<?php
 		printf(
 			/* translators: 1: order number, 2: order date, 3: order status */
-			esc_html__( 'Order %1$s was placed on %2$s and is currently %3$s.', 'post-purchase-hub' ),
+			esc_html__( 'Order %1$s was placed on %2$s and is currently %3$s.', 'wpmake-post-purchase-hub' ),
 			'<mark class="order-number">' . esc_html( $order_number ) . '</mark>',
 			'<mark class="order-date">' . esc_html( $placed_on ) . '</mark>',
 			'<mark class="order-status">' . esc_html( $status_label ) . '</mark>'

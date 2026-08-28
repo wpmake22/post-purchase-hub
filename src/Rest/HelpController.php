@@ -215,7 +215,7 @@ final class HelpController {
 			// belongs to someone else. The reason still reaches the log.
 			return $this->deny(
 				'pph_forbidden',
-				__( 'You do not have access to this order.', 'post-purchase-hub' ),
+				__( 'You do not have access to this order.', 'wpmake-post-purchase-hub' ),
 				403,
 				array(
 					'order_id'    => $order_id,
@@ -245,7 +245,7 @@ final class HelpController {
 		$order = $request->get_param( 'pph_order' );
 
 		if ( ! $order instanceof \WC_Order ) {
-			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'post-purchase-hub' ), 403, array() );
+			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		try {
@@ -258,7 +258,7 @@ final class HelpController {
 		} catch ( IneligibleActionException $e ) {
 			return $this->deny(
 				'pph_ineligible',
-				'' !== $e->result->message ? $e->result->message : __( 'This message could not be sent.', 'post-purchase-hub' ),
+				'' !== $e->result->message ? $e->result->message : __( 'This message could not be sent.', 'wpmake-post-purchase-hub' ),
 				EligibilityResponse::status_for( $e->result ),
 				array(
 					'order_id'    => $order->get_id(),
@@ -273,7 +273,7 @@ final class HelpController {
 		return new \WP_REST_Response(
 			array(
 				'submitted' => true,
-				'message'   => __( 'Thanks — your message is on its way to the store, along with your order details.', 'post-purchase-hub' ),
+				'message'   => __( 'Thanks — your message is on its way to the store, along with your order details.', 'wpmake-post-purchase-hub' ),
 			),
 			200
 		);
@@ -316,7 +316,7 @@ final class HelpController {
 	 * @return \WP_Error
 	 */
 	private function too_many_requests( array $log_context ): \WP_Error {
-		return $this->deny( 'pph_rate_limited', __( 'Too many messages. Please try again later.', 'post-purchase-hub' ), 429, $log_context );
+		return $this->deny( 'pph_rate_limited', __( 'Too many messages. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
 	}
 
 	/**

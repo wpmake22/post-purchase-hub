@@ -123,10 +123,10 @@ final class ActionAvailability {
 	 */
 	public static function descriptions(): array {
 		return array(
-			Cancel::ID  => __( 'Customers ask to cancel; you approve or decline from the request queue. Nothing is cancelled automatically and no refund is ever issued by this plugin.', 'post-purchase-hub' ),
-			Reorder::ID => __( 'Customers buy a past order again, after a screen showing what has changed: what is out of stock, what no longer exists, what costs more.', 'post-purchase-hub' ),
-			Invoice::ID => __( 'Links to the invoice your invoice plugin already generated, or to the order page to print when there is none. This plugin generates no PDFs.', 'post-purchase-hub' ),
-			Help::ID    => __( 'A message form that arrives with the order number, status and items already attached, so you can answer without asking what it is about.', 'post-purchase-hub' ),
+			Cancel::ID  => __( 'Customers ask to cancel; you approve or decline from the request queue. Nothing is cancelled automatically and no refund is ever issued by this plugin.', 'wpmake-post-purchase-hub' ),
+			Reorder::ID => __( 'Customers buy a past order again, after a screen showing what has changed: what is out of stock, what no longer exists, what costs more.', 'wpmake-post-purchase-hub' ),
+			Invoice::ID => __( 'Links to the invoice your invoice plugin already generated, or to the order page to print when there is none. This plugin generates no PDFs.', 'wpmake-post-purchase-hub' ),
+			Help::ID    => __( 'A message form that arrives with the order number, status and items already attached, so you can answer without asking what it is about.', 'wpmake-post-purchase-hub' ),
 		);
 	}
 

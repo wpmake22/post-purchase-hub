@@ -5,7 +5,7 @@
  * Rendered inside a <details> disclosure so the form is reachable, and its
  * context readable, with no JavaScript at all — only submitting it needs any.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/help-form.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/help-form.php.
  *
  * @package PostPurchaseHub
  * @version 0.13.0

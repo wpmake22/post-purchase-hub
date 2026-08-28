@@ -9,7 +9,7 @@ parameters:
 		- src
 		- free
 		- pro
-		- post-purchase-hub.php
+		- wpmake-post-purchase-hub.php
 	scanFiles:
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php

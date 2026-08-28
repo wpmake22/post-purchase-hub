@@ -16,8 +16,8 @@
 
 declare( strict_types = 1 );
 
-const SLUG      = 'post-purchase-hub';
-const MAIN_FILE = 'post-purchase-hub.php';
+const SLUG      = 'wpmake-post-purchase-hub';
+const MAIN_FILE = 'wpmake-post-purchase-hub.php';
 
 $root    = dirname( __DIR__ );
 $args    = parse_args( $argv );
@@ -71,8 +71,15 @@ if ( is_file( $free_zip ) ) {
 
 	// Packaging hygiene.
 	check( 'no dev directories', ! has_any_prefix( $files, array( SLUG . '/tests/', SLUG . '/node_modules/', SLUG . '/.git', SLUG . '/bin/', SLUG . '/docs/' ) ) );
-	check( 'no source assets', ! has_prefix( $files, SLUG . '/assets/src/' ) );
-	check( 'no dev config', ! has_any_suffix( $files, array( 'phpcs.xml.dist', 'phpstan.neon.dist', 'package.json', 'composer.lock', 'CLAUDE.md' ) ) );
+	// Inverted deliberately. This check used to assert the opposite,
+	// on the reasoning that sources are dead weight in an installed plugin. The
+	// first WP.org review of 1.0.0 rejected that: guideline 4 requires public
+	// access to the source of every compiled asset and to the build tools, and
+	// every bundle in assets/build was flagged. The sources ship now, and the
+	// check guards the requirement rather than the old habit.
+	check( 'contains source assets', has_prefix( $files, SLUG . '/assets/src/' ) );
+	check( 'contains build tooling', in_array( SLUG . '/package.json', $files, true ) && in_array( SLUG . '/webpack.config.js', $files, true ) );
+	check( 'no dev config', ! has_any_suffix( $files, array( 'phpcs.xml.dist', 'phpstan.neon.dist', 'composer.lock', 'CLAUDE.md' ) ) );
 
 	// Headers.
 	$main = read_zip_entry( $free_zip, SLUG . '/' . MAIN_FILE );
@@ -83,6 +90,7 @@ if ( is_file( $free_zip ) ) {
 	$readme = read_zip_entry( $free_zip, SLUG . '/readme.txt' );
 	check( "Stable tag is {$version}", trim( (string) ( preg_match( '/^Stable tag:\s*(.+)$/m', $readme, $m ) ? $m[1] : '' ) ) === $version );
 	check( 'readme declares limitations', stripos( $readme, 'does not' ) !== false );
+	check( 'readme documents the build', stripos( $readme, 'npm run build' ) !== false );
 } else {
 	$failures[] = 'free zip not found: ' . basename( $free_zip );
 }

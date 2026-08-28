@@ -190,8 +190,8 @@ final class PluginTest extends TestCase {
 		$this->assertEquals( $after_first, FakeWordPress::$actions );
 		$this->assertContains(
 			array(
-				'callback' => array( $plugin, 'load_textdomain' ),
-				'priority' => 10,
+				'callback' => array( $plugin, 'register_rendering' ),
+				'priority' => 20,
 			),
 			FakeWordPress::$actions['init']
 		);

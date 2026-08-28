@@ -2,7 +2,7 @@
 /**
  * Guest order-lookup form.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/lookup/form.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/lookup/form.php.
  *
  * @package PostPurchaseHub
  * @version 0.11.0
@@ -35,12 +35,12 @@ defined( 'ABSPATH' ) || exit;
 		data-pph-lookup-form
 	>
 		<p class="pph-lookup__intro">
-			<?php esc_html_e( 'Enter your order number and the email address you used at checkout. We will email a secure link to that order — no password needed.', 'post-purchase-hub' ); ?>
+			<?php esc_html_e( 'Enter your order number and the email address you used at checkout. We will email a secure link to that order — no password needed.', 'wpmake-post-purchase-hub' ); ?>
 		</p>
 
 		<p class="pph-lookup__field">
 			<label for="pph-lookup-number">
-				<?php esc_html_e( 'Order number', 'post-purchase-hub' ); ?>
+				<?php esc_html_e( 'Order number', 'wpmake-post-purchase-hub' ); ?>
 			</label>
 			<input
 				type="text"
@@ -56,7 +56,7 @@ defined( 'ABSPATH' ) || exit;
 
 		<p class="pph-lookup__field">
 			<label for="pph-lookup-email">
-				<?php esc_html_e( 'Billing email', 'post-purchase-hub' ); ?>
+				<?php esc_html_e( 'Billing email', 'wpmake-post-purchase-hub' ); ?>
 			</label>
 			<input
 				type="email"
@@ -90,7 +90,7 @@ defined( 'ABSPATH' ) || exit;
 				value="1"
 				data-pph-lookup-submit
 			>
-				<?php esc_html_e( 'Email me a secure link', 'post-purchase-hub' ); ?>
+				<?php esc_html_e( 'Email me a secure link', 'wpmake-post-purchase-hub' ); ?>
 			</button>
 		</p>
 	</form>

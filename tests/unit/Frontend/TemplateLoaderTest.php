@@ -77,7 +77,7 @@ final class TemplateLoaderTest extends TestCase {
 	 */
 	public function test_a_theme_override_takes_precedence(): void {
 		FakeWordPress::$theme_templates = array(
-			'post-purchase-hub/partials/timeline.php' => __FILE__,
+			'wpmake-post-purchase-hub/partials/timeline.php' => __FILE__,
 		);
 
 		$this->assertSame( __FILE__, $this->loader->locate( 'partials/timeline.php' ) );
@@ -120,8 +120,8 @@ final class TemplateLoaderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_traversal_is_refused_even_when_the_target_exists(): void {
-		$this->assertFileExists( PPH_PLUGIN_DIR . 'post-purchase-hub.php' );
-		$this->assertNull( $this->loader->locate( '../post-purchase-hub.php' ) );
+		$this->assertFileExists( PPH_PLUGIN_DIR . 'wpmake-post-purchase-hub.php' );
+		$this->assertNull( $this->loader->locate( '../wpmake-post-purchase-hub.php' ) );
 	}
 
 	/**
@@ -170,7 +170,7 @@ final class TemplateLoaderTest extends TestCase {
 		// A theme appearing mid-request is not a real scenario; a second
 		// filesystem lookup per row is. Same answer means it was not repeated.
 		FakeWordPress::$theme_templates = array(
-			'post-purchase-hub/partials/timeline.php' => __FILE__,
+			'wpmake-post-purchase-hub/partials/timeline.php' => __FILE__,
 		);
 
 		$this->assertSame( $first, $this->loader->locate( 'partials/timeline.php' ) );

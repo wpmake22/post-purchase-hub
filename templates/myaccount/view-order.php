@@ -6,7 +6,7 @@
  * is kept — it renders line items, totals and addresses that this plugin has no
  * business reimplementing — and the timeline is placed above it.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/myaccount/view-order.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/myaccount/view-order.php.
  *
  * @package PostPurchaseHub
  * @version 0.4.0

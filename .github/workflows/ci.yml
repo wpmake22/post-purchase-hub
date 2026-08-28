@@ -57,7 +57,7 @@ jobs:
           # One-or-more backslashes: `use PostPurchaseHub\Pro\X` in code and
           # 'PostPurchaseHub\\Pro\\X' inside a string are both leaks, and a
           # pattern that only matched one of them would be a gate in name only.
-          if grep -rnE 'PostPurchaseHub\\+(Pro|Free)\\+' src/ post-purchase-hub.php; then
+          if grep -rnE 'PostPurchaseHub\\+(Pro|Free)\\+' src/ wpmake-post-purchase-hub.php; then
             echo "::error::Core references an edition namespace. Core registers extension points; editions fill them."
             FAIL=1
           fi

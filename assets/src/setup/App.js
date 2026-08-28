@@ -184,14 +184,14 @@ export default function App() {
 			lines.push(
 				`${ __(
 					'Timeline stages',
-					'post-purchase-hub'
+					'wpmake-post-purchase-hub'
 				) }: ${ visible }`
 			);
 		}
 
 		if ( shown.includes( 'delivery' ) ) {
 			lines.push(
-				`${ __( 'Handling time', 'post-purchase-hub' ) }: ${
+				`${ __( 'Handling time', 'wpmake-post-purchase-hub' ) }: ${
 					values.handlingDays
 				}`
 			);
@@ -205,10 +205,10 @@ export default function App() {
 				.map( ( action ) => action.label );
 
 			lines.push(
-				`${ __( 'Customers can', 'post-purchase-hub' ) }: ${
+				`${ __( 'Customers can', 'wpmake-post-purchase-hub' ) }: ${
 					on.length
 						? on.join( ', ' )
-						: __( 'nothing yet', 'post-purchase-hub' )
+						: __( 'nothing yet', 'wpmake-post-purchase-hub' )
 				}`
 			);
 		}
@@ -219,7 +219,7 @@ export default function App() {
 
 		if ( mode ) {
 			lines.push(
-				`${ __( 'Order pages', 'post-purchase-hub' ) }: ${ mode.label }`
+				`${ __( 'Order pages', 'wpmake-post-purchase-hub' ) }: ${ mode.label }`
 			);
 		}
 
@@ -354,7 +354,7 @@ export default function App() {
 									disabled={ busy }
 									data-pph-wizard-back
 								>
-									{ __( 'Back', 'post-purchase-hub' ) }
+									{ __( 'Back', 'wpmake-post-purchase-hub' ) }
 								</button>
 							) : (
 								<span />
@@ -373,7 +373,7 @@ export default function App() {
 									>
 										{ __(
 											'Skip this step',
-											'post-purchase-hub'
+											'wpmake-post-purchase-hub'
 										) }
 									</button>
 								) }
@@ -394,9 +394,9 @@ export default function App() {
 									{ isFinish
 										? __(
 												'Finish and go live',
-												'post-purchase-hub'
+												'wpmake-post-purchase-hub'
 										  )
-										: __( 'Next', 'post-purchase-hub' ) }
+										: __( 'Next', 'wpmake-post-purchase-hub' ) }
 								</button>
 							</div>
 						</footer>

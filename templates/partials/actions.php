@@ -2,7 +2,7 @@
 /**
  * Eligible self-service actions for one order.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/actions.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/actions.php.
  *
  * @package PostPurchaseHub
  * @version 0.7.0
@@ -18,7 +18,7 @@ if ( empty( $actions ) ) {
 	return;
 }
 ?>
-<section class="pph-actions" data-pph-actions aria-label="<?php esc_attr_e( 'Available actions', 'post-purchase-hub' ); ?>">
+<section class="pph-actions" data-pph-actions aria-label="<?php esc_attr_e( 'Available actions', 'wpmake-post-purchase-hub' ); ?>">
 	<ul class="pph-actions__list" data-pph-actions-list>
 		<?php foreach ( $actions as $pph_action ) : ?>
 			<li class="pph-actions__item" data-pph-action="<?php echo esc_attr( $pph_action['id'] ); ?>">

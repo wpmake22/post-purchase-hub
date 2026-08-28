@@ -7,7 +7,7 @@
  * before showing it. Rendered in the footer so it never disturbs the tab
  * order of the page around it while hidden.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/request-modal.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/request-modal.php.
  *
  * @package PostPurchaseHub
  * @version 0.8.0
@@ -39,11 +39,11 @@ if ( empty( $modal['reason_codes'] ) ) {
 			type="button"
 			class="pph-modal__close"
 			data-pph-modal-close
-			aria-label="<?php esc_attr_e( 'Close', 'post-purchase-hub' ); ?>"
+			aria-label="<?php esc_attr_e( 'Close', 'wpmake-post-purchase-hub' ); ?>"
 		>&times;</button>
 
 		<h2 id="pph-request-modal-heading" class="pph-modal__heading">
-			<?php esc_html_e( 'Request cancellation', 'post-purchase-hub' ); ?>
+			<?php esc_html_e( 'Request cancellation', 'wpmake-post-purchase-hub' ); ?>
 		</h2>
 
 		<p id="pph-request-modal-description" class="pph-modal__description">
@@ -55,7 +55,7 @@ if ( empty( $modal['reason_codes'] ) ) {
 						'This sends a request to the store — it does not cancel your order right away. We usually respond within %d hour.',
 						'This sends a request to the store — it does not cancel your order right away. We usually respond within %d hours.',
 						$modal['expected_response_hours'],
-						'post-purchase-hub'
+						'wpmake-post-purchase-hub'
 					),
 					$modal['expected_response_hours']
 				)
@@ -67,7 +67,7 @@ if ( empty( $modal['reason_codes'] ) ) {
 			<input type="hidden" name="order_id" data-pph-request-order-id value="" />
 
 			<div class="pph-modal__field">
-				<label for="pph-request-reason"><?php esc_html_e( 'Reason', 'post-purchase-hub' ); ?></label>
+				<label for="pph-request-reason"><?php esc_html_e( 'Reason', 'wpmake-post-purchase-hub' ); ?></label>
 				<select
 					id="pph-request-reason"
 					name="reason_code"
@@ -84,7 +84,7 @@ if ( empty( $modal['reason_codes'] ) ) {
 
 			<div class="pph-modal__field">
 				<label for="pph-request-note">
-					<?php esc_html_e( 'Anything else? (optional)', 'post-purchase-hub' ); ?>
+					<?php esc_html_e( 'Anything else? (optional)', 'wpmake-post-purchase-hub' ); ?>
 				</label>
 				<textarea id="pph-request-note" name="note" data-pph-request-note rows="3"></textarea>
 			</div>
@@ -93,10 +93,10 @@ if ( empty( $modal['reason_codes'] ) ) {
 
 			<div class="pph-modal__actions">
 				<button type="button" class="button" data-pph-modal-close>
-					<?php esc_html_e( 'Cancel', 'post-purchase-hub' ); ?>
+					<?php esc_html_e( 'Cancel', 'wpmake-post-purchase-hub' ); ?>
 				</button>
 				<button type="submit" class="button button-primary" data-pph-request-submit>
-					<span data-pph-request-submit-label><?php esc_html_e( 'Send request', 'post-purchase-hub' ); ?></span>
+					<span data-pph-request-submit-label><?php esc_html_e( 'Send request', 'wpmake-post-purchase-hub' ); ?></span>
 				</button>
 			</div>
 		</form>

@@ -44,7 +44,7 @@ jobs:
       - name: Check version consistency
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          HEADER=$(grep -oP '^\s*\*\s*Version:\s*\K.+' post-purchase-hub.php | tr -d '[:space:]')
+          HEADER=$(grep -oP '^\s*\*\s*Version:\s*\K.+' wpmake-post-purchase-hub.php | tr -d '[:space:]')
           STABLE=$(grep -oP '^Stable tag:\s*\K.+' readme.txt | tr -d '[:space:]')
 
           FAIL=0
@@ -119,7 +119,7 @@ jobs:
         run: |
           npm ci
           npx wp-env start
-          npx wp-env run cli wp plugin install /var/www/html/wp-content/uploads/dist/post-purchase-hub-${{ needs.build.outputs.version }}.zip --activate || \
+          npx wp-env run cli wp plugin install /var/www/html/wp-content/uploads/dist/wpmake-post-purchase-hub-${{ needs.build.outputs.version }}.zip --activate || \
             npx wp-env run --env-cwd=/var/www/html cli bash -c "wp plugin install \$(ls /var/www/html/*.zip | head -1) --activate"
         continue-on-error: false
 
@@ -127,7 +127,7 @@ jobs:
         run: |
           npx wp-env run cli wp eval 'echo defined("PPH_EDITION") ? PPH_EDITION : "UNDEFINED";' | tee edition.txt
           grep -q '^free$' edition.txt || { echo "::error::PPH_EDITION was not 'free' in the built zip"; exit 1; }
-          npx wp-env run cli wp plugin list --status=active --field=name | grep -q post-purchase-hub
+          npx wp-env run cli wp plugin list --status=active --field=name | grep -qx wpmake-post-purchase-hub
 
   publish:
     name: Attach to release
@@ -165,8 +165,8 @@ jobs:
           npm ci && npm run build
           php bin/build.php --version=${{ needs.build.outputs.version }} --edition=free
           mkdir -p svn-src
-          unzip -q dist/post-purchase-hub-${{ needs.build.outputs.version }}.zip -d svn-src
-          mv svn-src/post-purchase-hub/* svn-src/ && rmdir svn-src/post-purchase-hub
+          unzip -q dist/wpmake-post-purchase-hub-${{ needs.build.outputs.version }}.zip -d svn-src
+          mv svn-src/wpmake-post-purchase-hub/* svn-src/ && rmdir svn-src/wpmake-post-purchase-hub
 
       # Requires SVN_USERNAME and SVN_PASSWORD in the `wporg` environment.
       # Gate the environment with a required reviewer so a stray tag cannot ship to WP.org.
@@ -175,7 +175,7 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SLUG: post-purchase-hub
+          SLUG: wpmake-post-purchase-hub
           BUILD_DIR: svn-src
           VERSION: ${{ needs.build.outputs.version }}
 

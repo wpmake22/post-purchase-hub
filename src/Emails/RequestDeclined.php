@@ -38,8 +38,8 @@ final class RequestDeclined extends AbstractEmail {
 	public function __construct() {
 		$this->id             = 'pph_request_declined';
 		$this->customer_email = true;
-		$this->title          = __( 'Request declined', 'post-purchase-hub' );
-		$this->description    = __( 'Sent to the customer once a staff member declines their cancellation request.', 'post-purchase-hub' );
+		$this->title          = __( 'Request declined', 'wpmake-post-purchase-hub' );
+		$this->description    = __( 'Sent to the customer once a staff member declines their cancellation request.', 'wpmake-post-purchase-hub' );
 		$this->email_group    = 'order-changes';
 		$this->template_html  = 'emails/request-declined.php';
 		$this->template_plain = 'emails/plain/request-declined.php';
@@ -56,14 +56,14 @@ final class RequestDeclined extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_subject(): string {
-		return __( 'About your request for order {order_number}', 'post-purchase-hub' );
+		return __( 'About your request for order {order_number}', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function get_default_heading(): string {
-		return __( 'We could not action your request', 'post-purchase-hub' );
+		return __( 'We could not action your request', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -137,7 +137,7 @@ final class RequestDeclined extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_additional_content(): string {
-		return __( 'If you have questions about this decision, reply to this email and we will help.', 'post-purchase-hub' );
+		return __( 'If you have questions about this decision, reply to this email and we will help.', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

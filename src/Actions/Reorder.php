@@ -181,7 +181,7 @@ final class Reorder {
 		if ( ! is_user_logged_in() ) {
 			return EligibilityResult::denied(
 				self::REASON_LOGIN_REQUIRED,
-				__( 'Sign in to your account to buy these items again.', 'post-purchase-hub' )
+				__( 'Sign in to your account to buy these items again.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
@@ -229,7 +229,7 @@ final class Reorder {
 			// never costs the customer the cart they already had.
 			$denied = EligibilityResult::denied(
 				self::REASON_NOTHING_AVAILABLE,
-				__( 'None of the items on this order can be bought again right now. Your cart has not been changed.', 'post-purchase-hub' )
+				__( 'None of the items on this order can be bought again right now. Your cart has not been changed.', 'wpmake-post-purchase-hub' )
 			);
 
 			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Typed constructor arg stored as a property, not the message; IneligibleActionException escapes its own message.
@@ -276,7 +276,7 @@ final class Reorder {
 	 * @return string
 	 */
 	public static function label(): string {
-		return __( 'Buy these again', 'post-purchase-hub' );
+		return __( 'Buy these again', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

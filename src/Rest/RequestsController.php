@@ -267,7 +267,7 @@ final class RequestsController {
 		$order = $request->get_param( 'pph_order' );
 
 		if ( ! $order instanceof \WC_Order ) {
-			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'post-purchase-hub' ), 403, array() );
+			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		try {
@@ -284,7 +284,7 @@ final class RequestsController {
 
 			return $this->deny(
 				$code,
-				'' !== $e->result->message ? $e->result->message : __( 'This action is not currently available for this order.', 'post-purchase-hub' ),
+				'' !== $e->result->message ? $e->result->message : __( 'This action is not currently available for this order.', 'wpmake-post-purchase-hub' ),
 				$status,
 				array(
 					'order_id'    => $order->get_id(),
@@ -316,7 +316,7 @@ final class RequestsController {
 		$found = $this->service->find( (int) $request->get_param( 'id' ) );
 
 		if ( null === $found ) {
-			return $this->deny( 'pph_forbidden', __( 'This request could not be found.', 'post-purchase-hub' ), 403, array() );
+			return $this->deny( 'pph_forbidden', __( 'This request could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		$order = $this->authorise_order( $found->order_id, 'rest:requests.delete' );
@@ -342,13 +342,13 @@ final class RequestsController {
 		$found = $request->get_param( 'pph_request' );
 
 		if ( ! $found instanceof Request ) {
-			return $this->deny( 'pph_forbidden', __( 'This request could not be found.', 'post-purchase-hub' ), 403, array() );
+			return $this->deny( 'pph_forbidden', __( 'This request could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		if ( ! $this->service->withdraw( $found ) ) {
 			return $this->deny(
 				'pph_already_resolved',
-				__( 'This request has already been resolved and can no longer be withdrawn.', 'post-purchase-hub' ),
+				__( 'This request has already been resolved and can no longer be withdrawn.', 'wpmake-post-purchase-hub' ),
 				409,
 				array( 'request_id' => $found->id )
 			);
@@ -377,7 +377,7 @@ final class RequestsController {
 			// that order exists. The reason_code still reaches the log.
 			return $this->deny(
 				'pph_forbidden',
-				__( 'You do not have access to this order.', 'post-purchase-hub' ),
+				__( 'You do not have access to this order.', 'wpmake-post-purchase-hub' ),
 				403,
 				array(
 					'order_id'    => $order_id,
@@ -425,7 +425,7 @@ final class RequestsController {
 	 * @return \WP_Error
 	 */
 	private function too_many_requests( array $log_context ): \WP_Error {
-		return $this->deny( 'pph_rate_limited', __( 'Too many requests. Please try again later.', 'post-purchase-hub' ), 429, $log_context );
+		return $this->deny( 'pph_rate_limited', __( 'Too many requests. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
 	}
 
 	/**

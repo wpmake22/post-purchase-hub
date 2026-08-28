@@ -45,9 +45,9 @@ final class RequestLabels {
 	 */
 	public static function type( string $type ): string {
 		$labels = array(
-			Request::TYPE_CANCELLATION => __( 'Cancellation', 'post-purchase-hub' ),
-			Request::TYPE_RETURN       => __( 'Return', 'post-purchase-hub' ),
-			Request::TYPE_HELP         => __( 'Help', 'post-purchase-hub' ),
+			Request::TYPE_CANCELLATION => __( 'Cancellation', 'wpmake-post-purchase-hub' ),
+			Request::TYPE_RETURN       => __( 'Return', 'wpmake-post-purchase-hub' ),
+			Request::TYPE_HELP         => __( 'Help', 'wpmake-post-purchase-hub' ),
 		);
 
 		return $labels[ $type ] ?? self::humanise( $type );
@@ -63,11 +63,11 @@ final class RequestLabels {
 	 */
 	public static function status( string $status ): string {
 		$labels = array(
-			Request::STATUS_PENDING   => _x( 'Pending', 'request status', 'post-purchase-hub' ),
-			Request::STATUS_APPROVED  => _x( 'Approved', 'request status', 'post-purchase-hub' ),
-			Request::STATUS_DECLINED  => _x( 'Declined', 'request status', 'post-purchase-hub' ),
-			Request::STATUS_WITHDRAWN => _x( 'Withdrawn', 'request status', 'post-purchase-hub' ),
-			Request::STATUS_COMPLETED => _x( 'Completed', 'request status', 'post-purchase-hub' ),
+			Request::STATUS_PENDING   => _x( 'Pending', 'request status', 'wpmake-post-purchase-hub' ),
+			Request::STATUS_APPROVED  => _x( 'Approved', 'request status', 'wpmake-post-purchase-hub' ),
+			Request::STATUS_DECLINED  => _x( 'Declined', 'request status', 'wpmake-post-purchase-hub' ),
+			Request::STATUS_WITHDRAWN => _x( 'Withdrawn', 'request status', 'wpmake-post-purchase-hub' ),
+			Request::STATUS_COMPLETED => _x( 'Completed', 'request status', 'wpmake-post-purchase-hub' ),
 		);
 
 		return $labels[ $status ] ?? self::humanise( $status );

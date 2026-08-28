@@ -77,8 +77,8 @@ final class AdminDigest extends AbstractEmail {
 	public function __construct( private RequestRepository $requests ) {
 		$this->id             = 'pph_admin_digest';
 		$this->customer_email = false;
-		$this->title          = __( 'Daily request digest', 'post-purchase-hub' );
-		$this->description    = __( 'An opt-in daily summary of pending and new cancellation requests. Disabled by default.', 'post-purchase-hub' );
+		$this->title          = __( 'Daily request digest', 'wpmake-post-purchase-hub' );
+		$this->description    = __( 'An opt-in daily summary of pending and new cancellation requests. Disabled by default.', 'wpmake-post-purchase-hub' );
 		$this->email_group    = 'orders';
 		$this->template_html  = 'emails/admin-digest.php';
 		$this->template_plain = 'emails/plain/admin-digest.php';
@@ -92,14 +92,14 @@ final class AdminDigest extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_subject(): string {
-		return __( '[{site_title}] Daily request digest', 'post-purchase-hub' );
+		return __( '[{site_title}] Daily request digest', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function get_default_heading(): string {
-		return __( 'Your daily request digest', 'post-purchase-hub' );
+		return __( 'Your daily request digest', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -185,9 +185,9 @@ final class AdminDigest extends AbstractEmail {
 	public function init_form_fields(): void {
 		$this->form_fields = array(
 			'enabled' => array(
-				'title'   => __( 'Enable/Disable', 'post-purchase-hub' ),
+				'title'   => __( 'Enable/Disable', 'wpmake-post-purchase-hub' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Send a daily summary of pending and new requests', 'post-purchase-hub' ),
+				'label'   => __( 'Send a daily summary of pending and new requests', 'wpmake-post-purchase-hub' ),
 				'default' => 'no',
 			),
 		) + $this->recipient_field( (string) get_option( 'admin_email' ) ) + $this->content_fields();

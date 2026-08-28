@@ -6,7 +6,7 @@
 	"category": "woocommerce",
 	"icon": "list-view",
 	"description": "Shows the signed-in customer's orders with their delivery timeline.",
-	"textdomain": "post-purchase-hub",
+	"textdomain": "wpmake-post-purchase-hub",
 	"supports": {
 		"html": false,
 		"align": ["wide", "full"]

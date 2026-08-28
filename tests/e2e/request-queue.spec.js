@@ -42,7 +42,7 @@ async function fileRequest(requestUtils, orderId) {
 
 test.describe("Admin request queue", () => {
 	test.beforeEach(async ({ requestUtils }) => {
-		await requestUtils.activatePlugin("post-purchase-hub");
+		await requestUtils.activatePlugin("wpmake-post-purchase-hub-for-woocommerce");
 		await completeSetup(requestUtils);
 	});
 

@@ -38,8 +38,8 @@ final class SecureOrderLink extends AbstractEmail {
 		$this->id             = 'pph_secure_link';
 		$this->customer_email = true;
 		$this->manual         = true;
-		$this->title          = __( 'Secure order link', 'post-purchase-hub' );
-		$this->description    = __( 'Sends the customer a secure, no-login link to their order. Triggered on demand — for example, when a guest asks to be sent one — never on a schedule.', 'post-purchase-hub' );
+		$this->title          = __( 'Secure order link', 'wpmake-post-purchase-hub' );
+		$this->description    = __( 'Sends the customer a secure, no-login link to their order. Triggered on demand — for example, when a guest asks to be sent one — never on a schedule.', 'wpmake-post-purchase-hub' );
 		$this->email_group    = 'order-changes';
 		$this->template_html  = 'emails/secure-order-link.php';
 		$this->template_plain = 'emails/plain/secure-order-link.php';
@@ -56,14 +56,14 @@ final class SecureOrderLink extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_subject(): string {
-		return __( 'Your secure link to order {order_number}', 'post-purchase-hub' );
+		return __( 'Your secure link to order {order_number}', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function get_default_heading(): string {
-		return __( 'Here is your secure order link', 'post-purchase-hub' );
+		return __( 'Here is your secure order link', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -157,7 +157,7 @@ final class SecureOrderLink extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_default_additional_content(): string {
-		return __( 'This link lets you view this order without signing in. Do not forward it.', 'post-purchase-hub' );
+		return __( 'This link lets you view this order without signing in. Do not forward it.', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Post-Purchase Hub for WooCommerce">
-	<description>Coding standards for Post-Purchase Hub for WooCommerce.</description>
+<ruleset name="WPMake Post-Purchase Hub for WooCommerce">
+	<description>Coding standards for WPMake Post-Purchase Hub for WooCommerce.</description>
 
 	<!--
 		Only what ships, plus the tests that cover it. The build scripts in bin/
@@ -9,7 +9,7 @@
 
 		Both edition directories ship too, so both are checked here.
 	-->
-	<file>post-purchase-hub.php</file>
+	<file>wpmake-post-purchase-hub.php</file>
 	<file>uninstall.php</file>
 	<file>src</file>
 	<file>free</file>
@@ -61,7 +61,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="post-purchase-hub"/>
+				<element value="wpmake-post-purchase-hub"/>
 			</property>
 		</properties>
 	</rule>

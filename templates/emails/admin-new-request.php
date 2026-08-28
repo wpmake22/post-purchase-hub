@@ -2,7 +2,7 @@
 /**
  * New request admin email (HTML).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/admin-new-request.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/admin-new-request.php.
  *
  * @package PostPurchaseHub
  * @version 0.10.0
@@ -28,7 +28,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	<?php
 	printf(
 		/* translators: %s: order number. */
-		esc_html__( 'A customer has raised a request against order #%s.', 'post-purchase-hub' ),
+		esc_html__( 'A customer has raised a request against order #%s.', 'wpmake-post-purchase-hub' ),
 		esc_html( $order instanceof WC_Order ? $order->get_order_number() : (string) $request->order_id )
 	);
 	?>
@@ -36,13 +36,13 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <?php if ( null !== $reason_label ) : ?>
 <p>
-	<strong><?php esc_html_e( 'Reason:', 'post-purchase-hub' ); ?></strong>
+	<strong><?php esc_html_e( 'Reason:', 'wpmake-post-purchase-hub' ); ?></strong>
 	<?php echo esc_html( $reason_label ); ?>
 </p>
 <?php endif; ?>
 
 <?php if ( null !== $request->customer_note ) : ?>
-<p><strong><?php esc_html_e( 'Customer note:', 'post-purchase-hub' ); ?></strong></p>
+<p><strong><?php esc_html_e( 'Customer note:', 'wpmake-post-purchase-hub' ); ?></strong></p>
 <blockquote>
 	<?php
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() runs first; wpautop() only wraps the already-escaped text in <p> tags.
@@ -52,7 +52,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 <?php endif; ?>
 
 <p>
-	<a href="<?php echo esc_url( $queue_url ); ?>"><?php esc_html_e( 'Review this request', 'post-purchase-hub' ); ?></a>
+	<a href="<?php echo esc_url( $queue_url ); ?>"><?php esc_html_e( 'Review this request', 'wpmake-post-purchase-hub' ); ?></a>
 </p>
 
 <?php

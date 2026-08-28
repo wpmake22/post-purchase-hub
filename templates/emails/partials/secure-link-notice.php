@@ -2,7 +2,7 @@
 /**
  * Secure order link notice injected into an opted-in WooCommerce email.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/partials/secure-link-notice.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/partials/secure-link-notice.php.
  *
  * @package PostPurchaseHub
  * @version 0.10.0
@@ -16,14 +16,14 @@ declare( strict_types = 1 );
 defined( 'ABSPATH' ) || exit;
 
 if ( $plain_text ) {
-	echo "\n" . esc_html__( 'You can also view this order without signing in:', 'post-purchase-hub' ) . ' ' . esc_url( $link_url ) . "\n\n";
+	echo "\n" . esc_html__( 'You can also view this order without signing in:', 'wpmake-post-purchase-hub' ) . ' ' . esc_url( $link_url ) . "\n\n";
 
 	return;
 }
 
 $pph_notice = sprintf(
 	/* translators: 1: opening <a> tag linking to the secure order link, 2: closing </a> tag. */
-	__( 'You can also %1$sview this order without signing in%2$s.', 'post-purchase-hub' ),
+	__( 'You can also %1$sview this order without signing in%2$s.', 'wpmake-post-purchase-hub' ),
 	'<a href="' . esc_url( $link_url ) . '">',
 	'</a>'
 );

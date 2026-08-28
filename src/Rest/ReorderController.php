@@ -191,7 +191,7 @@ final class ReorderController {
 			// belongs to someone else. The reason still reaches the log.
 			return $this->deny(
 				'pph_forbidden',
-				__( 'You do not have access to this order.', 'post-purchase-hub' ),
+				__( 'You do not have access to this order.', 'wpmake-post-purchase-hub' ),
 				403,
 				array(
 					'order_id'    => $order_id,
@@ -221,7 +221,7 @@ final class ReorderController {
 		$order = $request->get_param( 'pph_order' );
 
 		if ( ! $order instanceof \WC_Order ) {
-			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'post-purchase-hub' ), 403, array() );
+			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		try {
@@ -231,7 +231,7 @@ final class ReorderController {
 
 			return $this->deny(
 				Reorder::REASON_NOTHING_AVAILABLE === $e->result->reason_code ? 'pph_nothing_available' : 'pph_ineligible',
-				'' !== $e->result->message ? $e->result->message : __( 'This order cannot be bought again right now.', 'post-purchase-hub' ),
+				'' !== $e->result->message ? $e->result->message : __( 'This order cannot be bought again right now.', 'wpmake-post-purchase-hub' ),
 				$status,
 				array(
 					'order_id'    => $order->get_id(),
@@ -302,7 +302,7 @@ final class ReorderController {
 	 * @return \WP_Error
 	 */
 	private function too_many_requests( array $log_context ): \WP_Error {
-		return $this->deny( 'pph_rate_limited', __( 'Too many requests. Please try again later.', 'post-purchase-hub' ), 429, $log_context );
+		return $this->deny( 'pph_rate_limited', __( 'Too many requests. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
 	}
 
 	/**

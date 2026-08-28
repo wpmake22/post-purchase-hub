@@ -24,7 +24,7 @@ Set up the repository skeleton for a commercial WordPress plugin. Do not write a
 Create:
 - Directory structure exactly as specified in docs/SPEC.md Phase 5.
 - composer.json: PSR-4 autoload PostPurchaseHub\ -> src/, dev deps for squizlabs/php_codesniffer, wp-coding-standards/wpcs, phpcompatibility/phpcompatibility-wp, woocommerce/woocommerce-sniffs, phpstan/phpstan, php-stubs/woocommerce-stubs, phpunit, yoast/phpunit-polyfills. Scripts: lint, lint:fix, analyse, test:unit, test:int.
-- phpcs.xml.dist: WordPress-Extra + WordPress-Docs + WooCommerce-Core, text domain post-purchase-hub, prefix pph, minimum_supported_wp_version 6.5, PHP 8.1+ compatibility check, exclude vendor/node_modules/assets/build.
+- phpcs.xml.dist: WordPress-Extra + WordPress-Docs + WooCommerce-Core, text domain wpmake-post-purchase-hub, prefix pph, minimum_supported_wp_version 6.5, PHP 8.1+ compatibility check, exclude vendor/node_modules/assets/build.
 - phpstan.neon.dist: level 6, woocommerce-stubs + wordpress-stubs, paths src/.
 - package.json using @wordpress/scripts for asset build from assets/src to assets/build.
 - .wp-env.json with WordPress and WooCommerce, plus a second config for HPOS enabled.
@@ -45,11 +45,11 @@ Implement MILESTONE 01 — Plugin Foundation, per docs/SPEC.md Phase 11.
 Goal: an installable, standards-clean plugin that does nothing user-visible.
 
 Build:
-1. post-purchase-hub.php — plugin header (Requires PHP 8.1, Requires at least 6.5, Requires Plugins: woocommerce), guards for PHP/WP/Woo version and Woo presence with a graceful admin notice and early return, then bootstrap only. No logic in this file.
+1. wpmake-post-purchase-hub.php — plugin header (Requires PHP 8.1, Requires at least 6.5, Requires Plugins: woocommerce), guards for PHP/WP/Woo version and Woo presence with a graceful admin notice and early return, then bootstrap only. No logic in this file.
 2. src/Plugin.php — lazy service container (closures resolved on first get, memoised) plus a single register() that wires hooks. No business logic.
 3. src/Install/Activator.php and Deactivator.php. Activation: generate pph_token_secret (64 random bytes via wp_generate_password or random_bytes, base64, non-autoloaded option), set pph_schema_version placeholder, schedule nothing yet. Deactivation: clear cron events and plugin transients only — never data.
 4. HPOS declaration: FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true) on before_woocommerce_init.
-5. src/Support/Logger.php wrapping WC_Logger with source 'post-purchase-hub' and a context array.
+5. src/Support/Logger.php wrapping WC_Logger with source 'wpmake-post-purchase-hub' and a context array.
 6. src/Support/Cache.php — get/set/delete/incr, object-cache aware with a transient fallback, namespaced keys, explicit TTLs.
 
 Acceptance criteria to satisfy:
@@ -130,7 +130,7 @@ Implement MILESTONE 04 — Rendering Layer. This is the highest-risk milestone i
 
 Build:
 1. src/Frontend/Renderer.php — ADDITIVE mode as default. Hook woocommerce_view_order, woocommerce_order_details_after_order_table, and woocommerce_my_account_my_orders_column_* . Never replace a template in this mode.
-2. src/Frontend/TemplateLoader.php — resolves templates/ with theme override support at yourtheme/post-purchase-hub/. Template names come from a hardcoded whitelist; no request-derived paths.
+2. src/Frontend/TemplateLoader.php — resolves templates/ with theme override support at yourtheme/wpmake-post-purchase-hub/. Template names come from a hardcoded whitelist; no request-derived paths.
 3. Replacement mode via the woocommerce_locate_template filter, gated behind a setting that defaults to off.
 4. src/Admin/TemplateConflictScanner.php — detects whether the active theme or child theme overrides woocommerce/myaccount/orders.php or view-order.php; result cached; consumed by M14.
 5. [pph_orders] shortcode and a server-rendered pph/orders block (block.json + render_callback).
@@ -565,7 +565,7 @@ Then produce a grid: theme x viewport x pass/fail with the specific defect. Prop
 ```
 Using the Atlassian MCP, create tickets for the findings in the review above.
 
-One ticket per finding. Each with: a title stating the defect not the fix, description containing file, line, reproduction, expected vs actual, and the CLAUDE.md rule or spec section it violates. Priority from the severity ranking. Label: post-purchase-hub, plus one of security / compat / performance / correctness / maintainability. Link all to the milestone epic.
+One ticket per finding. Each with: a title stating the defect not the fix, description containing file, line, reproduction, expected vs actual, and the CLAUDE.md rule or spec section it violates. Priority from the severity ranking. Label: wpmake-post-purchase-hub, plus one of security / compat / performance / correctness / maintainability. Link all to the milestone epic.
 
 Show me the list before creating anything.
 ```

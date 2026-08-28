@@ -94,28 +94,28 @@ final class EligibilityResolver {
 		if ( ! ActionAvailability::is_enabled( $action_id ) ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_ACTION_DISABLED,
-				__( 'This is not something you can do here.', 'post-purchase-hub' )
+				__( 'This is not something you can do here.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
 		if ( array() !== $rule->excluded_order_types && in_array( $order->get_type(), $rule->excluded_order_types, true ) ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_ORDER_TYPE_EXCLUDED,
-				__( 'This order type is not eligible for this action.', 'post-purchase-hub' )
+				__( 'This order type is not eligible for this action.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
 		if ( null !== $rule->allowed_statuses && ! in_array( $order->get_status(), $rule->allowed_statuses, true ) ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_STATUS_NOT_ELIGIBLE,
-				__( 'This order is no longer in a status this action applies to.', 'post-purchase-hub' )
+				__( 'This order is no longer in a status this action applies to.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
 		if ( array() !== $rule->excluded_payment_methods && in_array( $order->get_payment_method(), $rule->excluded_payment_methods, true ) ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_PAYMENT_METHOD_EXCLUDED,
-				__( 'This action is not available for the payment method used on this order.', 'post-purchase-hub' )
+				__( 'This action is not available for the payment method used on this order.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
@@ -128,7 +128,7 @@ final class EligibilityResolver {
 		if ( array() !== $rule->excluded_product_types && $this->has_excluded_product( $order, $rule ) ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_PRODUCT_TYPE_EXCLUDED,
-				__( 'This order contains a product type this action does not apply to.', 'post-purchase-hub' )
+				__( 'This order contains a product type this action does not apply to.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
@@ -137,7 +137,7 @@ final class EligibilityResolver {
 		if ( null !== $rule->per_order_cap && $this->history->count_for_order( $order->get_id(), $history_type ) >= $rule->per_order_cap ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_REQUEST_CAP_REACHED,
-				__( 'This order has already reached the limit of requests for this action.', 'post-purchase-hub' )
+				__( 'This order has already reached the limit of requests for this action.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
@@ -179,14 +179,14 @@ final class EligibilityResolver {
 		if ( null !== $rule->min_age_seconds && $age < $rule->min_age_seconds ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_ORDER_TOO_NEW,
-				__( 'This order is too recent for this action yet.', 'post-purchase-hub' )
+				__( 'This order is too recent for this action yet.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
 		if ( null !== $rule->max_age_seconds && $age > $rule->max_age_seconds ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_ORDER_TOO_OLD,
-				__( 'This order is too old for this action now.', 'post-purchase-hub' )
+				__( 'This order is too old for this action now.', 'wpmake-post-purchase-hub' )
 			);
 		}
 
@@ -250,7 +250,7 @@ final class EligibilityResolver {
 		if ( $elapsed < $rule->cooldown_seconds ) {
 			return EligibilityResult::denied(
 				EligibilityResult::REASON_COOLDOWN_ACTIVE,
-				__( 'Please wait before requesting this action again.', 'post-purchase-hub' )
+				__( 'Please wait before requesting this action again.', 'wpmake-post-purchase-hub' )
 			);
 		}
 

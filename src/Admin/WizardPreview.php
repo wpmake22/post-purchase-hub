@@ -53,7 +53,7 @@ final class WizardPreview {
 		if ( ! $order instanceof \WC_Order ) {
 			printf(
 				'<p class="description" data-pph-wizard-preview-empty>%s</p>',
-				esc_html__( 'Once you have an order, this is where you will see exactly what your customers see. There are no orders on this store yet.', 'post-purchase-hub' )
+				esc_html__( 'Once you have an order, this is where you will see exactly what your customers see. There are no orders on this store yet.', 'wpmake-post-purchase-hub' )
 			);
 
 			echo '</div>';
@@ -66,7 +66,7 @@ final class WizardPreview {
 			esc_html(
 				sprintf(
 					/* translators: %s: order number the preview is built from. */
-					__( 'Built from order #%s, exactly as a customer would see it.', 'post-purchase-hub' ),
+					__( 'Built from order #%s, exactly as a customer would see it.', 'wpmake-post-purchase-hub' ),
 					$order->get_order_number()
 				)
 			)

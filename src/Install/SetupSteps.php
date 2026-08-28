@@ -169,13 +169,13 @@ final class SetupSteps {
 	 */
 	public static function labels(): array {
 		return array(
-			self::WELCOME  => __( 'Welcome', 'post-purchase-hub' ),
-			self::STATUSES => __( 'Statuses', 'post-purchase-hub' ),
-			self::DELIVERY => __( 'Delivery', 'post-purchase-hub' ),
-			self::TRACKING => __( 'Tracking', 'post-purchase-hub' ),
-			self::ACTIONS  => __( 'Actions', 'post-purchase-hub' ),
-			self::DISPLAY  => __( 'Display', 'post-purchase-hub' ),
-			self::FINISH   => __( 'Finish', 'post-purchase-hub' ),
+			self::WELCOME  => __( 'Welcome', 'wpmake-post-purchase-hub' ),
+			self::STATUSES => __( 'Statuses', 'wpmake-post-purchase-hub' ),
+			self::DELIVERY => __( 'Delivery', 'wpmake-post-purchase-hub' ),
+			self::TRACKING => __( 'Tracking', 'wpmake-post-purchase-hub' ),
+			self::ACTIONS  => __( 'Actions', 'wpmake-post-purchase-hub' ),
+			self::DISPLAY  => __( 'Display', 'wpmake-post-purchase-hub' ),
+			self::FINISH   => __( 'Finish', 'wpmake-post-purchase-hub' ),
 		);
 	}
 
@@ -190,18 +190,18 @@ final class SetupSteps {
 		return array(
 			array(
 				'id'          => self::PATH_COMPLETE,
-				'label'       => __( 'Set everything up', 'post-purchase-hub' ),
-				'description' => __( 'The full walkthrough: your order statuses, delivery estimates, tracking, what customers can do, and how it all appears. About two minutes.', 'post-purchase-hub' ),
+				'label'       => __( 'Set everything up', 'wpmake-post-purchase-hub' ),
+				'description' => __( 'The full walkthrough: your order statuses, delivery estimates, tracking, what customers can do, and how it all appears. About two minutes.', 'wpmake-post-purchase-hub' ),
 			),
 			array(
 				'id'          => self::PATH_TIMELINE,
-				'label'       => __( 'Keep customers informed', 'post-purchase-hub' ),
-				'description' => __( 'Order timelines and delivery estimates only. Self-service actions keep their defaults and you can change them later.', 'post-purchase-hub' ),
+				'label'       => __( 'Keep customers informed', 'wpmake-post-purchase-hub' ),
+				'description' => __( 'Order timelines and delivery estimates only. Self-service actions keep their defaults and you can change them later.', 'wpmake-post-purchase-hub' ),
 			),
 			array(
 				'id'          => self::PATH_ACTIONS,
-				'label'       => __( 'Cut support tickets', 'post-purchase-hub' ),
-				'description' => __( 'Cancellation requests, reordering, invoices and the help form. The timeline keeps the stage map this plugin ships with.', 'post-purchase-hub' ),
+				'label'       => __( 'Cut support tickets', 'wpmake-post-purchase-hub' ),
+				'description' => __( 'Cancellation requests, reordering, invoices and the help form. The timeline keeps the stage map this plugin ships with.', 'wpmake-post-purchase-hub' ),
 			),
 		);
 	}

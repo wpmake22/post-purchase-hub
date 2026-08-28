@@ -61,12 +61,12 @@ final class SettingsSidebar {
 
 		printf(
 			'<label class="screen-reader-text" for="pph-settings-search">%s</label>',
-			esc_html__( 'Search settings on this tab', 'post-purchase-hub' )
+			esc_html__( 'Search settings on this tab', 'wpmake-post-purchase-hub' )
 		);
 
 		printf(
 			'<input type="search" id="pph-settings-search" placeholder="%s" autocomplete="off" data-pph-settings-search />',
-			esc_attr__( 'Search settings…', 'post-purchase-hub' )
+			esc_attr__( 'Search settings…', 'wpmake-post-purchase-hub' )
 		);
 
 		echo wp_kses( SettingsIcons::search(), SettingsIcons::allowed_tags() );

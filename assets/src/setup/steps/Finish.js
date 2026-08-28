@@ -25,18 +25,18 @@ export default function Finish( { completed, summary, queueUrl, exitUrl } ) {
 	if ( completed ) {
 		return (
 			<Question
-				title={ __( 'Your store is live', 'post-purchase-hub' ) }
+				title={ __( 'Your store is live', 'wpmake-post-purchase-hub' ) }
 				help={ __(
 					'Customers now see their order timeline on the pages your theme already draws, and whatever actions you switched on. Every answer you gave is on the settings screen if you want to change one.',
-					'post-purchase-hub'
+					'wpmake-post-purchase-hub'
 				) }
 			>
 				<p className="pph-setup__actions" data-pph-wizard-done>
 					<a className="pph-setup__button" href={ queueUrl }>
-						{ __( 'Go to the request queue', 'post-purchase-hub' ) }
+						{ __( 'Go to the request queue', 'wpmake-post-purchase-hub' ) }
 					</a>
 					<a className="pph-setup__link-button" href={ exitUrl }>
-						{ __( 'Review the settings', 'post-purchase-hub' ) }
+						{ __( 'Review the settings', 'wpmake-post-purchase-hub' ) }
 					</a>
 				</p>
 			</Question>
@@ -45,10 +45,10 @@ export default function Finish( { completed, summary, queueUrl, exitUrl } ) {
 
 	return (
 		<Question
-			title={ __( 'Ready to go live', 'post-purchase-hub' ) }
+			title={ __( 'Ready to go live', 'wpmake-post-purchase-hub' ) }
 			help={ __(
 				'Nothing has been written to your store yet — everything you have answered so far is a draft. Finishing applies all of it at once, and that is the moment your customers start seeing any of this.',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 		>
 			<ul className="pph-setup__summary" data-pph-wizard-summary>
@@ -62,9 +62,9 @@ export default function Finish( { completed, summary, queueUrl, exitUrl } ) {
 					/* translators: %s: name of the settings screen section. */
 					__(
 						'Guest order lookup stays switched off. It adds a public endpoint, so it is turned on deliberately under %s rather than in passing here.',
-						'post-purchase-hub'
+						'wpmake-post-purchase-hub'
 					),
-					__( 'Settings → Guest Access', 'post-purchase-hub' )
+					__( 'Settings → Guest Access', 'wpmake-post-purchase-hub' )
 				) }
 			</p>
 		</Question>

@@ -177,6 +177,6 @@ final class Invoice {
 	 * @return string
 	 */
 	public static function label(): string {
-		return __( 'Invoice', 'post-purchase-hub' );
+		return __( 'Invoice', 'wpmake-post-purchase-hub' );
 	}
 }

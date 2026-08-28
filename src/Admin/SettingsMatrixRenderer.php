@@ -104,7 +104,7 @@ final class SettingsMatrixRenderer {
 	 * @return array<string, string>
 	 */
 	private function stage_choices(): array {
-		$choices = array( StageMapConfig::HIDDEN => __( '— not shown to customers —', 'post-purchase-hub' ) );
+		$choices = array( StageMapConfig::HIDDEN => __( '— not shown to customers —', 'wpmake-post-purchase-hub' ) );
 
 		foreach ( $this->stages->stages() as $stage => $label ) {
 			$choices[ $stage ] = $label;
@@ -176,7 +176,7 @@ final class SettingsMatrixRenderer {
 		$methods = SettingsShippingValues::available();
 
 		if ( array() === $methods ) {
-			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'post-purchase-hub' ) );
+			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'wpmake-post-purchase-hub' ) );
 
 			return;
 		}
@@ -209,7 +209,7 @@ final class SettingsMatrixRenderer {
 		$methods = SettingsShippingValues::available();
 
 		if ( array() === $methods ) {
-			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'post-purchase-hub' ) );
+			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'wpmake-post-purchase-hub' ) );
 
 			return;
 		}
@@ -226,8 +226,8 @@ final class SettingsMatrixRenderer {
 				esc_attr( isset( $range['min'] ) ? (string) (int) $range['min'] : '' ),
 				esc_attr( SettingsRenderer::name( $key ) . '[' . $method . '][max]' ),
 				esc_attr( isset( $range['max'] ) ? (string) (int) $range['max'] : '' ),
-				esc_attr__( 'Fastest, in business days', 'post-purchase-hub' ),
-				esc_attr__( 'Slowest, in business days', 'post-purchase-hub' )
+				esc_attr__( 'Fastest, in business days', 'wpmake-post-purchase-hub' ),
+				esc_attr__( 'Slowest, in business days', 'wpmake-post-purchase-hub' )
 			);
 		}
 

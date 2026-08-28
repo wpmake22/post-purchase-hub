@@ -34,11 +34,11 @@ export default function Statuses( {
 		<Question
 			title={ __(
 				'Which statuses do your customers see?',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 			help={ __(
 				'Each status becomes a stage on the customer’s timeline. A status set to “not shown” contributes nothing to it, which is how an internal status stays internal — and a stage with nothing in it is never shown to a customer.',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 		>
 			{ detected.length > 0 && (
@@ -47,7 +47,7 @@ export default function Statuses( {
 						/* translators: %s: comma-separated list of order statuses found on the store's recent orders. */
 						__(
 							'Found on your recent orders: %s.',
-							'post-purchase-hub'
+							'wpmake-post-purchase-hub'
 						),
 						detected.join( ', ' )
 					) }

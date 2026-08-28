@@ -25,7 +25,7 @@ final class Logger {
 	 *
 	 * @var string
 	 */
-	public const SOURCE = 'post-purchase-hub';
+	public const SOURCE = 'wpmake-post-purchase-hub';
 
 	/**
 	 * Memoised WooCommerce logger.

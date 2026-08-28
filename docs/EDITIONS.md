@@ -4,8 +4,8 @@ One repository. One source tree. `composer build` produces two zips:
 
 | Artifact | Contents | Destination |
 | --- | --- | --- |
-| `post-purchase-hub-{version}.zip` | Core + free-only upsell UI | WordPress.org SVN |
-| `post-purchase-hub-pro-{version}.zip` | Core + all pro features + licensing | Freemius / EDD / in-house store |
+| `wpmake-post-purchase-hub-{version}.zip` | Core + free-only upsell UI | WordPress.org SVN |
+| `wpmake-post-purchase-hub-pro-{version}.zip` | Core + all pro features + licensing | Freemius / EDD / in-house store |
 
 Pro is a **standalone superset**, not an add-on. A customer installs one plugin, not two.
 
@@ -28,8 +28,8 @@ That constraint is load-bearing rather than aesthetic. `docs/SPEC.md` already re
 ## Layout
 
 ```
-post-purchase-hub/
-├── post-purchase-hub.php     Shared bootstrap. Header + PPH_EDITION rewritten at build.
+wpmake-post-purchase-hub/
+├── wpmake-post-purchase-hub.php     Shared bootstrap. Header + PPH_EDITION rewritten at build.
 ├── composer.json
 ├── readme.txt                Free/WP.org only. Stripped from the pro zip.
 ├── README.md                 Pro only. Stripped from the free zip.
@@ -52,7 +52,7 @@ post-purchase-hub/
 └── dist/                     Build output, gitignored
 ```
 
-Both zips contain a folder named `post-purchase-hub/`. **The folder name must be identical**, or installing Pro leaves the free plugin sitting beside it and the customer runs two copies.
+Both zips contain a folder named `wpmake-post-purchase-hub/`. **The folder name must be identical**, or installing Pro leaves the free plugin sitting beside it and the customer runs two copies.
 
 ### composer.json
 
@@ -106,7 +106,7 @@ These are enforced in CI. Violating one fails the build, not code review.
 The main plugin file loads Pro only if the directory survived the build:
 
 ```php
-// post-purchase-hub.php — after the core bootstrap.
+// wpmake-post-purchase-hub.php — after the core bootstrap.
 if ( is_readable( __DIR__ . '/pro/bootstrap.php' ) ) {
     require_once __DIR__ . '/pro/bootstrap.php';
 }
@@ -152,7 +152,7 @@ There is one real trade-off worth deciding consciously. Freemius' free-tier valu
 
 ### Translations
 
-Both editions share the text domain `post-purchase-hub`. Free strings get community translations from translate.wordpress.org; Pro-only strings never will, because WP.org has no visibility into the Pro build. Ship Pro's `.mo` files in `languages/` and accept that Pro strings are yours to translate. Do not invent a second text domain to work around it — that fragments the merchant's translation setup for no gain.
+Both editions share the text domain `wpmake-post-purchase-hub`. Free strings get community translations from translate.wordpress.org; Pro-only strings never will, because WP.org has no visibility into the Pro build. Ship Pro's `.mo` files in `languages/` and accept that Pro strings are yours to translate. Do not invent a second text domain to work around it — that fragments the merchant's translation setup for no gain.
 
 ---
 
@@ -170,7 +170,7 @@ Or one edition: `composer build:free`, `composer build:pro`.
 
 **Cutting a release**
 
-1. Bump the version in `post-purchase-hub.php` and `readme.txt` (`Stable tag`). Update the changelog.
+1. Bump the version in `wpmake-post-purchase-hub.php` and `readme.txt` (`Stable tag`). Update the changelog.
 2. Commit and push to the release branch.
 3. `composer release` locally and install both zips on a scratch site. CI is a safety net, not a substitute for looking at it once.
 4. Tag and publish a GitHub release. The tag may be `1.2.0` or `v1.2.0`; the workflow strips the `v`.
@@ -203,7 +203,7 @@ Context: one repository produces two zips. Free ships to WordPress.org, Pro is a
 
 Build:
 1. Directory scaffolding: free/src, free/templates, free/tests, pro/src, pro/templates, pro/assets/src, pro/tests, pro/bootstrap.php. Add the three PSR-4 mappings to composer.json.
-2. In post-purchase-hub.php: define PPH_EDITION as 'free' in source (the build rewrites it), a pph_is_pro() helper reading that constant, and a conditional require of pro/bootstrap.php guarded by is_readable().
+2. In wpmake-post-purchase-hub.php: define PPH_EDITION as 'free' in source (the build rewrites it), a pph_is_pro() helper reading that constant, and a conditional require of pro/bootstrap.php guarded by is_readable().
 3. Fire a pph_loaded action at the end of core bootstrap, passing the container. This is Pro's only entry point.
 4. pro/bootstrap.php with a Pro\Bootstrap class that registers on pph_loaded. Leave it a no-op stub with a single log line — features arrive in later milestones.
 5. free/src/ with a Free\Bootstrap stub for upsell UI, registering on the same hook.
@@ -214,7 +214,7 @@ Build:
 10. .gitignore dist/.
 
 Acceptance:
-- composer build produces both zips with a post-purchase-hub/ root folder in each.
+- composer build produces both zips with a wpmake-post-purchase-hub/ root folder in each.
 - composer verify passes every check on both artifacts.
 - The free zip contains no pro/ directory, no Pro namespace anywhere including the composer classmap, and no outbound HTTP calls.
 - The pro zip carries an Update URI header; the free zip does not.

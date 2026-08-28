@@ -1,4 +1,4 @@
-# CLAUDE.md — Post-Purchase Hub for WooCommerce
+# CLAUDE.md — WPMake Post-Purchase Hub for WooCommerce
 
 You are working on a commercial WordPress plugin that will run on thousands of live WooCommerce stores. Read this file fully before your first action in any session.
 
@@ -14,19 +14,21 @@ You are working on a commercial WordPress plugin that will run on thousands of l
 
 | | |
 | --- | --- |
-| Plugin name | Post-Purchase Hub for WooCommerce |
-| Slug / text domain | `post-purchase-hub` |
+| Plugin name | WPMake Post-Purchase Hub for WooCommerce |
+| Slug / text domain | `wpmake-post-purchase-hub` |
 | Function/hook/option prefix | `pph_` |
 | PHP namespace root | `PostPurchaseHub\` (PSR-4 → `src/`) |
 | Free-only namespace | `PostPurchaseHub\Free\` → `free/src/` |
 | Pro-only namespace | `PostPurchaseHub\Pro\` → `pro/src/` |
-| Distributions | `post-purchase-hub-{v}.zip` (WP.org) and `post-purchase-hub-pro-{v}.zip` (store) |
+| Distributions | `wpmake-post-purchase-hub-{v}.zip` (WP.org) and `wpmake-post-purchase-hub-pro-{v}.zip` (store) |
 | Order meta prefix | `_pph_` |
 | DB table prefix | `{$wpdb->prefix}pph_` |
 | REST namespace | `pph/v1` |
 | Minimum | WordPress 6.5, PHP 8.1, WooCommerce latest−2 |
 
 Never name anything with a leading `WooCommerce` — trademark policy. "… for WooCommerce" only.
+
+The name carries the vendor identifier deliberately. WP.org's first review of 1.0.0 rejected "Post-Purchase Hub for WooCommerce" as a generic descriptive phrase with no distinctive leading term; `wpmake-` is the same prefix this account already ships `wpmake-advance-user-avatar` under. The `pph_` prefix, the `PostPurchaseHub\` namespace, `pph/v1` and the `_pph_` meta keys were kept: the slug still contains `post-purchase-hub`, so they still derive from it.
 
 ---
 
@@ -77,7 +79,7 @@ src/
   Admin/                Menu, RequestListTable, RequestDetail, SettingsPage, WizardPage, Notices, OrderMetabox
   Support/              Logger, Cache, Dates
   CLI/                  WP-CLI commands
-templates/              logic-free, theme-overridable via yourtheme/post-purchase-hub/
+templates/              logic-free, theme-overridable via yourtheme/wpmake-post-purchase-hub/
 assets/src → assets/build (@wordpress/scripts)
 tests/unit | tests/integration | tests/e2e | tests/fixtures
 
@@ -104,7 +106,7 @@ Deliberate non-choices — do not introduce these: DI framework, template engine
 - WordPress Coding Standards via `phpcs.xml.dist` (WordPress-Extra + WordPress-Docs + WooCommerce-Core). PHPCS must be clean before you report a milestone done.
 - PHPStan level 7 with `php-stubs/woocommerce-stubs`. Clean before reporting done.
 - Classes under ~300 lines, methods under ~50. If you exceed it, split — don't argue.
-- Every user-facing string translatable with `post-purchase-hub` text domain. Translator context (`_x`) on anything ambiguous. Never concatenate translatable strings.
+- Every user-facing string translatable with `wpmake-post-purchase-hub` text domain. Translator context (`_x`) on anything ambiguous. Never concatenate translatable strings.
 - Comments explain **why**, never **what**. No comment restating the line below it.
 - Any behavioural default a merchant might reasonably disagree with gets a documented filter at the moment it is introduced.
 - Hook naming: `pph_{noun}_{verb}` for actions, `pph_{noun}` for filters.
@@ -192,7 +194,7 @@ Say what you found, give the options with trade-offs, and wait. Do not pick the 
 - Every theme and page builder styles `myaccount/orders.php` and `view-order.php` differently. This is the single largest source of support tickets for this plugin. Additive-first is not negotiable.
 - Corporate mail scanners pre-fetch URLs in emails. Signed tokens must be idempotent within their TTL, never one-time-burn on GET.
 - Subscription parent/renewal orders and bookable products have different cancel semantics. Hard-excluded in v1.
-- Both zips must contain a folder named exactly `post-purchase-hub/`. A different folder name in the Pro zip means the customer ends up with two copies installed instead of an upgrade.
+- Both zips must contain a folder named exactly `wpmake-post-purchase-hub/`. A different folder name in the Pro zip means the customer ends up with two copies installed instead of an upgrade.
 - The Pro build needs an `Update URI` header. It shares its slug with a WP.org-hosted plugin, so without one WordPress will silently "update" a paying customer down to the free version. The failure is invisible until someone reports missing features.
 - Composer's optimized classmap is generated per edition inside the build staging directory. A classmap carried over from the full tree points at stripped files and fatals on load.
 - **`lifecycleScripts` cannot be used with `--config`.** wp-env keys each environment by an md5 of the config file's *path* (`lib/config/load-config.js`), and runs lifecycle scripts through a bare `exec()` that propagates no `--config`. A nested `wp-env run` inside `afterStart` therefore resolves to the default `.wp-env.json` environment, which a `--config .wp-env.ci.json` run never started: "Environment not initialized". Anything that needs to run after start belongs in an explicit step that repeats the same `--config`.

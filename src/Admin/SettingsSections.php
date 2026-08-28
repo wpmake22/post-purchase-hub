@@ -53,22 +53,22 @@ final class SettingsSections {
 			'general'  => array(
 				self::section(
 					'display',
-					__( 'Order page display', 'post-purchase-hub' ),
-					__( 'Where this plugin draws on the pages your customers already visit.', 'post-purchase-hub' ),
+					__( 'Order page display', 'wpmake-post-purchase-hub' ),
+					__( 'Where this plugin draws on the pages your customers already visit.', 'wpmake-post-purchase-hub' ),
 					array( TemplateReplacer::SETTING )
 				),
 			),
 			'timeline' => array(
 				self::section(
 					'stages',
-					__( 'Timeline stages', 'post-purchase-hub' ),
-					__( 'Which of your order statuses a customer sees, and as what.', 'post-purchase-hub' ),
+					__( 'Timeline stages', 'wpmake-post-purchase-hub' ),
+					__( 'Which of your order statuses a customer sees, and as what.', 'wpmake-post-purchase-hub' ),
 					array( StageMapConfig::MAP_SETTING )
 				),
 				self::section(
 					'estimates',
-					__( 'Delivery estimates', 'post-purchase-hub' ),
-					__( 'How long an order takes to leave you, and how long it spends in transit. A shipping method with no transit time shows no estimate at all.', 'post-purchase-hub' ),
+					__( 'Delivery estimates', 'wpmake-post-purchase-hub' ),
+					__( 'How long an order takes to leave you, and how long it spends in transit. A shipping method with no transit time shows no estimate at all.', 'wpmake-post-purchase-hub' ),
 					array(
 						EstimatedDelivery::HANDLING_SETTING,
 						EstimatedDelivery::HANDLING_OVERRIDES_SETTING,
@@ -77,8 +77,8 @@ final class SettingsSections {
 				),
 				self::section(
 					'calendar',
-					__( 'Working days', 'post-purchase-hub' ),
-					__( 'Days you do not ship on. Excluded from every estimate above.', 'post-purchase-hub' ),
+					__( 'Working days', 'wpmake-post-purchase-hub' ),
+					__( 'Days you do not ship on. Excluded from every estimate above.', 'wpmake-post-purchase-hub' ),
 					array(
 						EstimatedDelivery::WEEKEND_SETTING,
 						EstimatedDelivery::HOLIDAYS_SETTING,
@@ -88,14 +88,14 @@ final class SettingsSections {
 			'actions'  => array(
 				self::section(
 					'available',
-					__( 'Available actions', 'post-purchase-hub' ),
-					__( 'An action turned off here is removed from the customer\'s order pages and refused at the API as well.', 'post-purchase-hub' ),
+					__( 'Available actions', 'wpmake-post-purchase-hub' ),
+					__( 'An action turned off here is removed from the customer\'s order pages and refused at the API as well.', 'wpmake-post-purchase-hub' ),
 					array( ActionAvailability::SETTING )
 				),
 				self::section(
 					'cancellation',
-					__( 'Cancellation requests', 'post-purchase-hub' ),
-					__( 'A cancellation is always a request you approve or decline. This plugin never cancels an order by itself and never issues a refund.', 'post-purchase-hub' ),
+					__( 'Cancellation requests', 'wpmake-post-purchase-hub' ),
+					__( 'A cancellation is always a request you approve or decline. This plugin never cancels an order by itself and never issues a refund.', 'wpmake-post-purchase-hub' ),
 					array(
 						Cancel::STATUSES_SETTING,
 						Cancel::CAP_SETTING,
@@ -108,8 +108,8 @@ final class SettingsSections {
 			'guest'    => array(
 				self::section(
 					'lookup',
-					__( 'Guest order lookup', 'post-purchase-hub' ),
-					__( 'Off until you acknowledge what it does. Both switches are required — ticking only the first saves as off.', 'post-purchase-hub' ),
+					__( 'Guest order lookup', 'wpmake-post-purchase-hub' ),
+					__( 'Off until you acknowledge what it does. Both switches are required — ticking only the first saves as off.', 'wpmake-post-purchase-hub' ),
 					array(
 						GuestAccess::ENABLED_SETTING,
 						GuestAccess::ACKNOWLEDGED_SETTING,
@@ -117,22 +117,22 @@ final class SettingsSections {
 				),
 				self::section(
 					'links',
-					__( 'Secure links', 'post-purchase-hub' ),
-					__( 'The signed links emailed to the address already on the order, and how long they keep working.', 'post-purchase-hub' ),
+					__( 'Secure links', 'wpmake-post-purchase-hub' ),
+					__( 'The signed links emailed to the address already on the order, and how long they keep working.', 'wpmake-post-purchase-hub' ),
 					array( TokenService::TTL_SETTING )
 				),
 			),
 			'advanced' => array(
 				self::section(
 					'retention',
-					__( 'Request history', 'post-purchase-hub' ),
-					__( 'The daily cleanup keeps this table from growing forever.', 'post-purchase-hub' ),
+					__( 'Request history', 'wpmake-post-purchase-hub' ),
+					__( 'The daily cleanup keeps this table from growing forever.', 'wpmake-post-purchase-hub' ),
 					array( RetentionSweeper::RETENTION_SETTING )
 				),
 				self::section(
 					'uninstall',
-					__( 'Uninstalling', 'post-purchase-hub' ),
-					__( 'What happens to your data if this plugin is deleted.', 'post-purchase-hub' ),
+					__( 'Uninstalling', 'wpmake-post-purchase-hub' ),
+					__( 'What happens to your data if this plugin is deleted.', 'wpmake-post-purchase-hub' ),
 					array( Uninstaller::SETTING )
 				),
 			),
@@ -174,7 +174,7 @@ final class SettingsSections {
 		if ( array() !== $orphans ) {
 			$sections[] = self::section(
 				'other',
-				__( 'Other settings', 'post-purchase-hub' ),
+				__( 'Other settings', 'wpmake-post-purchase-hub' ),
 				'',
 				$orphans
 			);
@@ -193,12 +193,12 @@ final class SettingsSections {
 	 */
 	public static function tab_description( string $tab ): string {
 		$descriptions = array(
-			'general'  => __( 'How this plugin appears on your storefront, and whether it is working.', 'post-purchase-hub' ),
-			'timeline' => __( 'What a customer sees about where their order has got to.', 'post-purchase-hub' ),
-			'actions'  => __( 'What a customer can do about an order without emailing you.', 'post-purchase-hub' ),
-			'guest'    => __( 'Whether a customer without an account can find their order.', 'post-purchase-hub' ),
-			'emails'   => __( 'Every email this plugin sends, and where to change it.', 'post-purchase-hub' ),
-			'advanced' => __( 'Data retention and what happens on uninstall.', 'post-purchase-hub' ),
+			'general'  => __( 'How this plugin appears on your storefront, and whether it is working.', 'wpmake-post-purchase-hub' ),
+			'timeline' => __( 'What a customer sees about where their order has got to.', 'wpmake-post-purchase-hub' ),
+			'actions'  => __( 'What a customer can do about an order without emailing you.', 'wpmake-post-purchase-hub' ),
+			'guest'    => __( 'Whether a customer without an account can find their order.', 'wpmake-post-purchase-hub' ),
+			'emails'   => __( 'Every email this plugin sends, and where to change it.', 'wpmake-post-purchase-hub' ),
+			'advanced' => __( 'Data retention and what happens on uninstall.', 'wpmake-post-purchase-hub' ),
 		);
 
 		return $descriptions[ $tab ] ?? '';

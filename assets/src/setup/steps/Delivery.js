@@ -56,11 +56,11 @@ export default function Delivery( {
 		<Question
 			title={ __(
 				'How long before an order leaves you?',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 			help={ __(
 				'Business days between payment and dispatch. This is what turns an order date into “arrives Tuesday to Thursday” — and the non-working days come from your own settings, not from a guess.',
-				'post-purchase-hub'
+				'wpmake-post-purchase-hub'
 			) }
 		>
 			<div className="pph-setup__field">
@@ -68,7 +68,7 @@ export default function Delivery( {
 					className="pph-setup__field-label"
 					htmlFor="pph-handling-days"
 				>
-					{ __( 'Handling time', 'post-purchase-hub' ) }
+					{ __( 'Handling time', 'wpmake-post-purchase-hub' ) }
 				</label>
 				<div className="pph-setup__field-inline">
 					<input
@@ -84,7 +84,7 @@ export default function Delivery( {
 						}
 					/>
 					<span className="pph-setup__field-suffix">
-						{ __( 'business days', 'post-purchase-hub' ) }
+						{ __( 'business days', 'wpmake-post-purchase-hub' ) }
 					</span>
 				</div>
 			</div>
@@ -94,13 +94,13 @@ export default function Delivery( {
 					<summary>
 						{ __(
 							'Some shipping methods take longer',
-							'post-purchase-hub'
+							'wpmake-post-purchase-hub'
 						) }
 					</summary>
 					<p className="pph-setup__help">
 						{ __(
 							'Leave a box blank to use the handling time above.',
-							'post-purchase-hub'
+							'wpmake-post-purchase-hub'
 						) }
 					</p>
 					{ methods.map( ( method ) => (
@@ -129,7 +129,7 @@ export default function Delivery( {
 								<span className="pph-setup__field-suffix">
 									{ __(
 										'business days',
-										'post-purchase-hub'
+										'wpmake-post-purchase-hub'
 									) }
 								</span>
 							</div>

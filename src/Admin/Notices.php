@@ -92,14 +92,14 @@ final class Notices {
 
 		printf(
 			'<p><strong>%1$s</strong> %2$s</p>',
-			esc_html__( 'Post-Purchase Hub is installed.', 'post-purchase-hub' ),
-			esc_html__( 'Nothing is showing to your customers yet. The setup wizard takes about two minutes, and you can skip any question you are not sure about.', 'post-purchase-hub' )
+			esc_html__( 'Post-Purchase Hub is installed.', 'wpmake-post-purchase-hub' ),
+			esc_html__( 'Nothing is showing to your customers yet. The setup wizard takes about two minutes, and you can skip any question you are not sure about.', 'wpmake-post-purchase-hub' )
 		);
 
 		printf(
 			'<p><a class="button button-primary" href="%1$s">%2$s</a>',
 			esc_url( WizardPage::url() ),
-			esc_html__( 'Run the setup wizard', 'post-purchase-hub' )
+			esc_html__( 'Run the setup wizard', 'wpmake-post-purchase-hub' )
 		);
 
 		printf(
@@ -111,7 +111,7 @@ final class Notices {
 
 		printf( '<input type="hidden" name="action" value="%s" />', esc_attr( self::DISMISS_ACTION ) );
 		printf( '<input type="hidden" name="redirect" value="%s" />', esc_attr( self::current_path() ) );
-		printf( '<button type="submit" class="button">%s</button>', esc_html__( 'Not now', 'post-purchase-hub' ) );
+		printf( '<button type="submit" class="button">%s</button>', esc_html__( 'Not now', 'wpmake-post-purchase-hub' ) );
 
 		echo '</form></p></div>';
 	}
@@ -156,21 +156,21 @@ final class Notices {
 	 */
 	public function dismiss(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You do not have permission to do that.', 'post-purchase-hub' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You do not have permission to do that.', 'wpmake-post-purchase-hub' ), '', array( 'response' => 403 ) );
 		}
 
 		// `admin_post_{action}` fires for GET as well as POST, and this writes
 		// user meta: hard rule 4 says a GET never mutates, so this is where
 		// that is enforced rather than assumed from the form's method.
 		if ( 'POST' !== strtoupper( isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '' ) ) {
-			wp_die( esc_html__( 'That request could not be completed.', 'post-purchase-hub' ), '', array( 'response' => 405 ) );
+			wp_die( esc_html__( 'That request could not be completed.', 'wpmake-post-purchase-hub' ), '', array( 'response' => 405 ) );
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Verified on the next line; read here only to hand to the verifier.
 		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
-			wp_die( esc_html__( 'That link has expired. Please try again.', 'post-purchase-hub' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'That link has expired. Please try again.', 'wpmake-post-purchase-hub' ), '', array( 'response' => 403 ) );
 		}
 
 		update_user_meta( get_current_user_id(), self::DISMISSED_META, gmdate( 'Y-m-d H:i:s' ) );

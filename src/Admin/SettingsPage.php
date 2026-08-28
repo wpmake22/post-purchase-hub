@@ -95,8 +95,8 @@ final class SettingsPage {
 	public function add_menu(): void {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Post-Purchase Hub settings', 'post-purchase-hub' ),
-			__( 'Post-Purchase Hub', 'post-purchase-hub' ),
+			__( 'Post-Purchase Hub settings', 'wpmake-post-purchase-hub' ),
+			__( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ),
 			self::CAPABILITY,
 			self::PAGE,
 			array( $this, 'render' )
@@ -168,7 +168,7 @@ final class SettingsPage {
 	 */
 	public function render(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You do not have permission to change these settings.', 'post-purchase-hub' ) );
+			wp_die( esc_html__( 'You do not have permission to change these settings.', 'wpmake-post-purchase-hub' ) );
 		}
 
 		$tab = self::current_tab();
@@ -203,7 +203,7 @@ final class SettingsPage {
 
 		echo '<div class="pph-settings__save">';
 
-		submit_button( __( 'Save changes', 'post-purchase-hub' ), 'primary', 'submit', false );
+		submit_button( __( 'Save changes', 'wpmake-post-purchase-hub' ), 'primary', 'submit', false );
 
 		echo '</div></form>';
 	}
@@ -222,7 +222,7 @@ final class SettingsPage {
 		if ( 'emails' === $tab ) {
 			$this->layout->open_card(
 				SettingsLayout::anchor( $tab, 'emails' ),
-				__( 'Where these emails are configured', 'post-purchase-hub' ),
+				__( 'Where these emails are configured', 'wpmake-post-purchase-hub' ),
 				'',
 				'emails'
 			);
@@ -251,13 +251,13 @@ final class SettingsPage {
 
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'This plugin\'s emails live with your other WooCommerce emails, so you change their recipients, subjects and wording in one place rather than two.', 'post-purchase-hub' )
+			esc_html__( 'This plugin\'s emails live with your other WooCommerce emails, so you change their recipients, subjects and wording in one place rather than two.', 'wpmake-post-purchase-hub' )
 		);
 
 		printf(
 			'<p><a class="button button-secondary" href="%1$s">%2$s</a></p>',
 			esc_url( admin_url( 'admin.php?page=wc-settings&tab=email' ) ),
-			esc_html__( 'Open WooCommerce email settings', 'post-purchase-hub' )
+			esc_html__( 'Open WooCommerce email settings', 'wpmake-post-purchase-hub' )
 		);
 
 		echo '</div>';

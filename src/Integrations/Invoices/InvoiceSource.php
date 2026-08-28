@@ -79,7 +79,7 @@ final class InvoiceSource {
 	 */
 	public function label(): string {
 		return $this->is_document()
-			? __( 'Download invoice', 'post-purchase-hub' )
-			: __( 'View or print order', 'post-purchase-hub' );
+			? __( 'Download invoice', 'wpmake-post-purchase-hub' )
+			: __( 'View or print order', 'wpmake-post-purchase-hub' );
 	}
 }

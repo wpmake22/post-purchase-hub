@@ -26,7 +26,7 @@ const BRANCH = '[data-pph-branch="cancellation_requested"]';
 
 test.describe("Cancellation requests", () => {
 	test.beforeEach(async ({ requestUtils }) => {
-		await requestUtils.activatePlugin("post-purchase-hub");
+		await requestUtils.activatePlugin("wpmake-post-purchase-hub-for-woocommerce");
 		await completeSetup(requestUtils);
 	});
 

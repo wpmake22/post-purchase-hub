@@ -2,7 +2,7 @@
 /**
  * Request declined email (HTML).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/request-declined.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/request-declined.php.
  *
  * Deliberately never prints `$request->admin_note` — that field is internal
  * merchant context, never customer-facing copy (see `Emails\RequestDeclined`'s
@@ -30,15 +30,15 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	<?php
 	if ( $order instanceof WC_Order && '' !== $order->get_billing_first_name() ) {
 		/* translators: %s: customer first name. */
-		printf( esc_html__( 'Hi %s,', 'post-purchase-hub' ), esc_html( $order->get_billing_first_name() ) );
+		printf( esc_html__( 'Hi %s,', 'wpmake-post-purchase-hub' ), esc_html( $order->get_billing_first_name() ) );
 	} else {
-		esc_html_e( 'Hi,', 'post-purchase-hub' );
+		esc_html_e( 'Hi,', 'wpmake-post-purchase-hub' );
 	}
 	?>
 </p>
 
 <p>
-	<?php esc_html_e( "We looked into your request and, unfortunately, we're not able to action it. Your order is unchanged.", 'post-purchase-hub' ); ?>
+	<?php esc_html_e( "We looked into your request and, unfortunately, we're not able to action it. Your order is unchanged.", 'wpmake-post-purchase-hub' ); ?>
 </p>
 
 <?php

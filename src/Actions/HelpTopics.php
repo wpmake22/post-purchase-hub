@@ -74,11 +74,11 @@ final class HelpTopics {
 	 */
 	public static function labels(): array {
 		$defaults = array(
-			'where_is_my_order' => __( 'Where is my order?', 'post-purchase-hub' ),
-			'item_problem'      => __( 'Something is wrong with an item', 'post-purchase-hub' ),
-			'change_order'      => __( 'I need to change this order', 'post-purchase-hub' ),
-			'billing'           => __( 'A billing or payment question', 'post-purchase-hub' ),
-			'other'             => __( 'Something else', 'post-purchase-hub' ),
+			'where_is_my_order' => __( 'Where is my order?', 'wpmake-post-purchase-hub' ),
+			'item_problem'      => __( 'Something is wrong with an item', 'wpmake-post-purchase-hub' ),
+			'change_order'      => __( 'I need to change this order', 'wpmake-post-purchase-hub' ),
+			'billing'           => __( 'A billing or payment question', 'wpmake-post-purchase-hub' ),
+			'other'             => __( 'Something else', 'wpmake-post-purchase-hub' ),
 		);
 
 		/**

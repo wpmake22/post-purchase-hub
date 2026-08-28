@@ -341,10 +341,10 @@ final class Cancel {
 	 */
 	private static function approval_note_text( int $user_id ): string {
 		$user = $user_id > 0 ? get_userdata( $user_id ) : false;
-		$name = $user instanceof \WP_User ? $user->display_name : __( 'a store manager', 'post-purchase-hub' );
+		$name = $user instanceof \WP_User ? $user->display_name : __( 'a store manager', 'wpmake-post-purchase-hub' );
 
 		/* translators: 1: staff member's display name, 2: date and time the approval happened. */
-		$format = __( 'Cancellation request approved by %1$s on %2$s.', 'post-purchase-hub' );
+		$format = __( 'Cancellation request approved by %1$s on %2$s.', 'wpmake-post-purchase-hub' );
 
 		return sprintf( $format, $name, wp_date( get_option( 'date_format', 'F j, Y' ) . ' ' . get_option( 'time_format', 'H:i' ) ) );
 	}
@@ -361,7 +361,7 @@ final class Cancel {
 	 * @return string
 	 */
 	public static function label(): string {
-		return __( 'Request cancellation', 'post-purchase-hub' );
+		return __( 'Request cancellation', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
@@ -397,11 +397,11 @@ final class Cancel {
 	 */
 	public static function reason_code_labels(): array {
 		$defaults = array(
-			'changed_mind'       => __( 'I changed my mind', 'post-purchase-hub' ),
-			'found_better_price' => __( 'I found a better price elsewhere', 'post-purchase-hub' ),
-			'ordered_by_mistake' => __( 'I ordered this by mistake', 'post-purchase-hub' ),
-			'shipping_too_slow'  => __( 'Shipping is taking too long', 'post-purchase-hub' ),
-			'other'              => __( 'Other', 'post-purchase-hub' ),
+			'changed_mind'       => __( 'I changed my mind', 'wpmake-post-purchase-hub' ),
+			'found_better_price' => __( 'I found a better price elsewhere', 'wpmake-post-purchase-hub' ),
+			'ordered_by_mistake' => __( 'I ordered this by mistake', 'wpmake-post-purchase-hub' ),
+			'shipping_too_slow'  => __( 'Shipping is taking too long', 'wpmake-post-purchase-hub' ),
+			'other'              => __( 'Other', 'wpmake-post-purchase-hub' ),
 		);
 
 		/**

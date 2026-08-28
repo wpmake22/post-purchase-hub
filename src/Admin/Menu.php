@@ -76,7 +76,7 @@ final class Menu {
 	public function add_menu(): void {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Post-Purchase Hub', 'post-purchase-hub' ),
+			__( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ),
 			self::menu_title() . self::bubble( $this->pending_count() ),
 			self::CAPABILITY,
 			self::REQUESTS_PAGE,
@@ -91,7 +91,7 @@ final class Menu {
 	 * @return string
 	 */
 	public static function menu_title(): string {
-		return __( 'Requests', 'post-purchase-hub' );
+		return __( 'Requests', 'wpmake-post-purchase-hub' );
 	}
 
 	/**

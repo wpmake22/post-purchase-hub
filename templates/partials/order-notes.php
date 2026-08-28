@@ -2,7 +2,7 @@
 /**
  * Merchant notes to the customer.
  *
- * Override by copying this file to yourtheme/post-purchase-hub/partials/order-notes.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/order-notes.php.
  *
  * @package PostPurchaseHub
  * @version 0.4.1
@@ -19,7 +19,7 @@ if ( empty( $notes ) ) {
 }
 ?>
 <section class="pph-order-notes" data-pph-order-notes>
-	<h2 class="pph-order-notes__heading"><?php esc_html_e( 'Updates from the store', 'post-purchase-hub' ); ?></h2>
+	<h2 class="pph-order-notes__heading"><?php esc_html_e( 'Updates from the store', 'wpmake-post-purchase-hub' ); ?></h2>
 
 	<ol class="pph-order-notes__list">
 		<?php foreach ( $notes as $pph_note ) : ?>

@@ -2,7 +2,7 @@
 /**
  * Daily admin digest email (HTML).
  *
- * Override by copying this file to yourtheme/post-purchase-hub/emails/admin-digest.php.
+ * Override by copying this file to yourtheme/wpmake-post-purchase-hub/emails/admin-digest.php.
  *
  * @package PostPurchaseHub
  * @version 0.10.0
@@ -27,7 +27,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	<?php
 	printf(
 		/* translators: %d: number of requests created since the previous digest. */
-		esc_html( _n( '%d new request since your last digest.', '%d new requests since your last digest.', $new_count, 'post-purchase-hub' ) ),
+		esc_html( _n( '%d new request since your last digest.', '%d new requests since your last digest.', $new_count, 'wpmake-post-purchase-hub' ) ),
 		(int) $new_count
 	);
 	?>
@@ -37,14 +37,14 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	<?php
 	printf(
 		/* translators: %d: number of currently pending requests. */
-		esc_html( _n( '%d request is currently pending.', '%d requests are currently pending.', $pending_count, 'post-purchase-hub' ) ),
+		esc_html( _n( '%d request is currently pending.', '%d requests are currently pending.', $pending_count, 'wpmake-post-purchase-hub' ) ),
 		(int) $pending_count
 	);
 	?>
 </p>
 
 <p>
-	<a href="<?php echo esc_url( $queue_url ); ?>"><?php esc_html_e( 'Open the request queue', 'post-purchase-hub' ); ?></a>
+	<a href="<?php echo esc_url( $queue_url ); ?>"><?php esc_html_e( 'Open the request queue', 'wpmake-post-purchase-hub' ); ?></a>
 </p>
 
 <?php

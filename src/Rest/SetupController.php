@@ -157,7 +157,7 @@ final class SetupController {
 
 		return new \WP_Error(
 			'pph_setup_forbidden',
-			__( 'You do not have permission to run setup.', 'post-purchase-hub' ),
+			__( 'You do not have permission to run setup.', 'wpmake-post-purchase-hub' ),
 			array( 'status' => is_user_logged_in() ? 403 : 401 )
 		);
 	}

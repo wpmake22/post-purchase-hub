@@ -76,10 +76,10 @@ final class LinkInjector {
 	 */
 	public function add_settings_field( array $fields ): array {
 		$fields[ self::SETTINGS_FIELD ] = array(
-			'title'       => __( 'Post-Purchase Hub secure link', 'post-purchase-hub' ),
+			'title'       => __( 'Post-Purchase Hub secure link', 'wpmake-post-purchase-hub' ),
 			'type'        => 'checkbox',
-			'label'       => __( 'Include a secure, no-login link to this order', 'post-purchase-hub' ),
-			'description' => __( 'Lets the customer view this order without signing in. Off by default.', 'post-purchase-hub' ),
+			'label'       => __( 'Include a secure, no-login link to this order', 'wpmake-post-purchase-hub' ),
+			'description' => __( 'Lets the customer view this order without signing in. Off by default.', 'wpmake-post-purchase-hub' ),
 			'default'     => 'no',
 			'desc_tip'    => true,
 		);

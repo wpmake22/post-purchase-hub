@@ -81,10 +81,10 @@ final class HealthPanel {
 		);
 
 		echo '<div class="pph-settings__card-header">';
-		printf( '<h3>%s</h3>', esc_html__( 'Status', 'post-purchase-hub' ) );
+		printf( '<h3>%s</h3>', esc_html__( 'Status', 'wpmake-post-purchase-hub' ) );
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'What this store looks like to the plugin right now. Nothing here is a setting — it is what the other tabs have added up to.', 'post-purchase-hub' )
+			esc_html__( 'What this store looks like to the plugin right now. Nothing here is a setting — it is what the other tabs have added up to.', 'wpmake-post-purchase-hub' )
 		);
 		echo '</div>';
 
@@ -136,10 +136,10 @@ final class HealthPanel {
 
 		return array(
 			'id'    => 'setup',
-			'label' => __( 'Setup', 'post-purchase-hub' ),
+			'label' => __( 'Setup', 'wpmake-post-purchase-hub' ),
 			'value' => $complete
-				? __( 'Complete — your order pages are live.', 'post-purchase-hub' )
-				: __( 'Not finished — nothing is showing to customers yet.', 'post-purchase-hub' ),
+				? __( 'Complete — your order pages are live.', 'wpmake-post-purchase-hub' )
+				: __( 'Not finished — nothing is showing to customers yet.', 'wpmake-post-purchase-hub' ),
 			'state' => $complete ? self::OK : self::NOTICE,
 		);
 	}
@@ -156,12 +156,12 @@ final class HealthPanel {
 
 		return array(
 			'id'    => 'tracking',
-			'label' => __( 'Tracking data', 'post-purchase-hub' ),
+			'label' => __( 'Tracking data', 'wpmake-post-purchase-hub' ),
 			'value' => '' === $plugin
-				? __( 'None detected. Delivery estimates are shown instead; real tracking replaces them automatically once a tracking plugin provides it.', 'post-purchase-hub' )
+				? __( 'None detected. Delivery estimates are shown instead; real tracking replaces them automatically once a tracking plugin provides it.', 'wpmake-post-purchase-hub' )
 				: sprintf(
 					/* translators: %s: name of the detected tracking plugin. */
-					__( 'Reading from %s.', 'post-purchase-hub' ),
+					__( 'Reading from %s.', 'wpmake-post-purchase-hub' ),
 					$plugin
 				),
 			'state' => '' === $plugin ? self::NOTICE : self::OK,
@@ -180,12 +180,12 @@ final class HealthPanel {
 
 		return array(
 			'id'    => 'invoices',
-			'label' => __( 'Invoices', 'post-purchase-hub' ),
+			'label' => __( 'Invoices', 'wpmake-post-purchase-hub' ),
 			'value' => null === $provider
-				? __( 'No invoice plugin detected. Customers are offered their order page to print; this plugin does not generate PDFs.', 'post-purchase-hub' )
+				? __( 'No invoice plugin detected. Customers are offered their order page to print; this plugin does not generate PDFs.', 'wpmake-post-purchase-hub' )
 				: sprintf(
 					/* translators: %s: name of the detected invoice plugin. */
-					__( 'Linking to invoices from %s.', 'post-purchase-hub' ),
+					__( 'Linking to invoices from %s.', 'wpmake-post-purchase-hub' ),
 					$provider->label()
 				),
 			'state' => self::OK,
@@ -204,12 +204,12 @@ final class HealthPanel {
 
 		return array(
 			'id'    => 'templates',
-			'label' => __( 'Template conflicts', 'post-purchase-hub' ),
+			'label' => __( 'Template conflicts', 'wpmake-post-purchase-hub' ),
 			'value' => array() === $conflicts
-				? __( 'None found.', 'post-purchase-hub' )
+				? __( 'None found.', 'wpmake-post-purchase-hub' )
 				: sprintf(
 					/* translators: %s: comma-separated list of conflicting templates or plugins. */
-					__( 'Your theme or a page builder overrides: %s. Additive display still works; full replacement is switched off while this is true.', 'post-purchase-hub' ),
+					__( 'Your theme or a page builder overrides: %s. Additive display still works; full replacement is switched off while this is true.', 'wpmake-post-purchase-hub' ),
 					implode( ', ', array_map( 'strval', $conflicts ) )
 				),
 			'state' => array() === $conflicts ? self::OK : self::NOTICE,
@@ -229,18 +229,18 @@ final class HealthPanel {
 		if ( ! is_int( $next ) || $next < 1 ) {
 			return array(
 				'id'    => 'cron',
-				'label' => __( 'Daily cleanup', 'post-purchase-hub' ),
-				'value' => __( 'Not scheduled. Deactivating and reactivating the plugin reschedules it.', 'post-purchase-hub' ),
+				'label' => __( 'Daily cleanup', 'wpmake-post-purchase-hub' ),
+				'value' => __( 'Not scheduled. Deactivating and reactivating the plugin reschedules it.', 'wpmake-post-purchase-hub' ),
 				'state' => self::PROBLEM,
 			);
 		}
 
 		return array(
 			'id'    => 'cron',
-			'label' => __( 'Daily cleanup', 'post-purchase-hub' ),
+			'label' => __( 'Daily cleanup', 'wpmake-post-purchase-hub' ),
 			'value' => sprintf(
 				/* translators: %s: human-readable time until the next run, e.g. "3 hours". */
-				__( 'Next run in %s.', 'post-purchase-hub' ),
+				__( 'Next run in %s.', 'wpmake-post-purchase-hub' ),
 				human_time_diff( time(), $next )
 			),
 			'state' => self::OK,
@@ -262,24 +262,24 @@ final class HealthPanel {
 		if ( ! $tables ) {
 			return array(
 				'id'    => 'schema',
-				'label' => __( 'Database', 'post-purchase-hub' ),
-				'value' => __( 'The requests table is missing. Deactivating and reactivating the plugin recreates it.', 'post-purchase-hub' ),
+				'label' => __( 'Database', 'wpmake-post-purchase-hub' ),
+				'value' => __( 'The requests table is missing. Deactivating and reactivating the plugin recreates it.', 'wpmake-post-purchase-hub' ),
 				'state' => self::PROBLEM,
 			);
 		}
 
 		return array(
 			'id'    => 'schema',
-			'label' => __( 'Database', 'post-purchase-hub' ),
+			'label' => __( 'Database', 'wpmake-post-purchase-hub' ),
 			'value' => $installed === $expected
 				? sprintf(
 					/* translators: %d: schema version number. */
-					__( 'Up to date (version %d).', 'post-purchase-hub' ),
+					__( 'Up to date (version %d).', 'wpmake-post-purchase-hub' ),
 					$expected
 				)
 				: sprintf(
 					/* translators: 1: installed schema version, 2: expected schema version. */
-					__( 'Version %1$d installed, %2$d expected. It updates itself on the next page load.', 'post-purchase-hub' ),
+					__( 'Version %1$d installed, %2$d expected. It updates itself on the next page load.', 'wpmake-post-purchase-hub' ),
 					$installed,
 					$expected
 				),
