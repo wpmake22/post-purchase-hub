@@ -35,7 +35,7 @@ final class SecureLinkTest extends TestCase {
 		parent::setUp();
 
 		FakeWordPress::reset();
-		FakeWordPress::$options['pph_token_secret'] = base64_encode( random_bytes( 64 ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Test fixture, not obfuscation.
+		FakeWordPress::$options['wpmphub_token_secret'] = base64_encode( random_bytes( 64 ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Test fixture, not obfuscation.
 	}
 
 	/**
@@ -49,7 +49,7 @@ final class SecureLinkTest extends TestCase {
 
 		$url = SecureLink::url( $order, new TokenService() );
 
-		$this->assertStringContainsString( 'pph_token=', $url );
+		$this->assertStringContainsString( 'wpmphub_token=', $url );
 
 		$token   = $this->token_from_url( $url );
 		$payload = ( new TokenService() )->decode( $token );
@@ -101,7 +101,7 @@ final class SecureLinkTest extends TestCase {
 	}
 
 	/**
-	 * Extracts the pph_token query argument from a URL built by add_query_arg().
+	 * Extracts the wpmphub_token query argument from a URL built by add_query_arg().
 	 *
 	 * @param string $url URL to parse.
 	 * @return string

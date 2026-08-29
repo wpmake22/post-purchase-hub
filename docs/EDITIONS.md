@@ -29,7 +29,7 @@ That constraint is load-bearing rather than aesthetic. `docs/SPEC.md` already re
 
 ```
 wpmake-post-purchase-hub/
-├── wpmake-post-purchase-hub.php     Shared bootstrap. Header + PPH_EDITION rewritten at build.
+├── wpmake-post-purchase-hub.php     Shared bootstrap. Header + WPMPHUB_EDITION rewritten at build.
 ├── composer.json
 ├── readme.txt                Free/WP.org only. Stripped from the pro zip.
 ├── README.md                 Pro only. Stripped from the free zip.
@@ -85,7 +85,7 @@ These are enforced in CI. Violating one fails the build, not code review.
 
 **E1. Core never references edition code.** No `PostPurchaseHub\Pro\` or `PostPurchaseHub\Free\` anywhere in `src/`, including in strings, docblocks and `class_exists()` checks. Checked by `bin/build.php` preflight and by the CI grep gate.
 
-**E2. Core never asks whether Pro is active** to decide behaviour. No `if ( pph_is_pro() )` in `src/`. Core registers extension points; Pro fills them. `pph_is_pro()` exists only for display purposes in `free/` and for the licensing layer in `pro/`.
+**E2. Core never asks whether Pro is active** to decide behaviour. No `if ( wpmphub_is_pro() )` in `src/`. Core registers extension points; Pro fills them. `wpmphub_is_pro()` exists only for display purposes in `free/` and for the licensing layer in `pro/`.
 
 **E3. Pro extends only through core's public API** — documented filters, actions, the `ActionRegistry`, interfaces, and template overrides. No reaching into core internals, no reflection, no reopening private state.
 
@@ -115,7 +115,7 @@ if ( is_readable( __DIR__ . '/pro/bootstrap.php' ) ) {
 `pro/bootstrap.php` waits for core to be ready, then registers:
 
 ```php
-add_action( 'pph_loaded', static function ( $plugin ) {
+add_action( 'wpmphub_loaded', static function ( $plugin ) {
     ( new PostPurchaseHub\Pro\Bootstrap( $plugin ) )->register();
 } );
 ```
@@ -124,15 +124,15 @@ Core must therefore expose enough surface for Pro to add a whole feature. At min
 
 | Extension point | What Pro does with it |
 | --- | --- |
-| `pph_loaded` action | Bootstrap entry |
+| `wpmphub_loaded` action | Bootstrap entry |
 | `ActionRegistry::register()` | Adds the Return action |
-| `pph_request_types` filter | Adds `return` as a first-class request type |
-| `pph_action_eligibility` filter | Rules engine overrides |
-| `pph_settings_tabs` / `pph_settings_fields` | Pro settings, replacing free's locked teasers |
-| `pph_request_list_columns` / `_actions` | Bulk actions, saved views |
-| `pph_locate_template` | Pro template overrides |
-| `pph_timeline_stages` | Return-in-progress branch states |
-| `pph_registered_emails` | Return lifecycle emails |
+| `wpmphub_request_types` filter | Adds `return` as a first-class request type |
+| `wpmphub_action_eligibility` filter | Rules engine overrides |
+| `wpmphub_settings_tabs` / `wpmphub_settings_fields` | Pro settings, replacing free's locked teasers |
+| `wpmphub_request_list_columns` / `_actions` | Bulk actions, saved views |
+| `wpmphub_locate_template` | Pro template overrides |
+| `wpmphub_timeline_stages` | Return-in-progress branch states |
+| `wpmphub_registered_emails` | Return lifecycle emails |
 | `TrackingAdapterInterface` | Additional adapters |
 
 Free's counterpart lives in `free/src/` and does one job: render locked teasers where Pro features would be, so the settings screen shows the same shape in both editions. Keep it small. It is the only place in the codebase where marketing lives.
@@ -179,7 +179,7 @@ Or one edition: `composer build:free`, `composer build:pro`.
 **What the workflow does**
 
 `build` → version-consistency check, lint, PHPStan, unit tests, asset build, both zips, artifact verification.
-`smoke` → installs and activates the *built free zip* in wp-env and asserts `PPH_EDITION === 'free'` with no fatals. This catches the failure static analysis cannot: a core file referencing a stripped class.
+`smoke` → installs and activates the *built free zip* in wp-env and asserts `WPMPHUB_EDITION === 'free'` with no fatals. This catches the failure static analysis cannot: a core file referencing a stripped class.
 `publish` → attaches both zips to the GitHub release.
 `deploy-wporg` → pushes free to SVN. Gated behind a `wporg` environment; add a required reviewer so a stray tag can't ship.
 `deploy-pro` → placeholder until the licensing layer is chosen.
@@ -203,9 +203,9 @@ Context: one repository produces two zips. Free ships to WordPress.org, Pro is a
 
 Build:
 1. Directory scaffolding: free/src, free/templates, free/tests, pro/src, pro/templates, pro/assets/src, pro/tests, pro/bootstrap.php. Add the three PSR-4 mappings to composer.json.
-2. In wpmake-post-purchase-hub.php: define PPH_EDITION as 'free' in source (the build rewrites it), a pph_is_pro() helper reading that constant, and a conditional require of pro/bootstrap.php guarded by is_readable().
-3. Fire a pph_loaded action at the end of core bootstrap, passing the container. This is Pro's only entry point.
-4. pro/bootstrap.php with a Pro\Bootstrap class that registers on pph_loaded. Leave it a no-op stub with a single log line — features arrive in later milestones.
+2. In wpmake-post-purchase-hub.php: define WPMPHUB_EDITION as 'free' in source (the build rewrites it), a wpmphub_is_pro() helper reading that constant, and a conditional require of pro/bootstrap.php guarded by is_readable().
+3. Fire a wpmphub_loaded action at the end of core bootstrap, passing the container. This is Pro's only entry point.
+4. pro/bootstrap.php with a Pro\Bootstrap class that registers on wpmphub_loaded. Leave it a no-op stub with a single log line — features arrive in later milestones.
 5. free/src/ with a Free\Bootstrap stub for upsell UI, registering on the same hook.
 6. bin/build.php and bin/verify-build.php exactly as supplied in docs/EDITIONS.md. Do not rewrite them; if you believe one is wrong, say what and why and wait.
 7. composer scripts: build, build:free, build:pro, verify, release.
@@ -218,14 +218,14 @@ Acceptance:
 - composer verify passes every check on both artifacts.
 - The free zip contains no pro/ directory, no Pro namespace anywhere including the composer classmap, and no outbound HTTP calls.
 - The pro zip carries an Update URI header; the free zip does not.
-- Both zips report the correct PPH_EDITION and a Version header matching the argument.
+- Both zips report the correct WPMPHUB_EDITION and a Version header matching the argument.
 - Installing the free zip on a clean site activates without fatals.
 - Removing pro/ from the working tree leaves a plugin that still boots and passes the core test suite.
 
 Tests:
 - A build smoke test asserting both zips exist and their entry lists satisfy the E1-E8 rules.
-- An integration test asserting core never calls pph_is_pro() — grep src/ and fail on any hit.
-- An integration test asserting pph_loaded fires exactly once with the container.
+- An integration test asserting core never calls wpmphub_is_pro() — grep src/ and fail on any hit.
+- An integration test asserting wpmphub_loaded fires exactly once with the container.
 
 Do NOT implement any Pro feature in this milestone. The goal is the boundary and the pipeline, verified empty. A pipeline proven on a stub is worth more than one debugged later with three features already on the wrong side of the line.
 
@@ -238,9 +238,9 @@ Workflow per CLAUDE.md. Report, then STOP.
 
 Apply these when you reach each one.
 
-**M09 — Admin Request Queue.** Add: *"Expose `pph_request_list_columns`, `pph_request_list_actions` and `pph_request_bulk_actions` filters so Pro can add item-level columns, bulk approve and saved views without modifying this class. Register the request-type filter dropdown from `pph_request_types` rather than a hardcoded list."*
+**M09 — Admin Request Queue.** Add: *"Expose `wpmphub_request_list_columns`, `wpmphub_request_list_actions` and `wpmphub_request_bulk_actions` filters so Pro can add item-level columns, bulk approve and saved views without modifying this class. Register the request-type filter dropdown from `wpmphub_request_types` rather than a hardcoded list."*
 
-**M14 — Settings & Onboarding.** Add: *"Settings tabs and fields are registered through `pph_settings_tabs` and `pph_settings_fields`, not hardcoded. Where a Pro feature would appear, `free/src/` registers a locked teaser field with the same key, so the two editions render the same shape. Core must not know which is which."*
+**M14 — Settings & Onboarding.** Add: *"Settings tabs and fields are registered through `wpmphub_settings_tabs` and `wpmphub_settings_fields`, not hardcoded. Where a Pro feature would appear, `free/src/` registers a locked teaser field with the same key, so the two editions render the same shape. Core must not know which is which."*
 
 **M07 — Action Engine.** Add: *"`ActionRegistry` must be able to accept an action registered from outside `src/` with no change to core. Prove it with a test that registers a fake action from the test suite and asserts it renders and executes."*
 

@@ -19,7 +19,7 @@ use PostPurchaseHub\Security\Sanitizer;
 use PostPurchaseHub\Support\Logger;
 
 /**
- * `POST /pph/v1/help` — the route the help form submits to.
+ * `POST /wpmphub/v1/help` — the route the help form submits to.
  *
  * Not in docs/SPEC.md's documented route list (`POST /requests`,
  * `GET /orders/{id}/timeline`, `POST /lookup`, `POST /reorder`), and added
@@ -50,7 +50,7 @@ final class HelpController {
 	 *
 	 * @var string
 	 */
-	public const NAMESPACE = 'pph/v1';
+	public const NAMESPACE = 'wpmphub/v1';
 
 	/**
 	 * Route base.
@@ -214,7 +214,7 @@ final class HelpController {
 			// Deliberately the same message whether the order does not exist or
 			// belongs to someone else. The reason still reaches the log.
 			return $this->deny(
-				'pph_forbidden',
+				'wpmphub_forbidden',
 				__( 'You do not have access to this order.', 'wpmake-post-purchase-hub' ),
 				403,
 				array(
@@ -228,7 +228,7 @@ final class HelpController {
 			return $this->too_many_requests( array( 'stage' => 'email' ) );
 		}
 
-		$request->set_param( 'pph_order', $order );
+		$request->set_param( 'wpmphub_order', $order );
 
 		return true;
 	}
@@ -242,10 +242,10 @@ final class HelpController {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function submit( \WP_REST_Request $request ) {
-		$order = $request->get_param( 'pph_order' );
+		$order = $request->get_param( 'wpmphub_order' );
 
 		if ( ! $order instanceof \WC_Order ) {
-			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
+			return $this->deny( 'wpmphub_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		try {
@@ -257,7 +257,7 @@ final class HelpController {
 			);
 		} catch ( IneligibleActionException $e ) {
 			return $this->deny(
-				'pph_ineligible',
+				'wpmphub_ineligible',
 				'' !== $e->result->message ? $e->result->message : __( 'This message could not be sent.', 'wpmake-post-purchase-hub' ),
 				EligibilityResponse::status_for( $e->result ),
 				array(
@@ -290,7 +290,7 @@ final class HelpController {
 	 */
 	private static function supply_token( string $token ): void {
 		add_filter(
-			'pph_current_request_token',
+			'wpmphub_current_request_token',
 			static function () use ( $token ): string {
 				return $token;
 			}
@@ -316,7 +316,7 @@ final class HelpController {
 	 * @return \WP_Error
 	 */
 	private function too_many_requests( array $log_context ): \WP_Error {
-		return $this->deny( 'pph_rate_limited', __( 'Too many messages. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
+		return $this->deny( 'wpmphub_rate_limited', __( 'Too many messages. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
 	}
 
 	/**

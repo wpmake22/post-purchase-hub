@@ -25,7 +25,7 @@ final class OrderMetabox {
 	 *
 	 * @var string
 	 */
-	private const ID = 'pph-requests';
+	private const ID = 'wpmphub-requests';
 
 	/**
 	 * Constructor.
@@ -98,7 +98,7 @@ final class OrderMetabox {
 			return;
 		}
 
-		echo '<ul class="pph-order-requests">';
+		echo '<ul class="wpmphub-order-requests">';
 
 		foreach ( $requests as $request ) {
 			printf(

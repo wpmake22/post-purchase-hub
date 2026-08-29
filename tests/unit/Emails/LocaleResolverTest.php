@@ -18,7 +18,7 @@ require_once dirname( __DIR__, 2 ) . '/stubs/wp-functions.php';
 /**
  * Covers the resolution order docblocked on `LocaleResolver::for_order()`:
  * order meta, then the customer's account locale, then the site default —
- * with the `pph_email_locale` filter able to override any of them.
+ * with the `wpmphub_email_locale` filter able to override any of them.
  *
  * @since 0.10.0
  *
@@ -97,7 +97,7 @@ final class LocaleResolverTest extends TestCase {
 	}
 
 	/**
-	 * The pph_email_locale filter overrides every built-in guess.
+	 * The wpmphub_email_locale filter overrides every built-in guess.
 	 *
 	 * @return void
 	 */
@@ -108,7 +108,7 @@ final class LocaleResolverTest extends TestCase {
 		$order->update_meta_data( 'wpml_language', 'fr_FR' );
 
 		add_filter(
-			'pph_email_locale',
+			'wpmphub_email_locale',
 			static function ( $locale, $filtered_order ) use ( $order ) {
 				self::assertSame( $order, $filtered_order );
 

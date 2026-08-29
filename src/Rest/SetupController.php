@@ -16,7 +16,7 @@ use PostPurchaseHub\Install\SetupSteps;
 use PostPurchaseHub\Security\Sanitizer;
 
 /**
- * `pph/v1/setup` — the wizard's whole server side.
+ * `wpmphub/v1/setup` — the wizard's whole server side.
  *
  * The wizard is the one screen that must work before setup is complete, so
  * these routes register outside the gate every other route sits behind
@@ -28,7 +28,7 @@ use PostPurchaseHub\Security\Sanitizer;
  * the internet.
  *
  * Every write is a POST and every GET is a read (hard rule 4). A step's answers
- * go to `SetupState::remember_draft()` — never to `pph_settings` — so a
+ * go to `SetupState::remember_draft()` — never to `wpmphub_settings` — so a
  * merchant who closes the tab has changed nothing about their store. `finish()`
  * is the single write of the real option, and `SetupState::complete()`
  * immediately after it is the one moment the storefront starts rendering.
@@ -47,7 +47,7 @@ final class SetupController {
 	 *
 	 * @var string
 	 */
-	public const NAMESPACE = 'pph/v1';
+	public const NAMESPACE = 'wpmphub/v1';
 
 	/**
 	 * Route base.
@@ -156,7 +156,7 @@ final class SetupController {
 		}
 
 		return new \WP_Error(
-			'pph_setup_forbidden',
+			'wpmphub_setup_forbidden',
 			__( 'You do not have permission to run setup.', 'wpmake-post-purchase-hub' ),
 			array( 'status' => is_user_logged_in() ? 403 : 401 )
 		);

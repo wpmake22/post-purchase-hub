@@ -55,7 +55,7 @@ final class Reorder {
 	 *
 	 * @var string
 	 */
-	public const QUERY_ARG = 'pph_reorder';
+	public const QUERY_ARG = 'wpmphub_reorder';
 
 	/**
 	 * Denial code for a request that cannot hold a cart.
@@ -264,7 +264,7 @@ final class Reorder {
 		 * @param \WC_Order      $order   Order that was reordered.
 		 * @param ReorderOutcome $outcome What reached the cart, and what did not.
 		 */
-		do_action( 'pph_reorder_completed', $order, $outcome );
+		do_action( 'wpmphub_reorder_completed', $order, $outcome );
 
 		return $outcome;
 	}

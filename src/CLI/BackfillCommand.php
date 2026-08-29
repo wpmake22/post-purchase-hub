@@ -13,7 +13,7 @@ use PostPurchaseHub\Timeline\StageMap;
 use PostPurchaseHub\Timeline\TransitionRecorder;
 
 /**
- * `wp pph backfill-timeline` — gives existing orders the dates we can defend.
+ * `wp wpmphub backfill-timeline` — gives existing orders the dates we can defend.
  *
  * Never automatic, per docs/SPEC.md Phase 7: it touches every order in the
  * store, so it cannot run inside a request and cannot run without being asked.
@@ -34,7 +34,7 @@ final class BackfillCommand {
 	 *
 	 * @var string
 	 */
-	public const CURSOR_OPTION = 'pph_backfill_cursor';
+	public const CURSOR_OPTION = 'wpmphub_backfill_cursor';
 
 	/**
 	 * Orders loaded per batch.
@@ -92,8 +92,8 @@ final class BackfillCommand {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp pph backfill-timeline --dry-run
-	 *     wp pph backfill-timeline --limit=5000
+	 *     wp wpmphub backfill-timeline --dry-run
+	 *     wp wpmphub backfill-timeline --limit=5000
 	 *
 	 * @since 0.3.0
 	 *

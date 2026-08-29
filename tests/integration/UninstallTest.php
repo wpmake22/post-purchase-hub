@@ -66,7 +66,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function tear_down(): void {
-		delete_option( 'pph_settings' );
+		delete_option( 'wpmphub_settings' );
 
 		Schema::install();
 
@@ -99,7 +99,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_a_falsy_setting_is_a_no( $value ): void {
-		update_option( 'pph_settings', array( Uninstaller::SETTING => $value ) );
+		update_option( 'wpmphub_settings', array( Uninstaller::SETTING => $value ) );
 
 		$this->assertFalse( Uninstaller::deletion_allowed() );
 		$this->assertFalse( Uninstaller::run() );
@@ -130,7 +130,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 		Activator::activate();
 		$this->seed();
 
-		update_option( 'pph_settings', array( Uninstaller::SETTING => true ) );
+		update_option( 'wpmphub_settings', array( Uninstaller::SETTING => true ) );
 
 		$this->assertTrue( Uninstaller::run() );
 
@@ -138,7 +138,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 		$this->assertFalse( Schema::table_exists( Schema::request_items_table() ) );
 		$this->assertFalse( get_option( Activator::TOKEN_SECRET_OPTION, false ) );
 		$this->assertFalse( get_option( Activator::SCHEMA_VERSION_OPTION, false ) );
-		$this->assertFalse( get_option( 'pph_settings', false ) );
+		$this->assertFalse( get_option( 'wpmphub_settings', false ) );
 		$this->assertFalse( wp_next_scheduled( Activator::CLEANUP_HOOK ) );
 	}
 
@@ -151,8 +151,8 @@ final class UninstallTest extends \WP_UnitTestCase {
 	public function test_order_meta_is_removed_through_crud(): void {
 		$order = new \WC_Order();
 		$order->set_status( 'processing' );
-		$order->update_meta_data( '_pph_timeline', array( array( 'status' => 'processing' ) ) );
-		$order->update_meta_data( '_pph_eta', '2026-08-25' );
+		$order->update_meta_data( '_wpmphub_timeline', array( array( 'status' => 'processing' ) ) );
+		$order->update_meta_data( '_wpmphub_eta', '2026-08-25' );
 		$order->update_meta_data( '_other_plugin_key', 'keep me' );
 		$order->save();
 
@@ -163,8 +163,8 @@ final class UninstallTest extends \WP_UnitTestCase {
 
 		$reloaded = wc_get_order( $order->get_id() );
 
-		$this->assertSame( '', $reloaded->get_meta( '_pph_timeline' ) );
-		$this->assertSame( '', $reloaded->get_meta( '_pph_eta' ) );
+		$this->assertSame( '', $reloaded->get_meta( '_wpmphub_timeline' ) );
+		$this->assertSame( '', $reloaded->get_meta( '_wpmphub_eta' ) );
 		$this->assertSame( 'keep me', $reloaded->get_meta( '_other_plugin_key' ) );
 	}
 
@@ -176,7 +176,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 	public function test_other_plugins_meta_survives(): void {
 		$order = new \WC_Order();
 		$order->update_meta_data( '_wc_shipment_tracking_items', 'tracking' );
-		$order->update_meta_data( 'pph_no_underscore', 'not ours by convention' );
+		$order->update_meta_data( 'wpmphub_no_underscore', 'not ours by convention' );
 		$order->save();
 
 		Uninstaller::delete_order_meta();
@@ -184,7 +184,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 		$reloaded = wc_get_order( $order->get_id() );
 
 		$this->assertSame( 'tracking', $reloaded->get_meta( '_wc_shipment_tracking_items' ) );
-		$this->assertSame( 'not ours by convention', $reloaded->get_meta( 'pph_no_underscore' ) );
+		$this->assertSame( 'not ours by convention', $reloaded->get_meta( 'wpmphub_no_underscore' ) );
 	}
 
 	/**
@@ -195,7 +195,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 	public function test_the_order_sweep_is_bounded(): void {
 		for ( $i = 0; $i < 3; $i++ ) {
 			$order = new \WC_Order();
-			$order->update_meta_data( '_pph_timeline', array() );
+			$order->update_meta_data( '_wpmphub_timeline', array() );
 			$order->save();
 		}
 
@@ -212,7 +212,7 @@ final class UninstallTest extends \WP_UnitTestCase {
 	 */
 	public function test_the_order_sweep_is_idempotent(): void {
 		$order = new \WC_Order();
-		$order->update_meta_data( '_pph_timeline', array() );
+		$order->update_meta_data( '_wpmphub_timeline', array() );
 		$order->save();
 
 		Uninstaller::delete_order_meta();

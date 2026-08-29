@@ -70,7 +70,7 @@ final class EligibilityResolver {
 		 * @param \WC_Order         $order     Order evaluated.
 		 * @param EligibilityRule   $rule      Rule evaluated.
 		 */
-		$filtered = apply_filters( 'pph_action_eligibility', $result, $action_id, $order, $rule );
+		$filtered = apply_filters( 'wpmphub_action_eligibility', $result, $action_id, $order, $rule );
 
 		return $filtered instanceof EligibilityResult ? $filtered : $result;
 	}

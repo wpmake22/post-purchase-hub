@@ -28,7 +28,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 	public function test_the_test_environment_meets_every_requirement(): void {
 		$this->assertSame(
 			array(),
-			pph_requirement_failures(
+			wpmphub_requirement_failures(
 				PHP_VERSION,
 				(string) get_bloginfo( 'version' ),
 				defined( 'WC_VERSION' ) ? (string) WC_VERSION : null
@@ -42,7 +42,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_absent_woocommerce_is_the_only_failure_reported(): void {
-		$failures = pph_requirement_failures( PHP_VERSION, (string) get_bloginfo( 'version' ), null );
+		$failures = wpmphub_requirement_failures( PHP_VERSION, (string) get_bloginfo( 'version' ), null );
 
 		$this->assertCount( 1, $failures );
 		$this->assertStringContainsString( 'WooCommerce', $failures[0] );
@@ -54,7 +54,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_each_unmet_version_requirement_is_reported(): void {
-		$failures = pph_requirement_failures( '8.0.30', '6.4', '9.9.0' );
+		$failures = wpmphub_requirement_failures( '8.0.30', '6.4', '9.9.0' );
 
 		$this->assertCount( 3, $failures );
 	}
@@ -67,7 +67,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 	public function test_the_minimum_supported_versions_pass(): void {
 		$this->assertSame(
 			array(),
-			pph_requirement_failures( PPH_MINIMUM_PHP, PPH_MINIMUM_WP, PPH_MINIMUM_WC )
+			wpmphub_requirement_failures( WPMPHUB_MINIMUM_PHP, WPMPHUB_MINIMUM_WP, WPMPHUB_MINIMUM_WC )
 		);
 	}
 
@@ -77,7 +77,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_a_missing_autoloader_is_reported(): void {
-		$failures = pph_requirement_failures(
+		$failures = wpmphub_requirement_failures(
 			PHP_VERSION,
 			(string) get_bloginfo( 'version' ),
 			defined( 'WC_VERSION' ) ? (string) WC_VERSION : null,
@@ -97,7 +97,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
 
 		ob_start();
-		pph_requirements_notice( array( '<script>alert(1)</script>' ) );
+		wpmphub_requirements_notice( array( '<script>alert(1)</script>' ) );
 		$output = (string) ob_get_clean();
 
 		$this->assertStringNotContainsString( '<script>', $output );
@@ -113,7 +113,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
 
 		ob_start();
-		pph_requirements_notice( array( 'Requires WooCommerce.' ) );
+		wpmphub_requirements_notice( array( 'Requires WooCommerce.' ) );
 
 		$this->assertSame( '', (string) ob_get_clean() );
 	}
@@ -127,7 +127,7 @@ final class BootstrapTest extends \WP_UnitTestCase {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
 
 		ob_start();
-		pph_requirements_notice( array() );
+		wpmphub_requirements_notice( array() );
 
 		$this->assertSame( '', (string) ob_get_clean() );
 	}
@@ -147,6 +147,6 @@ final class BootstrapTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_hpos_compatibility_is_declared(): void {
-		$this->assertNotFalse( has_action( 'before_woocommerce_init', 'pph_declare_hpos_compatibility' ) );
+		$this->assertNotFalse( has_action( 'before_woocommerce_init', 'wpmphub_declare_hpos_compatibility' ) );
 	}
 }

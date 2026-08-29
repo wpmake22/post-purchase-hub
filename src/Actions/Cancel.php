@@ -179,7 +179,7 @@ final class Cancel {
 
 		return array(
 			'name' => self::label(),
-			'url'  => '#pph-cancel-' . $order->get_id(),
+			'url'  => '#wpmphub-cancel-' . $order->get_id(),
 		);
 	}
 
@@ -379,7 +379,7 @@ final class Cancel {
 		 *
 		 * @param string[] $codes Accepted reason codes.
 		 */
-		$codes = apply_filters( 'pph_cancel_reason_codes', self::DEFAULT_REASON_CODES );
+		$codes = apply_filters( 'wpmphub_cancel_reason_codes', self::DEFAULT_REASON_CODES );
 
 		return is_array( $codes ) && array() !== $codes ? array_values( $codes ) : self::DEFAULT_REASON_CODES;
 	}
@@ -411,7 +411,7 @@ final class Cancel {
 		 *
 		 * @param array<string, string> $labels Labels keyed by reason code.
 		 */
-		$labels = apply_filters( 'pph_cancel_reason_code_labels', $defaults );
+		$labels = apply_filters( 'wpmphub_cancel_reason_code_labels', $defaults );
 		$labels = is_array( $labels ) ? $labels : $defaults;
 
 		$result = array();
@@ -478,7 +478,7 @@ final class Cancel {
 	 * @return array<string, mixed>
 	 */
 	private static function settings(): array {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 
 		return is_array( $settings ) ? $settings : array();
 	}

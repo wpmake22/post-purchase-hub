@@ -34,7 +34,7 @@ final class RequestApproved extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function __construct() {
-		$this->id             = 'pph_request_approved';
+		$this->id             = 'wpmphub_request_approved';
 		$this->customer_email = true;
 		$this->title          = __( 'Request approved', 'wpmake-post-purchase-hub' );
 		$this->description    = __( 'Sent to the customer once a staff member approves their cancellation request.', 'wpmake-post-purchase-hub' );
@@ -45,7 +45,7 @@ final class RequestApproved extends AbstractEmail {
 			'{order_number}' => '',
 		);
 
-		add_action( 'pph_request_approved', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'wpmphub_request_approved', array( $this, 'trigger' ), 10, 2 );
 
 		parent::__construct();
 	}
@@ -65,7 +65,7 @@ final class RequestApproved extends AbstractEmail {
 	}
 
 	/**
-	 * Trigger. Hooked to `pph_request_approved`.
+	 * Trigger. Hooked to `wpmphub_request_approved`.
 	 *
 	 * @since 0.10.0
 	 *

@@ -13,7 +13,7 @@ use PostPurchaseHub\Install\Uninstaller;
 use PostPurchaseHub\Requests\RetentionSweeper;
 
 /**
- * `wp pph cleanup` — the same sweep the daily event runs, on demand.
+ * `wp wpmphub cleanup` — the same sweep the daily event runs, on demand.
  *
  * Exists because the first thing support asks a merchant with a large store to
  * do is run the maintenance task by hand, with output they can paste back.
@@ -56,7 +56,7 @@ final class CleanupCommand {
 	 * : Report what would be removed without removing it.
 	 *
 	 * [--order-meta]
-	 * : Also strip `_pph_*` meta from orders. Intended for finishing an uninstall
+	 * : Also strip `_wpmphub_*` meta from orders. Intended for finishing an uninstall
 	 * on a store too large to complete in one request. Destructive: it removes
 	 * timeline and estimated-delivery data from live orders.
 	 *
@@ -65,8 +65,8 @@ final class CleanupCommand {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp pph cleanup --dry-run
-	 *     wp pph cleanup --batches=50
+	 *     wp wpmphub cleanup --dry-run
+	 *     wp wpmphub cleanup --batches=50
 	 *
 	 * @since 0.2.0
 	 *
@@ -118,7 +118,7 @@ final class CleanupCommand {
 		}
 
 		if ( ! $confirmed ) {
-			\WP_CLI::confirm( 'Remove _pph_* meta from every order? Timeline history cannot be recovered.' );
+			\WP_CLI::confirm( 'Remove _wpmphub_* meta from every order? Timeline history cannot be recovered.' );
 		}
 
 		$result = Uninstaller::delete_order_meta( 100, PHP_INT_MAX, 300 );

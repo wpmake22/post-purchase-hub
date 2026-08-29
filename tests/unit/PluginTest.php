@@ -198,7 +198,7 @@ final class PluginTest extends TestCase {
 	}
 
 	/**
-	 * Register() fires pph_loaded exactly once, with the container.
+	 * Register() fires wpmphub_loaded exactly once, with the container.
 	 *
 	 * This action is the only entry point either edition has, so firing it twice
 	 * would register Pro twice and firing it without the container would leave
@@ -206,12 +206,12 @@ final class PluginTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function test_register_fires_pph_loaded_once_with_the_container(): void {
+	public function test_register_fires_wpmphub_loaded_once_with_the_container(): void {
 		$plugin   = new Plugin();
 		$received = array();
 
 		add_action(
-			'pph_loaded',
+			'wpmphub_loaded',
 			static function ( $passed ) use ( &$received ): void {
 				$received[] = $passed;
 			}

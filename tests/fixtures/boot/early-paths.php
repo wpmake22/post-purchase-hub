@@ -27,7 +27,7 @@ define( 'MINUTE_IN_SECONDS', 60 );
 define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
 
-$GLOBALS['pph_scheduled'] = array();
+$GLOBALS['wpmphub_scheduled'] = array();
 
 /**
  * Reads an option: always the default, since this harness has no database.
@@ -88,7 +88,7 @@ function do_action( $hook_name, ...$args ): void {
  * @return int|false
  */
 function wp_next_scheduled( $hook ) {
-	return $GLOBALS['pph_scheduled'][ $hook ] ?? false;
+	return $GLOBALS['wpmphub_scheduled'][ $hook ] ?? false;
 }
 
 /**
@@ -102,7 +102,7 @@ function wp_next_scheduled( $hook ) {
 function wp_schedule_event( $timestamp, $recurrence, $hook ): bool {
 	unset( $recurrence );
 
-	$GLOBALS['pph_scheduled'][ $hook ] = (int) $timestamp;
+	$GLOBALS['wpmphub_scheduled'][ $hook ] = (int) $timestamp;
 
 	return true;
 }
@@ -114,7 +114,7 @@ function wp_schedule_event( $timestamp, $recurrence, $hook ): bool {
  * @return int|false
  */
 function wp_clear_scheduled_hook( $hook ) {
-	unset( $GLOBALS['pph_scheduled'][ $hook ] );
+	unset( $GLOBALS['wpmphub_scheduled'][ $hook ] );
 
 	return 1;
 }
@@ -175,7 +175,7 @@ function delete_transient( $name ): bool {
 // action deciding whether to draw its form on an order page.
 PostPurchaseHub\Install\Activator::schedule_digest();
 
-if ( ! isset( $GLOBALS['pph_scheduled'][ PostPurchaseHub\Install\Activator::DIGEST_HOOK ] ) ) {
+if ( ! isset( $GLOBALS['wpmphub_scheduled'][ PostPurchaseHub\Install\Activator::DIGEST_HOOK ] ) ) {
 	echo "FAIL: the digest event was not scheduled\n";
 	exit( 1 );
 }
@@ -184,9 +184,9 @@ if ( ! isset( $GLOBALS['pph_scheduled'][ PostPurchaseHub\Install\Activator::DIGE
 // expression is what used to autoload an email class. The rest of
 // Deactivator::deactivate() talks to the database and is not what this harness
 // is about.
-$pph_hooks = ( new ReflectionClass( PostPurchaseHub\Install\Deactivator::class ) )->getConstant( 'CRON_HOOKS' );
+$wpmphub_hooks = ( new ReflectionClass( PostPurchaseHub\Install\Deactivator::class ) )->getConstant( 'CRON_HOOKS' );
 
-if ( ! is_array( $pph_hooks ) || ! in_array( PostPurchaseHub\Install\Activator::DIGEST_HOOK, $pph_hooks, true ) ) {
+if ( ! is_array( $wpmphub_hooks ) || ! in_array( PostPurchaseHub\Install\Activator::DIGEST_HOOK, $wpmphub_hooks, true ) ) {
 	echo "FAIL: deactivation would not clear the digest event\n";
 	exit( 1 );
 }
@@ -198,9 +198,9 @@ if ( class_exists( 'WC_Email', false ) ) {
 	exit( 1 );
 }
 
-foreach ( array( 'AdminDigest', 'HelpRequest', 'AbstractEmail' ) as $pph_email_class ) {
-	if ( class_exists( 'PostPurchaseHub\\Emails\\' . $pph_email_class, false ) ) {
-		echo 'FAIL: ' . $pph_email_class . " was autoloaded on an early path\n";
+foreach ( array( 'AdminDigest', 'HelpRequest', 'AbstractEmail' ) as $wpmphub_email_class ) {
+	if ( class_exists( 'PostPurchaseHub\\Emails\\' . $wpmphub_email_class, false ) ) {
+		echo 'FAIL: ' . $wpmphub_email_class . " was autoloaded on an early path\n";
 		exit( 1 );
 	}
 }

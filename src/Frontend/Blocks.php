@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace PostPurchaseHub\Frontend;
 
+use PostPurchaseHub\Security\Kses;
+
 /**
  * Registers this plugin's server-rendered blocks.
  *
@@ -28,14 +30,14 @@ final class Blocks {
 	 *
 	 * @var string
 	 */
-	public const NAME = 'pph/orders';
+	public const NAME = 'wpmphub/orders';
 
 	/**
 	 * Guest-lookup block name.
 	 *
 	 * @var string
 	 */
-	public const LOOKUP_NAME = 'pph/order-lookup';
+	public const LOOKUP_NAME = 'wpmphub/order-lookup';
 
 	/**
 	 * Built block metadata directory, relative to the plugin root.
@@ -85,13 +87,13 @@ final class Blocks {
 	 * @return void
 	 */
 	public function register(): void {
-		$metadata = PPH_PLUGIN_DIR . self::METADATA_PATH;
+		$metadata = WPMPHUB_PLUGIN_DIR . self::METADATA_PATH;
 
 		if ( is_readable( $metadata . '/block.json' ) ) {
 			register_block_type( $metadata, array( 'render_callback' => array( $this, 'render' ) ) );
 		}
 
-		$lookup_metadata = PPH_PLUGIN_DIR . self::LOOKUP_METADATA_PATH;
+		$lookup_metadata = WPMPHUB_PLUGIN_DIR . self::LOOKUP_METADATA_PATH;
 
 		if ( is_readable( $lookup_metadata . '/block.json' ) ) {
 			register_block_type( $lookup_metadata, array( 'render_callback' => array( $this, 'render_lookup' ) ) );
@@ -115,10 +117,18 @@ final class Blocks {
 			return '';
 		}
 
+		// get_block_wrapper_attributes() returns markup core has already escaped;
+		// the template output is escaped again at this boundary, where a reader
+		// of the callback can see it. See Security\Kses.
+		//
+		// LookupForm::render() filters too, because it is also a shortcode
+		// callback. The second pass is a deliberate no-op — wp_kses() over
+		// already-filtered markup returns it unchanged — kept so this callback
+		// carries its own guarantee rather than inheriting one.
 		return sprintf(
 			'<div %s>%s</div>',
-			get_block_wrapper_attributes( array( 'class' => 'pph-lookup-block' ) ),
-			$content
+			get_block_wrapper_attributes( array( 'class' => 'wpmphub-lookup-block' ) ),
+			Kses::filter( $content )
 		);
 	}
 
@@ -140,10 +150,11 @@ final class Blocks {
 			return '';
 		}
 
+		// As in render_lookup(): core escapes the wrapper, Kses escapes the rest.
 		return sprintf(
 			'<div %s>%s</div>',
-			get_block_wrapper_attributes( array( 'class' => 'pph-orders' ) ),
-			$content
+			get_block_wrapper_attributes( array( 'class' => 'wpmphub-orders' ) ),
+			Kses::filter( $content )
 		);
 	}
 }

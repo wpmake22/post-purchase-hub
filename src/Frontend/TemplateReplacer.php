@@ -164,7 +164,7 @@ final class TemplateReplacer {
 	 * @return string
 	 */
 	private function mode(): string {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 		$mode     = is_array( $settings ) ? ( $settings[ self::SETTING ] ?? self::MODE_ADDITIVE ) : self::MODE_ADDITIVE;
 
 		/**
@@ -179,7 +179,7 @@ final class TemplateReplacer {
 		 *
 		 * @param string $mode Configured mode.
 		 */
-		$mode = (string) apply_filters( 'pph_template_mode', is_string( $mode ) ? $mode : self::MODE_ADDITIVE );
+		$mode = (string) apply_filters( 'wpmphub_template_mode', is_string( $mode ) ? $mode : self::MODE_ADDITIVE );
 
 		return self::MODE_REPLACEMENT === $mode ? self::MODE_REPLACEMENT : self::MODE_ADDITIVE;
 	}

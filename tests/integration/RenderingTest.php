@@ -61,10 +61,10 @@ final class RenderingTest extends \WP_UnitTestCase {
 
 		wp_set_current_user( $customer );
 
-		$output = do_shortcode( '[pph_orders]' );
+		$output = do_shortcode( '[wpmphub_orders]' );
 
 		$this->assertSame( '', $output );
-		$this->assertStringNotContainsString( '[pph_orders]', $output );
+		$this->assertStringNotContainsString( '[wpmphub_orders]', $output );
 	}
 
 
@@ -124,7 +124,7 @@ final class RenderingTest extends \WP_UnitTestCase {
 		$markup = (string) ob_get_clean();
 
 		$this->assertSame( 0, get_num_queries() - $before, 'Rendering 20 rows must add no queries.' );
-		$this->assertSame( 20, substr_count( $markup, 'data-pph-timeline-summary' ) );
+		$this->assertSame( 20, substr_count( $markup, 'data-wpmphub-timeline-summary' ) );
 	}
 
 	/**
@@ -143,12 +143,12 @@ final class RenderingTest extends \WP_UnitTestCase {
 
 		$markup = (string) ob_get_clean();
 
-		// Counted on the stage list, not on `data-pph-timeline=`. The section
-		// carries `data-pph-timeline` as a bare boolean attribute, so the
+		// Counted on the stage list, not on `data-wpmphub-timeline=`. The section
+		// carries `data-wpmphub-timeline` as a bare boolean attribute, so the
 		// version with an equals sign appears nowhere in the markup and this
 		// assertion could only ever have read zero — including when the
 		// timeline rendered perfectly, which is what it was doing.
-		$this->assertSame( 1, substr_count( $markup, 'data-pph-timeline-stages' ) );
+		$this->assertSame( 1, substr_count( $markup, 'data-wpmphub-timeline-stages' ) );
 	}
 
 	/**
@@ -165,12 +165,12 @@ final class RenderingTest extends \WP_UnitTestCase {
 
 		$this->assertStringContainsString( '<ol', $markup );
 		$this->assertStringContainsString( 'aria-labelledby', $markup );
-		$this->assertStringContainsString( 'data-pph-stage-state=', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-stage-state=', $markup );
 
 		// Every stage states its condition in words as well as in styling.
 		$this->assertSame(
-			substr_count( $markup, 'data-pph-stage=' ),
-			substr_count( $markup, 'data-pph-stage-state-label' )
+			substr_count( $markup, 'data-wpmphub-stage=' ),
+			substr_count( $markup, 'data-wpmphub-stage-state-label' )
 		);
 	}
 
@@ -183,7 +183,7 @@ final class RenderingTest extends \WP_UnitTestCase {
 		$order = $this->orders( 1 )[0];
 
 		add_filter(
-			'pph_timeline_stages',
+			'wpmphub_timeline_stages',
 			static function (): array {
 				return array( 'placed' => '<script>alert(1)</script>' );
 			}
@@ -240,7 +240,7 @@ final class RenderingTest extends \WP_UnitTestCase {
 		$page_id = self::factory()->post->create(
 			array(
 				'post_type'    => 'page',
-				'post_content' => '[pph_orders]',
+				'post_content' => '[wpmphub_orders]',
 			)
 		);
 
@@ -270,14 +270,14 @@ final class RenderingTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_replacement_swaps_woocommerces_template(): void {
-		update_option( 'pph_settings', array( TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT ) );
+		update_option( 'wpmphub_settings', array( TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT ) );
 
 		$plugin = new Plugin();
 		$plugin->template_replacer()->register();
 
 		$located = apply_filters( 'wc_get_template', '/core/orders.php', 'myaccount/orders.php', array(), '', '' );
 
-		$this->assertSame( PPH_PLUGIN_DIR . 'templates/myaccount/orders.php', $located );
+		$this->assertSame( WPMPHUB_PLUGIN_DIR . 'templates/myaccount/orders.php', $located );
 	}
 
 	/**
@@ -286,7 +286,7 @@ final class RenderingTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_replacement_leaves_other_templates_alone(): void {
-		update_option( 'pph_settings', array( TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT ) );
+		update_option( 'wpmphub_settings', array( TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT ) );
 
 		$plugin = new Plugin();
 		$plugin->template_replacer()->register();
@@ -313,7 +313,7 @@ final class RenderingTest extends \WP_UnitTestCase {
 		Plugin::instance()->renderer()->render_order_notes( wc_get_order( $order->get_id() ) );
 		$markup = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'data-pph-order-notes', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-order-notes', $markup );
 		$this->assertStringContainsString( 'Your parcel leaves the warehouse tonight.', $markup );
 	}
 
@@ -360,10 +360,10 @@ final class RenderingTest extends \WP_UnitTestCase {
 
 		wp_set_current_user( 0 );
 
-		$output = do_shortcode( '[pph_orders]' );
+		$output = do_shortcode( '[wpmphub_orders]' );
 
-		$this->assertStringContainsString( 'data-pph-orders-empty', $output );
-		$this->assertStringNotContainsString( 'data-pph-timeline', $output );
+		$this->assertStringContainsString( 'data-wpmphub-orders-empty', $output );
+		$this->assertStringNotContainsString( 'data-wpmphub-timeline', $output );
 	}
 
 	/**
@@ -389,9 +389,9 @@ final class RenderingTest extends \WP_UnitTestCase {
 
 		Plugin::instance()->renderer()->register();
 
-		$output = do_shortcode( '[pph_orders]' );
+		$output = do_shortcode( '[wpmphub_orders]' );
 
-		$this->assertStringContainsString( 'data-pph-order-id="' . $my_order->get_id() . '"', $output );
-		$this->assertStringNotContainsString( 'data-pph-order-id="' . $their_order->get_id() . '"', $output );
+		$this->assertStringContainsString( 'data-wpmphub-order-id="' . $my_order->get_id() . '"', $output );
+		$this->assertStringNotContainsString( 'data-wpmphub-order-id="' . $their_order->get_id() . '"', $output );
 	}
 }

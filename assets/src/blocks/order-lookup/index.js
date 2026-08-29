@@ -1,5 +1,5 @@
 /**
- * Editor registration for the pph/order-lookup block.
+ * Editor registration for the wpmphub/order-lookup block.
  *
  * Server-rendered, like the orders block, and for a second reason: the form
  * disappears entirely on a store that has not enabled guest lookup, which

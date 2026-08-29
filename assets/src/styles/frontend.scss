@@ -1,7 +1,7 @@
 /**
  * Frontend styles.
  *
- * Every rule is scoped under a .pph- class and nothing here styles a
+ * Every rule is scoped under a .wpmphub- class and nothing here styles a
  * WooCommerce or theme selector. The plugin renders inside templates that six
  * themes and four page builders each lay out differently, so this stylesheet
  * describes its own components and inherits everything else — font, colour and
@@ -12,7 +12,7 @@
  * whatever the theme's body text already achieves.
  */
 
-.pph-timeline {
+.wpmphub-timeline {
 	margin: 1.5em 0;
 
 	&__heading {
@@ -34,7 +34,7 @@
 		padding: 0 0 1em;
 		position: relative;
 
-		&:not(:last-child) .pph-timeline__marker::after {
+		&:not(:last-child) .wpmphub-timeline__marker::after {
 			content: "";
 			position: absolute;
 			left: 50%;
@@ -109,7 +109,7 @@
 	}
 }
 
-.pph-timeline-summary {
+.wpmphub-timeline-summary {
 	display: block;
 
 	&__time {
@@ -119,7 +119,7 @@
 	}
 }
 
-.pph-order-notes {
+.wpmphub-order-notes {
 	margin: 1.5em 0;
 
 	&__heading {
@@ -148,14 +148,14 @@
 	}
 }
 
-.pph-orders {
+.wpmphub-orders {
 
 	&__empty {
 		margin: 1em 0;
 	}
 }
 
-.pph-eta {
+.wpmphub-eta {
 	margin: 0 0 1.5em;
 
 	&__label {
@@ -169,7 +169,7 @@
  * built, so it inherits the theme's own `input-text` and `button` classes and
  * only lays itself out.
  */
-.pph-lookup {
+.wpmphub-lookup {
 	margin: 0 0 1.5em;
 
 	&__notice {
@@ -201,7 +201,7 @@
  * this in greyscale, or with a theme that overrides colour, still knows which
  * line is not coming back.
  */
-.pph-reorder {
+.wpmphub-reorder {
 	margin: 1.5em 0;
 
 	&__heading {
@@ -277,7 +277,7 @@
  * server-rendered inside the page, so it stays readable — and submittable, once
  * the script loads — without any dialog behaviour to trap focus in.
  */
-.pph-help {
+.wpmphub-help {
 	margin: 1.5em 0;
 
 	&__toggle {
@@ -364,7 +364,7 @@
  * The request dialog.
  *
  * Positioned and sized here rather than left to the theme, because a dialog is
- * the one component a theme has no opinion about: `.pph-modal` renders inside
+ * the one component a theme has no opinion about: `.wpmphub-modal` renders inside
  * the order page's normal flow, so without this it lays out as a full-width
  * block halfway down the page instead of over it.
  *
@@ -372,7 +372,7 @@
  * the buttons are the theme's own `.button` — so only the geometry, the
  * backdrop and the elevation are described.
  */
-.pph-modal {
+.wpmphub-modal {
 	align-items: center;
 	display: flex;
 	inset: 0;
@@ -463,11 +463,11 @@
 
 @media (max-width: 480px) {
 
-	.pph-timeline__stage {
+	.wpmphub-timeline__stage {
 		grid-template-columns: 1.25em 1fr;
 	}
 
-	.pph-timeline__time {
+	.wpmphub-timeline__time {
 		grid-column: 2;
 		grid-row: auto;
 		white-space: normal;
@@ -476,7 +476,7 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-	.pph-timeline * {
+	.wpmphub-timeline * {
 		transition: none !important;
 	}
 }

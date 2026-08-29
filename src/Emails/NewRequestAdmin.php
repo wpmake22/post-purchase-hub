@@ -35,7 +35,7 @@ final class NewRequestAdmin extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function __construct() {
-		$this->id             = 'pph_admin_new_request';
+		$this->id             = 'wpmphub_admin_new_request';
 		$this->customer_email = false;
 		$this->title          = __( 'New request', 'wpmake-post-purchase-hub' );
 		$this->description    = __( 'Sent to the store when a customer raises a cancellation request.', 'wpmake-post-purchase-hub' );
@@ -46,7 +46,7 @@ final class NewRequestAdmin extends AbstractEmail {
 			'{order_number}' => '',
 		);
 
-		add_action( 'pph_request_created', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'wpmphub_request_created', array( $this, 'trigger' ), 10, 2 );
 
 		parent::__construct();
 
@@ -68,7 +68,7 @@ final class NewRequestAdmin extends AbstractEmail {
 	}
 
 	/**
-	 * Trigger. Hooked to `pph_request_created`.
+	 * Trigger. Hooked to `wpmphub_request_created`.
 	 *
 	 * @since 0.10.0
 	 *

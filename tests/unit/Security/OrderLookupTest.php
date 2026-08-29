@@ -172,7 +172,7 @@ final class OrderLookupTest extends TestCase {
 		$this->order( 42 );
 
 		add_filter(
-			'pph_lookup_order_id',
+			'wpmphub_lookup_order_id',
 			static function (): int {
 				return 0;
 			}

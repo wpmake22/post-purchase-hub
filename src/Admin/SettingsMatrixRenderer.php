@@ -45,11 +45,11 @@ final class SettingsMatrixRenderer {
 	 * @return void
 	 */
 	public function statuses( string $key, array $selected ): void {
-		echo '<fieldset class="pph-settings__group pph-settings__group--inline">';
+		echo '<fieldset class="wpmphub-settings__group wpmphub-settings__group--inline">';
 
 		foreach ( SettingsStatusValues::all() as $slug => $label ) {
 			printf(
-				'<label class="pph-settings__option"><input type="checkbox" name="%1$s" value="%2$s" %3$s /> %4$s</label>',
+				'<label class="wpmphub-settings__option"><input type="checkbox" name="%1$s" value="%2$s" %3$s /> %4$s</label>',
 				esc_attr( SettingsRenderer::name( $key ) . '[]' ),
 				esc_attr( $slug ),
 				checked( in_array( $slug, $selected, true ), true, false ),
@@ -73,12 +73,12 @@ final class SettingsMatrixRenderer {
 		$stages = $this->stage_choices();
 		$live   = $this->stages->status_map();
 
-		echo '<div class="pph-settings__map">';
+		echo '<div class="wpmphub-settings__map">';
 
 		foreach ( SettingsStatusValues::all() as $slug => $label ) {
 			$current = $stored[ $slug ] ?? ( $live[ $slug ] ?? StageMapConfig::HIDDEN );
 
-			echo '<div class="pph-settings__map-row"><span class="pph-settings__map-label">' . esc_html( $label ) . '</span>';
+			echo '<div class="wpmphub-settings__map-row"><span class="wpmphub-settings__map-label">' . esc_html( $label ) . '</span>';
 			printf( '<select name="%1$s" aria-label="%2$s">', esc_attr( SettingsRenderer::name( $key ) . '[' . $slug . ']' ), esc_attr( $label ) );
 
 			foreach ( $stages as $stage => $stage_label ) {
@@ -129,11 +129,11 @@ final class SettingsMatrixRenderer {
 	public function weekdays( string $key, array $selected ): void {
 		$selected = array_map( 'intval', $selected );
 
-		echo '<fieldset class="pph-settings__group pph-settings__group--inline">';
+		echo '<fieldset class="wpmphub-settings__group wpmphub-settings__group--inline">';
 
 		foreach ( self::weekday_labels() as $day => $label ) {
 			printf(
-				'<label class="pph-settings__option"><input type="checkbox" name="%1$s" value="%2$d" %3$s /> %4$s</label>',
+				'<label class="wpmphub-settings__option"><input type="checkbox" name="%1$s" value="%2$d" %3$s /> %4$s</label>',
 				esc_attr( SettingsRenderer::name( $key ) . '[]' ),
 				(int) $day,
 				checked( in_array( (int) $day, $selected, true ), true, false ),
@@ -176,16 +176,16 @@ final class SettingsMatrixRenderer {
 		$methods = SettingsShippingValues::available();
 
 		if ( array() === $methods ) {
-			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'wpmake-post-purchase-hub' ) );
+			printf( '<p class="wpmphub-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'wpmake-post-purchase-hub' ) );
 
 			return;
 		}
 
-		echo '<div class="pph-settings__map">';
+		echo '<div class="wpmphub-settings__map">';
 
 		foreach ( $methods as $method => $label ) {
 			printf(
-				'<div class="pph-settings__map-row"><span class="pph-settings__map-label">%1$s</span><input type="number" class="pph-settings__number" name="%2$s" value="%3$s" min="0" max="60" step="1" aria-label="%4$s" /></div>',
+				'<div class="wpmphub-settings__map-row"><span class="wpmphub-settings__map-label">%1$s</span><input type="number" class="wpmphub-settings__number" name="%2$s" value="%3$s" min="0" max="60" step="1" aria-label="%4$s" /></div>',
 				esc_html( $label ),
 				esc_attr( SettingsRenderer::name( $key ) . '[' . $method . ']' ),
 				esc_attr( isset( $stored[ $method ] ) ? (string) (int) $stored[ $method ] : '' ),
@@ -209,18 +209,18 @@ final class SettingsMatrixRenderer {
 		$methods = SettingsShippingValues::available();
 
 		if ( array() === $methods ) {
-			printf( '<p class="pph-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'wpmake-post-purchase-hub' ) );
+			printf( '<p class="wpmphub-settings__help">%s</p>', esc_html__( 'No shipping methods are configured yet.', 'wpmake-post-purchase-hub' ) );
 
 			return;
 		}
 
-		echo '<div class="pph-settings__map">';
+		echo '<div class="wpmphub-settings__map">';
 
 		foreach ( $methods as $method => $label ) {
 			$range = isset( $stored[ $method ] ) && is_array( $stored[ $method ] ) ? $stored[ $method ] : array();
 
 			printf(
-				'<div class="pph-settings__map-row"><span class="pph-settings__map-label">%1$s</span><span class="pph-settings__range"><input type="number" class="pph-settings__number" name="%2$s" value="%3$s" min="0" max="60" step="1" aria-label="%6$s" /><span aria-hidden="true">–</span><input type="number" class="pph-settings__number" name="%4$s" value="%5$s" min="0" max="60" step="1" aria-label="%7$s" /></span></div>',
+				'<div class="wpmphub-settings__map-row"><span class="wpmphub-settings__map-label">%1$s</span><span class="wpmphub-settings__range"><input type="number" class="wpmphub-settings__number" name="%2$s" value="%3$s" min="0" max="60" step="1" aria-label="%6$s" /><span aria-hidden="true">–</span><input type="number" class="wpmphub-settings__number" name="%4$s" value="%5$s" min="0" max="60" step="1" aria-label="%7$s" /></span></div>',
 				esc_html( $label ),
 				esc_attr( SettingsRenderer::name( $key ) . '[' . $method . '][min]' ),
 				esc_attr( isset( $range['min'] ) ? (string) (int) $range['min'] : '' ),
@@ -246,13 +246,13 @@ final class SettingsMatrixRenderer {
 	public function action_toggles( string $key, array $stored ): void {
 		$descriptions = ActionAvailability::descriptions();
 
-		echo '<fieldset class="pph-settings__group pph-settings__group--actions">';
+		echo '<fieldset class="wpmphub-settings__group wpmphub-settings__group--actions">';
 
 		foreach ( ActionAvailability::labels() as $action_id => $label ) {
 			$enabled = ! isset( $stored[ $action_id ] ) || (bool) $stored[ $action_id ];
 
 			printf(
-				'<div class="pph-settings__action"><label class="pph-switch"><input type="checkbox" name="%1$s" value="1" %2$s /><span class="pph-switch__track" aria-hidden="true"></span><span class="pph-switch__label">%3$s</span></label><p class="pph-settings__help">%4$s</p></div>',
+				'<div class="wpmphub-settings__action"><label class="wpmphub-switch"><input type="checkbox" name="%1$s" value="1" %2$s /><span class="wpmphub-switch__track" aria-hidden="true"></span><span class="wpmphub-switch__label">%3$s</span></label><p class="wpmphub-settings__help">%4$s</p></div>',
 				esc_attr( SettingsRenderer::name( $key ) . '[' . $action_id . ']' ),
 				checked( $enabled, true, false ),
 				esc_html( $label ),

@@ -92,7 +92,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 		 * @param Request        $request Request just created.
 		 * @param \WC_Order|null $order   Order it was raised against, if it still resolves.
 		 */
-		do_action( 'pph_request_created', $request, $order );
+		do_action( 'wpmphub_request_created', $request, $order );
 
 		return $request;
 	}
@@ -126,7 +126,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 			 *
 			 * @param Request $request Request that was withdrawn.
 			 */
-			do_action( 'pph_request_withdrawn', $request );
+			do_action( 'wpmphub_request_withdrawn', $request );
 		}
 
 		return $updated;
@@ -158,7 +158,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 			 * @param Request        $request Request just approved.
 			 * @param \WC_Order|null $order   Order it was raised against, if it still resolves.
 			 */
-			do_action( 'pph_request_approved', $request, $order );
+			do_action( 'wpmphub_request_approved', $request, $order );
 		}
 
 		return $updated;
@@ -191,7 +191,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 			 * @param Request        $request Request just declined.
 			 * @param \WC_Order|null $order   Order it was raised against, if it still resolves.
 			 */
-			do_action( 'pph_request_declined', $request, $order );
+			do_action( 'wpmphub_request_declined', $request, $order );
 		}
 
 		return $updated;
@@ -223,7 +223,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 			 * @param Request        $request Request just closed.
 			 * @param \WC_Order|null $order   Order it was raised against, if it still resolves.
 			 */
-			do_action( 'pph_request_reconciled', $request, $order );
+			do_action( 'wpmphub_request_reconciled', $request, $order );
 		}
 
 		return $updated;
@@ -246,7 +246,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 		 * @param string $note Default note text.
 		 */
 		return (string) apply_filters(
-			'pph_request_reconciliation_note',
+			'wpmphub_request_reconciliation_note',
 			__( 'Order was cancelled through another route while this request was still open; closed automatically, no separate transition made.', 'wpmake-post-purchase-hub' )
 		);
 	}
@@ -303,7 +303,7 @@ final class RequestService implements RequestLifecycle, RequestResolution {
 		 * @param Request $request Request just created.
 		 */
 		return (string) apply_filters(
-			'pph_request_note',
+			'wpmphub_request_note',
 			sprintf(
 				/* translators: 1: request type label, 2: request id. */
 				__( 'Customer requested %1$s (request #%2$d).', 'wpmake-post-purchase-hub' ),

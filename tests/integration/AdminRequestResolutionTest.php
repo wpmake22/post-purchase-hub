@@ -102,7 +102,7 @@ final class AdminRequestResolutionTest extends \WP_UnitTestCase {
 
 		$fired = null;
 		add_action(
-			'pph_request_approved',
+			'wpmphub_request_approved',
 			static function ( $approved_request, $approved_order ) use ( &$fired ): void {
 				$fired = array( $approved_request, $approved_order );
 			},
@@ -117,7 +117,7 @@ final class AdminRequestResolutionTest extends \WP_UnitTestCase {
 
 		$this->assertTrue( $order->has_status( 'cancelled' ) );
 		$this->assertSame( 5, wc_get_product( $product->get_id() )->get_stock_quantity(), 'Stock reduced by 2 must be restored to its original 5.' );
-		$this->assertNotNull( $fired, 'pph_request_approved must fire.' );
+		$this->assertNotNull( $fired, 'wpmphub_request_approved must fire.' );
 		$this->assertSame( Request::STATUS_APPROVED, ( new RequestRepository() )->find( $request->id )->status );
 	}
 
@@ -156,7 +156,7 @@ final class AdminRequestResolutionTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_approve_does_not_restock_when_the_merchant_turned_it_off(): void {
-		update_option( 'pph_settings', array( Cancel::RESTOCK_SETTING => false ), false );
+		update_option( 'wpmphub_settings', array( Cancel::RESTOCK_SETTING => false ), false );
 
 		$order   = $this->order();
 		$product = $order->get_items()[ array_key_first( $order->get_items() ) ]->get_product();
@@ -165,7 +165,7 @@ final class AdminRequestResolutionTest extends \WP_UnitTestCase {
 		$service->approve( $this->pending_request( $order->get_id() ), $order, 1 );
 		( new Cancel( Plugin::instance()->eligibility_resolver(), $service ) )->approve( $order, 1 );
 
-		delete_option( 'pph_settings' );
+		delete_option( 'wpmphub_settings' );
 
 		$this->assertTrue( wc_get_order( $order->get_id() )->has_status( 'cancelled' ) );
 		$this->assertSame( 3, wc_get_product( $product->get_id() )->get_stock_quantity(), 'Stock stays where the order left it.' );
@@ -184,13 +184,13 @@ final class AdminRequestResolutionTest extends \WP_UnitTestCase {
 		$service = new RequestService( new RequestRepository() );
 		$cancel  = new Cancel( Plugin::instance()->eligibility_resolver(), $service );
 
-		update_option( 'pph_settings', array( Cancel::RESTOCK_SETTING => false ), false );
+		update_option( 'wpmphub_settings', array( Cancel::RESTOCK_SETTING => false ), false );
 
 		$suppressed = $this->order();
 		$service->approve( $this->pending_request( $suppressed->get_id() ), $suppressed, 1 );
 		$cancel->approve( $suppressed, 1 );
 
-		delete_option( 'pph_settings' );
+		delete_option( 'wpmphub_settings' );
 
 		$restocked = $this->order();
 		$product   = $restocked->get_items()[ array_key_first( $restocked->get_items() ) ]->get_product();

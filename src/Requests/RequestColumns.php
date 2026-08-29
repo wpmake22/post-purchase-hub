@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Requests;
 
 /**
- * What each column of `pph_requests` will accept.
+ * What each column of `wpmphub_requests` will accept.
  *
  * The repository owns statements; this owns the invariants those statements
  * depend on. Keeping them apart means the rules can be read — and tested —

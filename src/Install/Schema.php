@@ -13,7 +13,7 @@ namespace PostPurchaseHub\Install;
  * Owns the two custom tables: their names, their DDL and their removal.
  *
  * Both tables are created at install even though nothing writes to
- * `pph_request_items` in 1.0. Per docs/SPEC.md Phase 7 that is deliberate:
+ * `wpmphub_request_items` in 1.0. Per docs/SPEC.md Phase 7 that is deliberate:
  * item-level returns and the "top returned products" report both need
  * item-granular rows, and retrofitting normalisation onto shipped JSON is a
  * migration with a data-quality tail. An empty table costs nothing.
@@ -27,14 +27,14 @@ final class Schema {
 	 *
 	 * @var string
 	 */
-	public const REQUESTS = 'pph_requests';
+	public const REQUESTS = 'wpmphub_requests';
 
 	/**
 	 * Unprefixed name of the request items table.
 	 *
 	 * @var string
 	 */
-	public const REQUEST_ITEMS = 'pph_request_items';
+	public const REQUEST_ITEMS = 'wpmphub_request_items';
 
 	/**
 	 * Fully prefixed requests table name.

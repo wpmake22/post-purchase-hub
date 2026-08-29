@@ -36,7 +36,7 @@ final class RequestDeclined extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function __construct() {
-		$this->id             = 'pph_request_declined';
+		$this->id             = 'wpmphub_request_declined';
 		$this->customer_email = true;
 		$this->title          = __( 'Request declined', 'wpmake-post-purchase-hub' );
 		$this->description    = __( 'Sent to the customer once a staff member declines their cancellation request.', 'wpmake-post-purchase-hub' );
@@ -47,7 +47,7 @@ final class RequestDeclined extends AbstractEmail {
 			'{order_number}' => '',
 		);
 
-		add_action( 'pph_request_declined', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'wpmphub_request_declined', array( $this, 'trigger' ), 10, 2 );
 
 		parent::__construct();
 	}
@@ -67,7 +67,7 @@ final class RequestDeclined extends AbstractEmail {
 	}
 
 	/**
-	 * Trigger. Hooked to `pph_request_declined`.
+	 * Trigger. Hooked to `wpmphub_request_declined`.
 	 *
 	 * @since 0.10.0
 	 *

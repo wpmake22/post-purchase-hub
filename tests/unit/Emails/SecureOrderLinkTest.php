@@ -63,7 +63,7 @@ final class SecureOrderLinkTest extends TestCase {
 	 * @return void
 	 */
 	public function test_sends_even_when_disabled_in_settings(): void {
-		FakeWordPress::$options['woocommerce_pph_secure_link_settings'] = array( 'enabled' => 'no' );
+		FakeWordPress::$options['woocommerce_wpmphub_secure_link_settings'] = array( 'enabled' => 'no' );
 
 		$order = new \WC_Order( 88 );
 		$order->set_billing_email( 'customer@example.test' );
@@ -110,7 +110,7 @@ final class SecureOrderLinkTest extends TestCase {
 	 * An install that cannot mint tokens sends nothing, rather than throwing.
 	 *
 	 * `TokenService::issue()` throws on a missing secret, which is right — but
-	 * this trigger runs on `pph_secure_link_requested`, at `shutdown`, after a
+	 * this trigger runs on `wpmphub_secure_link_requested`, at `shutdown`, after a
 	 * guest lookup. An exception there is a fatal on a request the visitor has
 	 * already been answered for, and the email it would have sent has no
 	 * content without a link anyway.

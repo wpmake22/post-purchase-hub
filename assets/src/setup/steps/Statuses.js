@@ -42,7 +42,7 @@ export default function Statuses( {
 			) }
 		>
 			{ detected.length > 0 && (
-				<p className="pph-setup__detected" data-pph-wizard-detected>
+				<p className="wpmphub-setup__detected" data-wpmphub-wizard-detected>
 					{ sprintf(
 						/* translators: %s: comma-separated list of order statuses found on the store's recent orders. */
 						__(
@@ -54,10 +54,10 @@ export default function Statuses( {
 				</p>
 			) }
 
-			<div className="pph-setup__map">
+			<div className="wpmphub-setup__map">
 				{ statuses.map( ( status ) => (
 					<div
-						className={ `pph-setup__map-row ${
+						className={ `wpmphub-setup__map-row ${
 							detected.includes( status.value )
 								? 'is-detected'
 								: ''

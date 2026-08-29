@@ -53,7 +53,7 @@ final class GuestAccessTest extends TestCase {
 	 * @return void
 	 */
 	private function settings( array $settings ): void {
-		FakeWordPress::$options['pph_settings'] = $settings;
+		FakeWordPress::$options['wpmphub_settings'] = $settings;
 	}
 
 	/**
@@ -117,7 +117,7 @@ final class GuestAccessTest extends TestCase {
 		);
 
 		add_filter(
-			'pph_guest_lookup_enabled',
+			'wpmphub_guest_lookup_enabled',
 			static function (): bool {
 				return false;
 			}
@@ -134,7 +134,7 @@ final class GuestAccessTest extends TestCase {
 	 */
 	public function test_the_filter_cannot_enable_it(): void {
 		add_filter(
-			'pph_guest_lookup_enabled',
+			'wpmphub_guest_lookup_enabled',
 			static function (): bool {
 				return true;
 			}
@@ -149,7 +149,7 @@ final class GuestAccessTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_non_array_option_leaves_it_off(): void {
-		FakeWordPress::$options['pph_settings'] = 'not-an-array';
+		FakeWordPress::$options['wpmphub_settings'] = 'not-an-array';
 
 		$this->assertFalse( $this->access->is_enabled() );
 	}

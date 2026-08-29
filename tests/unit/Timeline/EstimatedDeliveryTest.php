@@ -88,7 +88,7 @@ final class EstimatedDeliveryTest extends TestCase {
 	 * @return void
 	 */
 	private function configure( array $settings ): void {
-		update_option( 'pph_settings', $settings );
+		update_option( 'wpmphub_settings', $settings );
 	}
 
 	/**
@@ -499,7 +499,7 @@ final class EstimatedDeliveryTest extends TestCase {
 		);
 
 		add_filter(
-			'pph_estimated_delivery',
+			'wpmphub_estimated_delivery',
 			static function () use ( $override ) {
 				return $override;
 			}
@@ -529,7 +529,7 @@ final class EstimatedDeliveryTest extends TestCase {
 		);
 
 		add_filter(
-			'pph_estimated_delivery',
+			'wpmphub_estimated_delivery',
 			static function () {
 				return 'not a range';
 			}

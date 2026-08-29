@@ -12,11 +12,11 @@ declare( strict_types = 1 );
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Named for the plugin it stands in for, alongside this repository's other test doubles.
 
-if ( ! class_exists( 'PPH_Fixture_Wpo_Wcpdf' ) ) {
+if ( ! class_exists( 'WPMPHUB_Fixture_Wpo_Wcpdf' ) ) {
 	/**
 	 * What the fixture reports, and what the adapter asked it.
 	 */
-	final class PPH_Fixture_Wpo_Wcpdf {
+	final class WPMPHUB_Fixture_Wpo_Wcpdf {
 
 		/**
 		 * The link output the document-link shortcode returns by default.

@@ -113,11 +113,11 @@ final class HelpViewTest extends TestCase {
 
 		$html = $this->render( 9100 );
 
-		$this->assertStringContainsString( 'data-pph-help', $html );
-		$this->assertStringContainsString( 'id="pph-help-9100"', $html );
-		$this->assertStringContainsString( 'data-pph-help-form', $html );
-		$this->assertStringContainsString( 'data-pph-help-topic', $html );
-		$this->assertStringContainsString( 'data-pph-help-message', $html );
+		$this->assertStringContainsString( 'data-wpmphub-help', $html );
+		$this->assertStringContainsString( 'id="wpmphub-help-9100"', $html );
+		$this->assertStringContainsString( 'data-wpmphub-help-form', $html );
+		$this->assertStringContainsString( 'data-wpmphub-help-topic', $html );
+		$this->assertStringContainsString( 'data-wpmphub-help-message', $html );
 		$this->assertStringContainsString( '2 × Blue shirt', $html );
 		$this->assertStringContainsString( 'maxlength="' . Help::MESSAGE_MAX_LENGTH . '"', $html );
 	}

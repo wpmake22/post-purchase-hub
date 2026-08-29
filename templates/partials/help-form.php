@@ -37,84 +37,84 @@ if ( empty( $help['topics'] ) ) {
 }
 ?>
 <details
-	class="pph-help"
+	class="wpmphub-help"
 	id="<?php echo esc_attr( $help['element_id'] ); ?>"
-	data-pph-help
-	data-pph-order-id="<?php echo esc_attr( (string) $help['order_id'] ); ?>"
+	data-wpmphub-help
+	data-wpmphub-order-id="<?php echo esc_attr( (string) $help['order_id'] ); ?>"
 >
-	<summary class="pph-help__toggle" data-pph-help-toggle>
+	<summary class="wpmphub-help__toggle" data-wpmphub-help-toggle>
 		<?php echo esc_html( $help['heading'] ); ?>
 	</summary>
 
-	<div class="pph-help__panel">
-		<p class="pph-help__intro"><?php echo esc_html( $help['intro'] ); ?></p>
+	<div class="wpmphub-help__panel">
+		<p class="wpmphub-help__intro"><?php echo esc_html( $help['intro'] ); ?></p>
 
-		<div class="pph-help__context" data-pph-help-context>
-			<h3 class="pph-help__context-heading"><?php echo esc_html( $help['context_heading'] ); ?></h3>
+		<div class="wpmphub-help__context" data-wpmphub-help-context>
+			<h3 class="wpmphub-help__context-heading"><?php echo esc_html( $help['context_heading'] ); ?></h3>
 
-			<ul class="pph-help__context-list">
-				<?php foreach ( $help['summary'] as $pph_row ) : ?>
-					<li class="pph-help__context-item">
-						<span class="pph-help__context-label"><?php echo esc_html( $pph_row['label'] ); ?></span>
-						<span class="pph-help__context-value"><?php echo esc_html( $pph_row['value'] ); ?></span>
+			<ul class="wpmphub-help__context-list">
+				<?php foreach ( $help['summary'] as $wpmphub_row ) : ?>
+					<li class="wpmphub-help__context-item">
+						<span class="wpmphub-help__context-label"><?php echo esc_html( $wpmphub_row['label'] ); ?></span>
+						<span class="wpmphub-help__context-value"><?php echo esc_html( $wpmphub_row['value'] ); ?></span>
 					</li>
 				<?php endforeach; ?>
 			</ul>
 
 			<?php if ( array() !== $help['items'] ) : ?>
-				<ul class="pph-help__items">
-					<?php foreach ( $help['items'] as $pph_item ) : ?>
-						<li class="pph-help__item"><?php echo esc_html( $pph_item ); ?></li>
+				<ul class="wpmphub-help__items">
+					<?php foreach ( $help['items'] as $wpmphub_item ) : ?>
+						<li class="wpmphub-help__item"><?php echo esc_html( $wpmphub_item ); ?></li>
 					<?php endforeach; ?>
 				</ul>
 			<?php endif; ?>
 
 			<?php if ( '' !== $help['items_note'] ) : ?>
-				<p class="pph-help__items-note"><?php echo esc_html( $help['items_note'] ); ?></p>
+				<p class="wpmphub-help__items-note"><?php echo esc_html( $help['items_note'] ); ?></p>
 			<?php endif; ?>
 		</div>
 
-		<form class="pph-help__form" data-pph-help-form novalidate>
-			<input type="hidden" name="order_id" value="<?php echo esc_attr( (string) $help['order_id'] ); ?>" data-pph-help-order-id />
+		<form class="wpmphub-help__form" data-wpmphub-help-form novalidate>
+			<input type="hidden" name="order_id" value="<?php echo esc_attr( (string) $help['order_id'] ); ?>" data-wpmphub-help-order-id />
 
-			<div class="pph-help__field">
+			<div class="wpmphub-help__field">
 				<label for="<?php echo esc_attr( $help['element_id'] . '-topic' ); ?>">
 					<?php echo esc_html( $help['topic_label'] ); ?>
 				</label>
 				<select
 					id="<?php echo esc_attr( $help['element_id'] . '-topic' ); ?>"
 					name="topic"
-					data-pph-help-topic
+					data-wpmphub-help-topic
 					required
 				>
-					<?php foreach ( $help['topics'] as $pph_code => $pph_label ) : ?>
-						<option value="<?php echo esc_attr( $pph_code ); ?>"><?php echo esc_html( $pph_label ); ?></option>
+					<?php foreach ( $help['topics'] as $wpmphub_code => $wpmphub_label ) : ?>
+						<option value="<?php echo esc_attr( $wpmphub_code ); ?>"><?php echo esc_html( $wpmphub_label ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
 
-			<div class="pph-help__field">
+			<div class="wpmphub-help__field">
 				<label for="<?php echo esc_attr( $help['element_id'] . '-message' ); ?>">
 					<?php echo esc_html( $help['message_label'] ); ?>
 				</label>
 				<textarea
 					id="<?php echo esc_attr( $help['element_id'] . '-message' ); ?>"
 					name="message"
-					data-pph-help-message
+					data-wpmphub-help-message
 					rows="4"
 					maxlength="<?php echo esc_attr( (string) $help['message_max_length'] ); ?>"
 					aria-describedby="<?php echo esc_attr( $help['element_id'] . '-hint' ); ?>"
 					required
 				></textarea>
-				<p class="pph-help__hint" id="<?php echo esc_attr( $help['element_id'] . '-hint' ); ?>">
+				<p class="wpmphub-help__hint" id="<?php echo esc_attr( $help['element_id'] . '-hint' ); ?>">
 					<?php echo esc_html( $help['message_hint'] ); ?>
 				</p>
 			</div>
 
-			<p class="pph-help__error" data-pph-help-error hidden aria-live="assertive"></p>
+			<p class="wpmphub-help__error" data-wpmphub-help-error hidden aria-live="assertive"></p>
 
-			<div class="pph-help__actions">
-				<button type="submit" class="button button-primary" data-pph-help-submit>
+			<div class="wpmphub-help__actions">
+				<button type="submit" class="button button-primary" data-wpmphub-help-submit>
 					<?php echo esc_html( $help['submit_label'] ); ?>
 				</button>
 			</div>

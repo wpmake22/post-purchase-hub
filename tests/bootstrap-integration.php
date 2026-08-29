@@ -12,60 +12,60 @@
 
 declare( strict_types = 1 );
 
-$pph_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
+$wpmphub_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
 
-if ( ! file_exists( $pph_autoload ) ) {
+if ( ! file_exists( $wpmphub_autoload ) ) {
 	echo "Composer autoloader missing. Run: composer install\n";
 	exit( 1 );
 }
 
-require_once $pph_autoload;
+require_once $wpmphub_autoload;
 
 // Constant name is defined by the WordPress test library, so it cannot carry our prefix.
 if ( ! defined( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' ) ) {
 	define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', dirname( __DIR__ ) . '/vendor/yoast/phpunit-polyfills' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 }
 
-$pph_tests_dir = getenv( 'WP_TESTS_DIR' );
+$wpmphub_tests_dir = getenv( 'WP_TESTS_DIR' );
 
-if ( ! is_string( $pph_tests_dir ) || '' === $pph_tests_dir ) {
-	$pph_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+if ( ! is_string( $wpmphub_tests_dir ) || '' === $wpmphub_tests_dir ) {
+	$wpmphub_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
 
-$pph_tests_dir = rtrim( $pph_tests_dir, '/\\' );
+$wpmphub_tests_dir = rtrim( $wpmphub_tests_dir, '/\\' );
 
-if ( ! file_exists( $pph_tests_dir . '/includes/functions.php' ) ) {
-	echo "WordPress test library not found at {$pph_tests_dir}.\n";
+if ( ! file_exists( $wpmphub_tests_dir . '/includes/functions.php' ) ) {
+	echo "WordPress test library not found at {$wpmphub_tests_dir}.\n";
 	echo "Start wp-env (npx wp-env start) or set WP_TESTS_DIR.\n";
 	exit( 1 );
 }
 
-require_once $pph_tests_dir . '/includes/functions.php';
+require_once $wpmphub_tests_dir . '/includes/functions.php';
 
 /**
  * Loads WooCommerce and this plugin before WordPress finishes booting.
  *
  * @return void
  */
-function pph_tests_load_plugins(): void {
-	$pph_woo_file = getenv( 'WP_WOOCOMMERCE_FILE' );
+function wpmphub_tests_load_plugins(): void {
+	$wpmphub_woo_file = getenv( 'WP_WOOCOMMERCE_FILE' );
 
-	if ( ! is_string( $pph_woo_file ) || '' === $pph_woo_file ) {
-		$pph_woo_file = WP_PLUGIN_DIR . '/woocommerce/woocommerce.php';
+	if ( ! is_string( $wpmphub_woo_file ) || '' === $wpmphub_woo_file ) {
+		$wpmphub_woo_file = WP_PLUGIN_DIR . '/woocommerce/woocommerce.php';
 	}
 
-	if ( ! file_exists( $pph_woo_file ) ) {
-		echo "WooCommerce not found at {$pph_woo_file}. Set WP_WOOCOMMERCE_FILE.\n";
+	if ( ! file_exists( $wpmphub_woo_file ) ) {
+		echo "WooCommerce not found at {$wpmphub_woo_file}. Set WP_WOOCOMMERCE_FILE.\n";
 		exit( 1 );
 	}
 
-	require_once $pph_woo_file;
+	require_once $wpmphub_woo_file;
 
 	// The main plugin file is delivered by M01; until then the suite boots WooCommerce only.
-	$pph_plugin_file = dirname( __DIR__ ) . '/wpmake-post-purchase-hub.php';
+	$wpmphub_plugin_file = dirname( __DIR__ ) . '/wpmake-post-purchase-hub.php';
 
-	if ( file_exists( $pph_plugin_file ) ) {
-		require_once $pph_plugin_file;
+	if ( file_exists( $wpmphub_plugin_file ) ) {
+		require_once $wpmphub_plugin_file;
 	}
 }
 
@@ -75,7 +75,7 @@ function pph_tests_load_plugins(): void {
  *
  * The plugin half matters more than it looks. `register_activation_hook()`
  * never fires in the test harness, so without this the suite runs against an
- * install that has no `pph_token_secret` — and every code path that mints a
+ * install that has no `wpmphub_token_secret` — and every code path that mints a
  * signed link fails for a reason no production site would ever hit. Two
  * integration failures were exactly that, and they masked the question of
  * whether the code under test was sound. An integration suite whose
@@ -86,7 +86,7 @@ function pph_tests_load_plugins(): void {
  *
  * @return void
  */
-function pph_tests_install_woocommerce(): void {
+function wpmphub_tests_install_woocommerce(): void {
 	if ( ! class_exists( 'WC_Install' ) ) {
 		return;
 	}
@@ -97,7 +97,7 @@ function pph_tests_install_woocommerce(): void {
 	$GLOBALS['wp_roles'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 	wp_roles();
 
-	pph_tests_install_plugin_options();
+	wpmphub_tests_install_plugin_options();
 }
 
 /**
@@ -119,7 +119,7 @@ function pph_tests_install_woocommerce(): void {
  *
  * @return void
  */
-function pph_tests_install_plugin_options(): void {
+function wpmphub_tests_install_plugin_options(): void {
 	if ( ! class_exists( PostPurchaseHub\Install\Activator::class ) ) {
 		return;
 	}
@@ -130,7 +130,7 @@ function pph_tests_install_plugin_options(): void {
 	}
 }
 
-tests_add_filter( 'muplugins_loaded', 'pph_tests_load_plugins' );
-tests_add_filter( 'setup_theme', 'pph_tests_install_woocommerce' );
+tests_add_filter( 'muplugins_loaded', 'wpmphub_tests_load_plugins' );
+tests_add_filter( 'setup_theme', 'wpmphub_tests_install_woocommerce' );
 
-require $pph_tests_dir . '/includes/bootstrap.php';
+require $wpmphub_tests_dir . '/includes/bootstrap.php';

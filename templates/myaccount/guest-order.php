@@ -24,9 +24,9 @@ declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="pph-guest-order" data-pph-guest-order="<?php echo esc_attr( (string) $order_id ); ?>">
+<div class="wpmphub-guest-order" data-wpmphub-guest-order="<?php echo esc_attr( (string) $order_id ); ?>">
 
-	<p class="pph-guest-order__summary" data-pph-guest-order-summary>
+	<p class="wpmphub-guest-order__summary" data-wpmphub-guest-order-summary>
 		<?php
 		printf(
 			/* translators: 1: order number, 2: order date, 3: order status */
@@ -46,7 +46,7 @@ defined( 'ABSPATH' ) || exit;
 	 *
 	 * @param \WC_Order $order Order to describe.
 	 */
-	do_action( 'pph_render_order_detail', $order );
+	do_action( 'wpmphub_render_order_detail', $order );
 
 	/**
 	 * Renders the merchant's notes to this customer.
@@ -58,7 +58,7 @@ defined( 'ABSPATH' ) || exit;
 	 *
 	 * @param \WC_Order $order Order whose notes to show.
 	 */
-	do_action( 'pph_render_order_notes', $order );
+	do_action( 'wpmphub_render_order_notes', $order );
 
 	/**
 	 * Fires after this plugin's guest order heading.

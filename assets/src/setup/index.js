@@ -11,7 +11,7 @@ import { createRoot } from '@wordpress/element';
 import App from './App';
 import '../styles/setup.scss';
 
-const container = document.getElementById( 'pph-setup-wizard' );
+const container = document.getElementById( 'wpmphub-setup-wizard' );
 
 if ( container ) {
 	createRoot( container ).render( <App /> );

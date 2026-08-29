@@ -26,14 +26,14 @@ defined( 'ABSPATH' ) || exit;
  * @since 1.0.0
  * @return void
  */
-function pph_pro_load_textdomain(): void {
-	load_plugin_textdomain( 'wpmake-post-purchase-hub', false, dirname( plugin_basename( PPH_PLUGIN_FILE ) ) . '/languages' );
+function wpmphub_pro_load_textdomain(): void {
+	load_plugin_textdomain( 'wpmake-post-purchase-hub', false, dirname( plugin_basename( WPMPHUB_PLUGIN_FILE ) ) . '/languages' );
 }
 
-add_action( 'init', 'pph_pro_load_textdomain' );
+add_action( 'init', 'wpmphub_pro_load_textdomain' );
 
 add_action(
-	'pph_loaded',
+	'wpmphub_loaded',
 	/**
 	 * Attaches Pro to core once the container exists.
 	 *

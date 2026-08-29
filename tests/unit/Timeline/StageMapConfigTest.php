@@ -47,7 +47,7 @@ final class StageMapConfigTest extends TestCase {
 	 * @return void
 	 */
 	private function store( array $map ): void {
-		FakeWordPress::$options['pph_settings'] = array( StageMapConfig::MAP_SETTING => $map );
+		FakeWordPress::$options['wpmphub_settings'] = array( StageMapConfig::MAP_SETTING => $map );
 	}
 
 	/**
@@ -132,7 +132,7 @@ final class StageMapConfigTest extends TestCase {
 		// load, so a developer's own filter is always the later one.
 		( new StageMapConfig() )->register();
 
-		FakeWordPress::$filters['pph_status_stage_map'][] = static function ( $map ) {
+		FakeWordPress::$filters['wpmphub_status_stage_map'][] = static function ( $map ) {
 			$map['processing'] = 'shipped';
 
 			return $map;
@@ -149,7 +149,7 @@ final class StageMapConfigTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_corrupted_map_is_ignored(): void {
-		FakeWordPress::$options['pph_settings'] = array( StageMapConfig::MAP_SETTING => 'nonsense' );
+		FakeWordPress::$options['wpmphub_settings'] = array( StageMapConfig::MAP_SETTING => 'nonsense' );
 
 		$this->assertSame( array(), StageMapConfig::stored() );
 

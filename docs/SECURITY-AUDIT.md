@@ -34,25 +34,25 @@ entry points, or reads this plugin's own options.
 
 | File | Input source | Validation | Sanitisation | Output context | Escaping |
 | --- | --- | --- | --- | --- | --- |
-| `Rest/LookupController.php` | `POST /pph/v1/lookup` → `order_number` | `is_scalar`, non-empty after trim, ≤ `OrderLookup::MAX_NUMBER_LENGTH` (64) | `sanitize_text_field` | JSON `message` | n/a — the message is one of three fixed translated strings; no input is reflected |
-| `Rest/LookupController.php` | `POST /pph/v1/lookup` → `email` | `is_scalar`, ≤254, `is_email` | `sanitize_email` | JSON `message`; the address itself only ever reaches `Sanitizer::hash_email()` | n/a — never echoed, never logged raw |
+| `Rest/LookupController.php` | `POST /wpmphub/v1/lookup` → `order_number` | `is_scalar`, non-empty after trim, ≤ `OrderLookup::MAX_NUMBER_LENGTH` (64) | `sanitize_text_field` | JSON `message` | n/a — the message is one of three fixed translated strings; no input is reflected |
+| `Rest/LookupController.php` | `POST /wpmphub/v1/lookup` → `email` | `is_scalar`, ≤254, `is_email` | `sanitize_email` | JSON `message`; the address itself only ever reaches `Sanitizer::hash_email()` | n/a — never echoed, never logged raw |
 | `Rest/LookupController.php` | `$_SERVER['REMOTE_ADDR']` | none needed — identity only | `sanitize_text_field` + `wp_unslash` | none | n/a — hashed by `RateLimiter`, truncated hash in logs |
-| `Rest/RequestsController.php` | `POST /pph/v1/requests` → `order_id` | `is_numeric` and `> 0` | `absint` | JSON integer | n/a |
+| `Rest/RequestsController.php` | `POST /wpmphub/v1/requests` → `order_id` | `is_numeric` and `> 0` | `absint` | JSON integer | n/a |
 | `Rest/RequestsController.php` | → `reason_code` | `Sanitizer::reason_code()` against `Cancel::reason_codes()` | `sanitize_text_field` | JSON string; admin list table; email subject lines | `esc_html()` at every render |
 | `Rest/RequestsController.php` | → `note` | `is_scalar` | `Sanitizer::note()` — `wp_strip_all_tags` then `mb_substr` to 2000 | wp-admin detail screen, HTML email, plain-text email | `esc_html()` in all three; `wpautop( esc_html() )` where paragraphs are wanted |
 | `Rest/RequestsController.php` | → `token` | `is_scalar` | regex `^[A-Za-z0-9_-]*\.[a-f0-9]*$`, then HMAC-verified by `TokenService::decode()` with `hash_equals` | none | n/a — never echoed |
-| `Rest/RequestsController.php` | `DELETE /pph/v1/requests/{id}` → `id` | `is_numeric` and `> 0`; the row is then re-verified against its order's owner, never trusted from `request_id` | `absint` | JSON integer | n/a |
-| `Rest/HelpController.php` | `POST /pph/v1/help` → `topic` | `HelpTopics::normalise()` whitelist | `sanitize_text_field` | HTML and plain-text email | `esc_html()` |
+| `Rest/RequestsController.php` | `DELETE /wpmphub/v1/requests/{id}` → `id` | `is_numeric` and `> 0`; the row is then re-verified against its order's owner, never trusted from `request_id` | `absint` | JSON integer | n/a |
+| `Rest/HelpController.php` | `POST /wpmphub/v1/help` → `topic` | `HelpTopics::normalise()` whitelist | `sanitize_text_field` | HTML and plain-text email | `esc_html()` |
 | `Rest/HelpController.php` | → `message` | `is_scalar`, `mb_strlen` ≤ 4 × `Help::MESSAGE_MAX_LENGTH` at the schema, so markup cannot spend the real budget | `Sanitizer::note()` | HTML and plain-text email | `wpautop( esc_html() )` / `esc_html()` |
-| `Rest/ReorderController.php` | `POST /pph/v1/reorder` → `mode` | `in_array` against `ReorderOptions::modes()` | `ReorderOptions::normalise_mode()` (falls back to merge) | JSON string | n/a |
+| `Rest/ReorderController.php` | `POST /wpmphub/v1/reorder` → `mode` | `in_array` against `ReorderOptions::modes()` | `ReorderOptions::normalise_mode()` (falls back to merge) | JSON string | n/a |
 | `Rest/ReorderController.php` | → `order_id` | `is_numeric` and `> 0` | `absint` | JSON | n/a |
-| `Frontend/LookupForm.php` | `$_POST[pph_order_number]`, `$_POST[pph_order_email]`, `$_POST[pph_order_lookup]` | same service as the REST route — `Security\GuestLookupService` | `sanitize_text_field` / `sanitize_email` + `wp_unslash` | 302 to `Urls::current()`; nothing submitted is rendered (post/redirect/get) | n/a |
-| `Frontend/LookupForm.php` | `$_GET[pph_lookup]` | matched against four `LookupResult` constants | `sanitize_key` | notice text chosen from a fixed table, never taken from the URL | `esc_html()` in `templates/lookup/form.php` |
-| `Frontend/GuestContext.php` | `$_GET[pph_token]` | regex `^[A-Za-z0-9_-]+\.[a-f0-9]{64}$`, then HMAC + expiry + order-key in `TokenService` / `OwnershipResolver` | `sanitize_text_field` + `wp_unslash` | `Location` header, token stripped | `wp_safe_redirect()`; host comes from `home_url()`, never the `Host` header |
-| `Frontend/GuestContext.php` | `$_COOKIE[pph_guest_context]` | regex `^[a-f0-9]{32}$` | `sanitize_text_field` + `wp_unslash` | none | n/a — used as a cache key under `sha256` |
-| `Frontend/GuestOrderView.php` | `$_GET[pph_context]` | compared to two constants | `sanitize_key` | one of two fixed strings | `esc_html()` |
-| `Frontend/ReorderView.php` | `$_GET[pph_reorder]` | must equal the order already being rendered | `absint` | none | n/a |
-| `Frontend/Assets.php` | `$_GET[pph_reorder]` | presence test only | `absint` | none | n/a |
+| `Frontend/LookupForm.php` | `$_POST[wpmphub_order_number]`, `$_POST[wpmphub_order_email]`, `$_POST[wpmphub_order_lookup]` | same service as the REST route — `Security\GuestLookupService` | `sanitize_text_field` / `sanitize_email` + `wp_unslash` | 302 to `Urls::current()`; nothing submitted is rendered (post/redirect/get) | n/a |
+| `Frontend/LookupForm.php` | `$_GET[wpmphub_lookup]` | matched against four `LookupResult` constants | `sanitize_key` | notice text chosen from a fixed table, never taken from the URL | `esc_html()` in `templates/lookup/form.php` |
+| `Frontend/GuestContext.php` | `$_GET[wpmphub_token]` | regex `^[A-Za-z0-9_-]+\.[a-f0-9]{64}$`, then HMAC + expiry + order-key in `TokenService` / `OwnershipResolver` | `sanitize_text_field` + `wp_unslash` | `Location` header, token stripped | `wp_safe_redirect()`; host comes from `home_url()`, never the `Host` header |
+| `Frontend/GuestContext.php` | `$_COOKIE[wpmphub_guest_context]` | regex `^[a-f0-9]{32}$` | `sanitize_text_field` + `wp_unslash` | none | n/a — used as a cache key under `sha256` |
+| `Frontend/GuestOrderView.php` | `$_GET[wpmphub_context]` | compared to two constants | `sanitize_key` | one of two fixed strings | `esc_html()` |
+| `Frontend/ReorderView.php` | `$_GET[wpmphub_reorder]` | must equal the order already being rendered | `absint` | none | n/a |
+| `Frontend/Assets.php` | `$_GET[wpmphub_reorder]` | presence test only | `absint` | none | n/a |
 | `Support/Urls.php` | `$_SERVER['REQUEST_URI']` | path and query only; scheme and host are taken from `home_url()` | `esc_url_raw` + `wp_unslash` | `Location` header, form `action` | `wp_safe_redirect()` / `esc_url()` |
 
 ### 1.3 Admin inputs
@@ -63,10 +63,10 @@ an invitation to retry.
 
 | File | Input source | Authorisation | Validation | Sanitisation | Output context | Escaping |
 | --- | --- | --- | --- | --- | --- | --- |
-| `Admin/RequestActionController.php` | `$_POST` on `admin_post_pph_{approve,decline}_request` | `edit_shop_orders`, then `wp_verify_nonce( …, 'pph_request_action' )` | `request_id` `is_scalar`; the row's order is re-resolved and re-checked | `absint`, `sanitize_text_field` for `admin_note` | redirect only | `wp_safe_redirect()` |
+| `Admin/RequestActionController.php` | `$_POST` on `admin_post_wpmphub_{approve,decline}_request` | `edit_shop_orders`, then `wp_verify_nonce( …, 'wpmphub_request_action' )` | `request_id` `is_scalar`; the row's order is re-resolved and re-checked | `absint`, `sanitize_text_field` for `admin_note` | redirect only | `wp_safe_redirect()` |
 | `Admin/Notices.php` | `$_REQUEST[_wpnonce]`, `$_REQUEST[redirect]` | `manage_woocommerce`, POST-only guard, then nonce | `redirect` must match `^[a-z0-9_-]+\.php(\?page=[a-z0-9_-]+)?$` or is discarded | `sanitize_text_field` + `wp_unslash` + `rawurldecode` | redirect only | `wp_safe_redirect( admin_url( … ) )` |
-| `Admin/Wizard.php` | `$_POST[pph_settings]` (array), `$_POST[pph_step]`, `$_POST[pph_skip]` | `manage_woocommerce`, `check_admin_referer()` in the caller before anything is read | per-field, by `SettingsSanitizer::sanitize_field()` against the field's declared type | per-field; the raw array is never used directly | admin form values | `esc_attr()` / `esc_html()` in `SettingsRenderer` |
-| `Admin/SettingsPage.php` | `$_GET[tab]`, `$_POST[pph_settings_tab]` | core's `options.php` runs capability (`manage_woocommerce`, declared via `option_page_capability_*`) and nonce before the sanitise callback | matched against `SettingsFields::TABS` | `sanitize_key` | tab markup | `esc_attr()` / `esc_url()` / `esc_html()` |
+| `Admin/Wizard.php` | `$_POST[wpmphub_settings]` (array), `$_POST[wpmphub_step]`, `$_POST[wpmphub_skip]` | `manage_woocommerce`, `check_admin_referer()` in the caller before anything is read | per-field, by `SettingsSanitizer::sanitize_field()` against the field's declared type | per-field; the raw array is never used directly | admin form values | `esc_attr()` / `esc_html()` in `SettingsRenderer` |
+| `Admin/SettingsPage.php` | `$_GET[tab]`, `$_POST[wpmphub_settings_tab]` | core's `options.php` runs capability (`manage_woocommerce`, declared via `option_page_capability_*`) and nonce before the sanitise callback | matched against `SettingsFields::TABS` | `sanitize_key` | tab markup | `esc_attr()` / `esc_url()` / `esc_html()` |
 | `Admin/RequestListTable.php` | `$_GET[type,status,order_id,orderby,order,s,paged]` | `edit_shop_orders` on the screen | `orderby`/`order` whitelisted by `RequestQuery::order_by()`; `per_page` clamped to 100 | `sanitize_key` / `absint` / `sanitize_text_field` | list-table cells | `esc_html()` / `esc_url()` / `esc_attr()` |
 | `Admin/Menu.php` | `$_GET[request_id]` | `edit_shop_orders` | `> 0`, row looked up and re-verified | `absint` | detail screen | `esc_html()` |
 | `Admin/Assets.php` | `$_GET[page]` | admin screen | compared against a fixed list | `sanitize_key` | none | n/a |
@@ -76,11 +76,11 @@ an invitation to retry.
 | Source | File | Validation | Notes |
 | --- | --- | --- | --- |
 | WP-CLI associative args | `CLI/BackfillCommand.php`, `CLI/CleanupCommand.php` | `(int)` with a `max( 1, … )` floor; flags are presence tests | Reaching WP-CLI is already shell-level authentication |
-| `pph_settings` option | read in ~10 classes | `is_array()` guard then per-key `(int)` / `(bool)` / `is_array` | Never trusted as an array of the right shape |
-| `pph_token_secret` option | `Security/TokenService.php` | `(string)`; an empty secret makes `issue()` throw and `decode()` return null | Fails closed, never falls back to a fixed key |
-| Filter return values | throughout | every filter whose value matters is re-typed at the call site | `pph_token_ttl_days` is re-clamped to ≤90 **after** the filter; `pph_guest_lookup_enabled` can only disable; `pph_lookup_order_id` is `(int)` then floored at 0; `pph_locate_template` is existence-checked and discarded if unreadable; `pph_action_eligibility` must return an `EligibilityResult`; `pph_cancel_reason_codes` must return a non-empty array |
+| `wpmphub_settings` option | read in ~10 classes | `is_array()` guard then per-key `(int)` / `(bool)` / `is_array` | Never trusted as an array of the right shape |
+| `wpmphub_token_secret` option | `Security/TokenService.php` | `(string)`; an empty secret makes `issue()` throw and `decode()` return null | Fails closed, never falls back to a fixed key |
+| Filter return values | throughout | every filter whose value matters is re-typed at the call site | `wpmphub_token_ttl_days` is re-clamped to ≤90 **after** the filter; `wpmphub_guest_lookup_enabled` can only disable; `wpmphub_lookup_order_id` is `(int)` then floored at 0; `wpmphub_locate_template` is existence-checked and discarded if unreadable; `wpmphub_action_eligibility` must return an `EligibilityResult`; `wpmphub_cancel_reason_codes` must return a non-empty array |
 | Another plugin's shortcode output | `Integrations/Invoices/PdfInvoicesPackingSlips.php` | `FILTER_VALIDATE_URL`, then `esc_url_raw()` | Read-only. Output is `esc_url()`'d again in `templates/partials/actions.php` |
-| Third-party tracking meta | — | — | Nothing reads it today; `NullTrackingAvailability` answers the `pph_has_tracking_data` filter and no concrete adapter ships. See "Issues found". |
+| Third-party tracking meta | — | — | Nothing reads it today; `NullTrackingAvailability` answers the `wpmphub_has_tracking_data` filter and no concrete adapter ships. See "Issues found". |
 
 ---
 

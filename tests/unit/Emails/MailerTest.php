@@ -26,7 +26,7 @@ require_once dirname( __DIR__, 2 ) . '/stubs/wp-functions.php';
 
 /**
  * Covers registration: the six emails this plugin ships, and the
- * `pph_registered_emails` extension point docs/EDITIONS.md names for Pro's
+ * `wpmphub_registered_emails` extension point docs/EDITIONS.md names for Pro's
  * return-lifecycle emails.
  *
  * @since 0.10.0
@@ -66,16 +66,16 @@ final class MailerTest extends TestCase {
 	}
 
 	/**
-	 * The pph_registered_emails filter can add to, or replace, the list Pro
+	 * The wpmphub_registered_emails filter can add to, or replace, the list Pro
 	 * would use for its own return-lifecycle emails.
 	 *
 	 * @return void
 	 */
-	public function test_pph_registered_emails_filter_can_add_to_the_list(): void {
+	public function test_wpmphub_registered_emails_filter_can_add_to_the_list(): void {
 		$mailer = new Mailer( new RequestRepository(), new TokenService() );
 
 		add_filter(
-			'pph_registered_emails',
+			'wpmphub_registered_emails',
 			static function ( array $emails ): array {
 				$emails['Fake\\Pro\\ReturnApproved'] = new \stdClass();
 

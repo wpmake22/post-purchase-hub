@@ -1,7 +1,7 @@
 /**
  * Customer-facing timeline end-to-end tests.
  *
- * Every selector here is a plugin-owned `data-pph-*` attribute. Themes rename
+ * Every selector here is a plugin-owned `data-wpmphub-*` attribute. Themes rename
  * and restructure the markup around the My Account templates freely, so a test
  * anchored on a theme's class names tells you which theme changed, not whether
  * the plugin works.
@@ -10,9 +10,9 @@
 const { test, expect } = require("@wordpress/e2e-test-utils-playwright");
 const { completeSetup } = require("./utils/setup");
 
-const TIMELINE = "[data-pph-timeline]";
-const SUMMARY = "[data-pph-timeline-summary]";
-const STAGE = "[data-pph-stage]";
+const TIMELINE = "[data-wpmphub-timeline]";
+const SUMMARY = "[data-wpmphub-timeline-summary]";
+const STAGE = "[data-wpmphub-stage]";
 
 test.describe("Order timeline", () => {
 	test.beforeEach(async ({ requestUtils }) => {
@@ -31,7 +31,7 @@ test.describe("Order timeline", () => {
 		const summaries = page.locator(SUMMARY);
 
 		await expect(summaries).toHaveCount(await rows.count());
-		await expect(summaries.first()).toHaveAttribute("data-pph-stage", /.+/);
+		await expect(summaries.first()).toHaveAttribute("data-wpmphub-stage", /.+/);
 	});
 
 	test("the order detail page shows an ordered list of stages", async ({
@@ -53,7 +53,7 @@ test.describe("Order timeline", () => {
 
 		for (let i = 0; i < count; i++) {
 			await expect(
-				stages.nth(i).locator("[data-pph-stage-state-label]"),
+				stages.nth(i).locator("[data-wpmphub-stage-state-label]"),
 			).not.toBeEmpty();
 		}
 	});
@@ -89,7 +89,7 @@ test.describe("Order timeline", () => {
 		await page.locator("tbody tr a").first().click();
 
 		const overflows = await page.evaluate(() => {
-			const el = document.querySelector("[data-pph-timeline]");
+			const el = document.querySelector("[data-wpmphub-timeline]");
 
 			return el
 				? el.scrollWidth > document.documentElement.clientWidth

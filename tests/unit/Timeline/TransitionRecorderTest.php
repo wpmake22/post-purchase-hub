@@ -150,7 +150,7 @@ final class TransitionRecorderTest extends TestCase {
 	 */
 	public function test_the_entry_cap_holds_and_spares_branch_states(): void {
 		add_filter(
-			'pph_timeline_stages',
+			'wpmphub_timeline_stages',
 			static function ( array $stages ): array {
 				for ( $i = 0; $i < 12; $i++ ) {
 					$stages[ 'extra_' . $i ] = 'Extra ' . $i;
@@ -161,7 +161,7 @@ final class TransitionRecorderTest extends TestCase {
 		);
 
 		add_filter(
-			'pph_status_stage_map',
+			'wpmphub_status_stage_map',
 			static function ( array $map ): array {
 				for ( $i = 0; $i < 12; $i++ ) {
 					$map[ 'custom-' . $i ] = 'extra_' . $i;

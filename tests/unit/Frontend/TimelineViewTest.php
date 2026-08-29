@@ -164,7 +164,7 @@ final class TimelineViewTest extends TestCase {
 	 */
 	public function test_the_date_format_is_filterable(): void {
 		add_filter(
-			'pph_timeline_date_format',
+			'wpmphub_timeline_date_format',
 			static function (): string {
 				return 'D';
 			}

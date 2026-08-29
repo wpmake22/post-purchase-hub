@@ -152,8 +152,8 @@ final class SchemaTest extends \WP_UnitTestCase {
 	public function test_table_names_are_prefixed(): void {
 		global $wpdb;
 
-		$this->assertSame( $wpdb->prefix . 'pph_requests', Schema::requests_table() );
-		$this->assertSame( $wpdb->prefix . 'pph_request_items', Schema::request_items_table() );
+		$this->assertSame( $wpdb->prefix . 'wpmphub_requests', Schema::requests_table() );
+		$this->assertSame( $wpdb->prefix . 'wpmphub_request_items', Schema::request_items_table() );
 		$this->assertContains( Schema::requests_table(), Schema::tables() );
 	}
 

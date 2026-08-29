@@ -12,7 +12,7 @@
  * @package PostPurchaseHub
  */
 
-$pph_removed = array(
+$wpmphub_removed = array(
 	'orders'   => 0,
 	'users'    => 0,
 	'pages'    => 0,
@@ -24,49 +24,49 @@ foreach ( wc_get_orders(
 		'limit'        => -1,
 		'status'       => 'any',
 		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- A one-off teardown on a development site; there is no indexed alternative for "orders this run created".
-		'meta_key'     => '_pph_m16_fixture',
+		'meta_key'     => '_wpmphub_m16_fixture',
 		'meta_compare' => 'EXISTS',
 		'return'       => 'ids',
 	)
-) as $pph_order_id ) {
-	$pph_order = wc_get_order( $pph_order_id );
+) as $wpmphub_order_id ) {
+	$wpmphub_order = wc_get_order( $wpmphub_order_id );
 
-	if ( $pph_order ) {
+	if ( $wpmphub_order ) {
 		$order->delete( true );
-		++$pph_removed['orders'];
+		++$wpmphub_removed['orders'];
 	}
 }
 
-foreach ( array( 'pph_customer', 'pph_manager' ) as $pph_login ) {
-	$pph_user = get_user_by( 'login', $pph_login );
+foreach ( array( 'wpmphub_customer', 'wpmphub_manager' ) as $wpmphub_login ) {
+	$wpmphub_user = get_user_by( 'login', $wpmphub_login );
 
-	if ( $pph_user ) {
+	if ( $wpmphub_user ) {
 		require_once ABSPATH . 'wp-admin/includes/user.php';
-		wp_delete_user( $pph_user->ID );
-		++$pph_removed['users'];
+		wp_delete_user( $wpmphub_user->ID );
+		++$wpmphub_removed['users'];
 	}
 }
 
-$pph_page = get_page_by_path( 'pph-order-lookup' );
+$wpmphub_page = get_page_by_path( 'wpmphub-order-lookup' );
 
-if ( $pph_page ) {
-	wp_delete_post( $pph_page->ID, true );
-	++$pph_removed['pages'];
+if ( $wpmphub_page ) {
+	wp_delete_post( $wpmphub_page->ID, true );
+	++$wpmphub_removed['pages'];
 }
 
 global $wpdb;
 
-$pph_requests_table = $wpdb->prefix . 'pph_requests';
-$pph_items_table    = $wpdb->prefix . 'pph_request_items';
+$wpmphub_requests_table = $wpdb->prefix . 'wpmphub_requests';
+$wpmphub_items_table    = $wpdb->prefix . 'wpmphub_request_items';
 
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Truncating this plugin's own tables by their Schema-built names.
-$pph_removed['requests'] = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$pph_requests_table}" );
+$wpmphub_removed['requests'] = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpmphub_requests_table}" );
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- As above.
-$wpdb->query( "TRUNCATE TABLE {$pph_items_table}" );
+$wpdb->query( "TRUNCATE TABLE {$wpmphub_items_table}" );
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- As above.
-$wpdb->query( "TRUNCATE TABLE {$pph_requests_table}" );
+$wpdb->query( "TRUNCATE TABLE {$wpmphub_requests_table}" );
 
 // Settings and setup state are deliberately left alone: a developer who ran
 // the wizard by hand probably wants the store still configured afterwards.
-echo 'Removed: ' . wp_json_encode( $pph_removed ) . "\n";
-echo "Left in place: pph_settings and pph_setup_state.\n";
+echo 'Removed: ' . wp_json_encode( $wpmphub_removed ) . "\n";
+echo "Left in place: wpmphub_settings and wpmphub_setup_state.\n";

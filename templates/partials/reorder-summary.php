@@ -4,7 +4,7 @@
  *
  * Shown before anything reaches the cart: every line of the past order with
  * the outcome it will have, and — only when something can actually be added —
- * the confirmation that submits to `pph/v1/reorder`.
+ * the confirmation that submits to `wpmphub/v1/reorder`.
  *
  * Override by copying this file to yourtheme/wpmake-post-purchase-hub/partials/reorder-summary.php.
  *
@@ -34,54 +34,54 @@ if ( empty( $reorder['lines'] ) ) {
 }
 ?>
 <section
-	class="pph-reorder"
-	data-pph-reorder
-	data-pph-order-id="<?php echo esc_attr( (string) $reorder['order_id'] ); ?>"
+	class="wpmphub-reorder"
+	data-wpmphub-reorder
+	data-wpmphub-order-id="<?php echo esc_attr( (string) $reorder['order_id'] ); ?>"
 	aria-label="<?php esc_attr_e( 'Buy these again', 'wpmake-post-purchase-hub' ); ?>"
 >
-	<h3 class="pph-reorder__heading">
+	<h3 class="wpmphub-reorder__heading">
 		<?php esc_html_e( 'Before we add these to your cart', 'wpmake-post-purchase-hub' ); ?>
 	</h3>
 
-	<p class="pph-reorder__intro" data-pph-reorder-intro>
+	<p class="wpmphub-reorder__intro" data-wpmphub-reorder-intro>
 		<?php esc_html_e( 'Nothing has been added yet. Here is what has changed since you ordered.', 'wpmake-post-purchase-hub' ); ?>
 	</p>
 
-	<ul class="pph-reorder__lines" data-pph-reorder-lines>
-		<?php foreach ( $reorder['lines'] as $pph_line ) : ?>
+	<ul class="wpmphub-reorder__lines" data-wpmphub-reorder-lines>
+		<?php foreach ( $reorder['lines'] as $wpmphub_line ) : ?>
 			<li
-				class="pph-reorder__line pph-reorder__line--<?php echo esc_attr( $pph_line['outcome'] ); ?>"
-				data-pph-reorder-line
-				data-pph-reorder-outcome="<?php echo esc_attr( $pph_line['outcome'] ); ?>"
+				class="wpmphub-reorder__line wpmphub-reorder__line--<?php echo esc_attr( $wpmphub_line['outcome'] ); ?>"
+				data-wpmphub-reorder-line
+				data-wpmphub-reorder-outcome="<?php echo esc_attr( $wpmphub_line['outcome'] ); ?>"
 			>
-				<span class="pph-reorder__name" data-pph-reorder-name>
-					<?php echo esc_html( $pph_line['name'] ); ?>
+				<span class="wpmphub-reorder__name" data-wpmphub-reorder-name>
+					<?php echo esc_html( $wpmphub_line['name'] ); ?>
 				</span>
 
-				<span class="pph-reorder__quantity" data-pph-reorder-quantity>
+				<span class="wpmphub-reorder__quantity" data-wpmphub-reorder-quantity>
 					<?php
 					echo esc_html(
 						sprintf(
 							/* translators: %d: quantity on the original order. */
 							__( 'Ordered: %d', 'wpmake-post-purchase-hub' ),
-							$pph_line['requested']
+							$wpmphub_line['requested']
 						)
 					);
 					?>
 				</span>
 
-				<span class="pph-reorder__status" data-pph-reorder-status>
-					<?php echo esc_html( $pph_line['status'] ); ?>
+				<span class="wpmphub-reorder__status" data-wpmphub-reorder-status>
+					<?php echo esc_html( $wpmphub_line['status'] ); ?>
 				</span>
 
-				<?php if ( '' !== $pph_line['price_note'] ) : ?>
-					<span class="pph-reorder__price" data-pph-reorder-price>
-						<?php echo esc_html( $pph_line['price_note'] ); ?>
+				<?php if ( '' !== $wpmphub_line['price_note'] ) : ?>
+					<span class="wpmphub-reorder__price" data-wpmphub-reorder-price>
+						<?php echo esc_html( $wpmphub_line['price_note'] ); ?>
 					</span>
 				<?php endif; ?>
 
-				<?php if ( '' !== $pph_line['url'] ) : ?>
-					<a class="pph-reorder__link" href="<?php echo esc_url( $pph_line['url'] ); ?>" data-pph-reorder-link>
+				<?php if ( '' !== $wpmphub_line['url'] ) : ?>
+					<a class="wpmphub-reorder__link" href="<?php echo esc_url( $wpmphub_line['url'] ); ?>" data-wpmphub-reorder-link>
 						<?php esc_html_e( 'Choose options', 'wpmake-post-purchase-hub' ); ?>
 					</a>
 				<?php endif; ?>
@@ -90,24 +90,24 @@ if ( empty( $reorder['lines'] ) ) {
 	</ul>
 
 	<?php if ( '' !== $reorder['capped_notice'] ) : ?>
-		<p class="pph-reorder__notice" data-pph-reorder-capped>
+		<p class="wpmphub-reorder__notice" data-wpmphub-reorder-capped>
 			<?php echo esc_html( $reorder['capped_notice'] ); ?>
 		</p>
 	<?php endif; ?>
 
 	<?php if ( '' !== $reorder['unavailable'] ) : ?>
-		<p class="pph-reorder__notice pph-reorder__notice--empty" data-pph-reorder-unavailable role="status">
+		<p class="wpmphub-reorder__notice wpmphub-reorder__notice--empty" data-wpmphub-reorder-unavailable role="status">
 			<?php echo esc_html( $reorder['unavailable'] ); ?>
 		</p>
 	<?php endif; ?>
 
 	<?php if ( $reorder['can_confirm'] ) : ?>
-		<form class="pph-reorder__form" data-pph-reorder-form novalidate>
-			<input type="hidden" name="order_id" value="<?php echo esc_attr( (string) $reorder['order_id'] ); ?>" data-pph-reorder-order-id />
+		<form class="wpmphub-reorder__form" data-wpmphub-reorder-form novalidate>
+			<input type="hidden" name="order_id" value="<?php echo esc_attr( (string) $reorder['order_id'] ); ?>" data-wpmphub-reorder-order-id />
 
 			<?php if ( $reorder['cart_items'] > 0 ) : ?>
-				<fieldset class="pph-reorder__modes">
-					<legend class="pph-reorder__legend">
+				<fieldset class="wpmphub-reorder__modes">
+					<legend class="wpmphub-reorder__legend">
 						<?php
 						echo esc_html(
 							sprintf(
@@ -124,35 +124,35 @@ if ( empty( $reorder['lines'] ) ) {
 						?>
 					</legend>
 
-					<label class="pph-reorder__mode">
+					<label class="wpmphub-reorder__mode">
 						<input
 							type="radio"
 							name="mode"
 							value="merge"
-							data-pph-reorder-mode
+							data-wpmphub-reorder-mode
 							<?php checked( 'merge', $reorder['default_mode'] ); ?>
 						/>
 						<?php echo esc_html( $reorder['merge_label'] ); ?>
 					</label>
 
-					<label class="pph-reorder__mode">
+					<label class="wpmphub-reorder__mode">
 						<input
 							type="radio"
 							name="mode"
 							value="replace"
-							data-pph-reorder-mode
+							data-wpmphub-reorder-mode
 							<?php checked( 'replace', $reorder['default_mode'] ); ?>
 						/>
 						<?php echo esc_html( $reorder['replace_label'] ); ?>
 					</label>
 				</fieldset>
 			<?php else : ?>
-				<input type="hidden" name="mode" value="<?php echo esc_attr( $reorder['default_mode'] ); ?>" data-pph-reorder-mode-default />
+				<input type="hidden" name="mode" value="<?php echo esc_attr( $reorder['default_mode'] ); ?>" data-wpmphub-reorder-mode-default />
 			<?php endif; ?>
 
-			<p class="pph-reorder__error" data-pph-reorder-error hidden aria-live="assertive"></p>
+			<p class="wpmphub-reorder__error" data-wpmphub-reorder-error hidden aria-live="assertive"></p>
 
-			<button type="submit" class="button button-primary" data-pph-reorder-confirm>
+			<button type="submit" class="button button-primary" data-wpmphub-reorder-confirm>
 				<?php echo esc_html( $reorder['confirm_label'] ); ?>
 			</button>
 		</form>

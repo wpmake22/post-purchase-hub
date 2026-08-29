@@ -10,13 +10,14 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Frontend;
 
 use PostPurchaseHub\Security\GuestAccess;
+use PostPurchaseHub\Security\Kses;
 use PostPurchaseHub\Security\GuestLookupService;
 use PostPurchaseHub\Security\LookupResult;
 use PostPurchaseHub\Security\Sanitizer;
 use PostPurchaseHub\Support\Urls;
 
 /**
- * Registers `[pph_order_lookup]` and handles its submission without JavaScript.
+ * Registers `[wpmphub_order_lookup]` and handles its submission without JavaScript.
  *
  * The form posts to its own page and the handler redirects — post/redirect/get,
  * so a refresh does not resubmit and the submitted address never appears in
@@ -41,35 +42,35 @@ final class LookupForm {
 	 *
 	 * @var string
 	 */
-	public const TAG = 'pph_order_lookup';
+	public const TAG = 'wpmphub_order_lookup';
 
 	/**
 	 * Field marking a POST as ours.
 	 *
 	 * @var string
 	 */
-	public const SUBMIT_FIELD = 'pph_order_lookup';
+	public const SUBMIT_FIELD = 'wpmphub_order_lookup';
 
 	/**
 	 * Order-number field name.
 	 *
 	 * @var string
 	 */
-	public const NUMBER_FIELD = 'pph_order_number';
+	public const NUMBER_FIELD = 'wpmphub_order_number';
 
 	/**
 	 * Email field name.
 	 *
 	 * @var string
 	 */
-	public const EMAIL_FIELD = 'pph_order_email';
+	public const EMAIL_FIELD = 'wpmphub_order_email';
 
 	/**
 	 * Query argument the redirect reports the outcome in.
 	 *
 	 * @var string
 	 */
-	public const NOTICE_PARAM = 'pph_lookup';
+	public const NOTICE_PARAM = 'wpmphub_lookup';
 
 	/**
 	 * Constructor.
@@ -171,16 +172,20 @@ final class LookupForm {
 			Sanitizer::nocache();
 		}
 
-		return $this->templates->get(
-			'lookup/form.php',
-			array(
-				'action' => Urls::current( array( self::NOTICE_PARAM ) ),
-				'notice' => $notice,
-				'fields' => array(
-					'submit' => self::SUBMIT_FIELD,
-					'number' => self::NUMBER_FIELD,
-					'email'  => self::EMAIL_FIELD,
-				),
+		// This is a shortcode callback: WordPress prints what it returns, so the
+		// markup is escaped again at the boundary. See Security\Kses.
+		return Kses::filter(
+			$this->templates->get(
+				'lookup/form.php',
+				array(
+					'action' => Urls::current( array( self::NOTICE_PARAM ) ),
+					'notice' => $notice,
+					'fields' => array(
+						'submit' => self::SUBMIT_FIELD,
+						'number' => self::NUMBER_FIELD,
+						'email'  => self::EMAIL_FIELD,
+					),
+				)
 			)
 		);
 	}

@@ -13,7 +13,7 @@ namespace PostPurchaseHub\Integrations\Tracking;
  * Reports no tracking data until a real adapter says otherwise.
  *
  * The safe default: with no adapter installed, every order behaves as if it
- * has no tracking, so estimated delivery keeps showing. `pph_has_tracking_data`
+ * has no tracking, so estimated delivery keeps showing. `wpmphub_has_tracking_data`
  * is the escape hatch for a store that already has tracking some other way —
  * a merchant's own code, or a tracking plugin's own integration — without
  * waiting on this plugin's adapter layer to exist.
@@ -39,6 +39,6 @@ final class NullTrackingAvailability implements TrackingAvailability {
 		 * @param bool      $has_tracking Whether tracking data exists. Defaults to false.
 		 * @param \WC_Order $order        Order being checked.
 		 */
-		return (bool) apply_filters( 'pph_has_tracking_data', false, $order );
+		return (bool) apply_filters( 'wpmphub_has_tracking_data', false, $order );
 	}
 }

@@ -46,7 +46,7 @@ final class RequestDetail {
 	public function render( int $request_id ): void {
 		$request = $this->requests->find( $request_id );
 
-		echo '<div class="wrap pph-request-detail">';
+		echo '<div class="wrap wpmphub-request-detail">';
 
 		if ( null === $request ) {
 			printf(
@@ -165,13 +165,13 @@ final class RequestDetail {
 		echo '<h2>' . esc_html__( 'Decision', 'wpmake-post-purchase-hub' ) . '</h2>';
 
 		printf(
-			'<textarea name="admin_note" form="pph-approve-%1$d" placeholder="%2$s"></textarea>',
+			'<textarea name="admin_note" form="wpmphub-approve-%1$d" placeholder="%2$s"></textarea>',
 			(int) $request->id,
 			esc_attr__( 'Internal note (not shown to the customer)', 'wpmake-post-purchase-hub' )
 		);
 
-		$this->render_form( $request, RequestActionController::APPROVE_ACTION, __( 'Approve', 'wpmake-post-purchase-hub' ), 'pph-approve-' . $request->id );
-		$this->render_form( $request, RequestActionController::DECLINE_ACTION, __( 'Decline', 'wpmake-post-purchase-hub' ), 'pph-decline-' . $request->id );
+		$this->render_form( $request, RequestActionController::APPROVE_ACTION, __( 'Approve', 'wpmake-post-purchase-hub' ), 'wpmphub-approve-' . $request->id );
+		$this->render_form( $request, RequestActionController::DECLINE_ACTION, __( 'Decline', 'wpmake-post-purchase-hub' ), 'wpmphub-decline-' . $request->id );
 	}
 
 	/**

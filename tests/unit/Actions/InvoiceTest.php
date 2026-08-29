@@ -122,7 +122,7 @@ final class InvoiceTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_fallback_can_be_filtered_off(): void {
-		FakeWordPress::$filters['pph_invoice_print_fallback'][] = static function (): bool {
+		FakeWordPress::$filters['wpmphub_invoice_print_fallback'][] = static function (): bool {
 			return false;
 		};
 
@@ -147,12 +147,12 @@ final class InvoiceTest extends TestCase {
 	}
 
 	/**
-	 * `pph_action_eligibility` can deny the action, as it can any other.
+	 * `wpmphub_action_eligibility` can deny the action, as it can any other.
 	 *
 	 * @return void
 	 */
 	public function test_the_eligibility_filter_can_deny_it(): void {
-		FakeWordPress::$filters['pph_action_eligibility'][] = static function ( $result, $action_id ) {
+		FakeWordPress::$filters['wpmphub_action_eligibility'][] = static function ( $result, $action_id ) {
 			return Invoice::ID === $action_id
 				? \PostPurchaseHub\Actions\EligibilityResult::denied( 'merchant_choice', 'Not available.' )
 				: $result;
@@ -185,7 +185,7 @@ final class InvoiceTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_filtered_source_reaches_the_detail_page(): void {
-		FakeWordPress::$filters['pph_invoice_source'][] = static function () {
+		FakeWordPress::$filters['wpmphub_invoice_source'][] = static function () {
 			return new InvoiceSource( InvoiceSource::KIND_DOCUMENT, 'https://shop.test/other-plugin.pdf', 'other' );
 		};
 

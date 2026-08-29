@@ -16,19 +16,19 @@ You are working on a commercial WordPress plugin that will run on thousands of l
 | --- | --- |
 | Plugin name | WPMake Post-Purchase Hub for WooCommerce |
 | Slug / text domain | `wpmake-post-purchase-hub` |
-| Function/hook/option prefix | `pph_` |
+| Function/hook/option prefix | `wpmphub_` |
 | PHP namespace root | `PostPurchaseHub\` (PSR-4 → `src/`) |
 | Free-only namespace | `PostPurchaseHub\Free\` → `free/src/` |
 | Pro-only namespace | `PostPurchaseHub\Pro\` → `pro/src/` |
 | Distributions | `wpmake-post-purchase-hub-{v}.zip` (WP.org) and `wpmake-post-purchase-hub-pro-{v}.zip` (store) |
-| Order meta prefix | `_pph_` |
-| DB table prefix | `{$wpdb->prefix}pph_` |
-| REST namespace | `pph/v1` |
+| Order meta prefix | `_wpmphub_` |
+| DB table prefix | `{$wpdb->prefix}wpmphub_` |
+| REST namespace | `wpmphub/v1` |
 | Minimum | WordPress 6.5, PHP 8.1, WooCommerce latest−2 |
 
 Never name anything with a leading `WooCommerce` — trademark policy. "… for WooCommerce" only.
 
-The name carries the vendor identifier deliberately. WP.org's first review of 1.0.0 rejected "Post-Purchase Hub for WooCommerce" as a generic descriptive phrase with no distinctive leading term; `wpmake-` is the same prefix this account already ships `wpmake-advance-user-avatar` under. The `pph_` prefix, the `PostPurchaseHub\` namespace, `pph/v1` and the `_pph_` meta keys were kept: the slug still contains `post-purchase-hub`, so they still derive from it.
+The name carries the vendor identifier deliberately. WP.org's first review of 1.0.0 rejected "Post-Purchase Hub for WooCommerce" as a generic descriptive phrase with no distinctive leading term; `wpmake-` is the same prefix this account already ships `wpmake-advance-user-avatar` under. The `wpmphub_` prefix, the `PostPurchaseHub\` namespace, `wpmphub/v1` and the `_wpmphub_` meta keys were kept: the slug still contains `post-purchase-hub`, so they still derive from it.
 
 ---
 
@@ -55,7 +55,7 @@ These are not preferences. Violating one is a bug even if tests pass.
 ### Edition rules (see `docs/EDITIONS.md`)
 
 16. **Core never references edition code.** No `PostPurchaseHub\Pro\` or `PostPurchaseHub\Free\` anywhere under `src/` — not in code, not in strings, not in docblocks, not in `class_exists()`. CI greps for this and fails the build.
-17. **Core never branches on edition.** No `if ( pph_is_pro() )` in `src/`. Core registers extension points; Pro fills them. If Pro cannot be built on core's public surface, the surface is wrong — say so rather than reaching through it.
+17. **Core never branches on edition.** No `if ( wpmphub_is_pro() )` in `src/`. Core registers extension points; Pro fills them. If Pro cannot be built on core's public surface, the surface is wrong — say so rather than reaching through it.
 18. **No inline build markers.** Never write `//#if__PREMIUM`-style blocks. Edition code is separated by directory so the free artifact is a strict subset of tested source, never a rewritten one. Wanting a marker means a missing filter.
 19. **Free must be coherent alone.** No dead buttons, no half-features, no error paths that only make sense with Pro installed.
 20. **Never edit `bin/build.php` or `bin/verify-build.php` opportunistically.** If a verification check fails, fix the code it caught. Changing the check to pass is only acceptable as a deliberate, explained decision — raise it and wait.
@@ -91,13 +91,13 @@ bin/build.php               produces both zips
 bin/verify-build.php        inspects the built zips for leakage
 ```
 
-`src/` ships in both editions. The build deletes `pro/` for the free zip and `free/` for the pro zip. Pro attaches at the `pph_loaded` action and extends core only through documented filters, the `ActionRegistry`, interfaces and template overrides.
+`src/` ships in both editions. The build deletes `pro/` for the free zip and `free/` for the pro zip. Pro attaches at the `wpmphub_loaded` action and extends core only through documented filters, the `ActionRegistry`, interfaces and template overrides.
 
 `Timeline/`, `Actions/` and `Requests/` are separate domains. They communicate through services and never reach into each other's storage.
 
 Deliberate non-choices — do not introduce these: DI framework, template engine, custom post types, custom taxonomies, custom capabilities, Action Scheduler (v1), `admin-ajax`, runtime vendor packages.
 
-**React is admitted in exactly one place: the setup wizard.** `assets/src/setup/` is a React app on a page of its own (`Admin\WizardPage`) driven by `Rest\SetupController` (`pph/v1/setup`), and it replaced the `admin-post.php` form wizard deliberately — the earlier one was not intuitive enough to carry a feature the whole storefront is gated on. It uses only WordPress core externals (`@wordpress/element`, `components`, `api-fetch`, `i18n`), never a bundled UI framework: nothing in this plugin's zips may ship React or a component library of its own. The settings screen, the request queue and every other admin surface stay server-rendered PHP — do not "modernise" them to match.
+**React is admitted in exactly one place: the setup wizard.** `assets/src/setup/` is a React app on a page of its own (`Admin\WizardPage`) driven by `Rest\SetupController` (`wpmphub/v1/setup`), and it replaced the `admin-post.php` form wizard deliberately — the earlier one was not intuitive enough to carry a feature the whole storefront is gated on. It uses only WordPress core externals (`@wordpress/element`, `components`, `api-fetch`, `i18n`), never a bundled UI framework: nothing in this plugin's zips may ship React or a component library of its own. The settings screen, the request queue and every other admin surface stay server-rendered PHP — do not "modernise" them to match.
 
 ---
 
@@ -109,7 +109,7 @@ Deliberate non-choices — do not introduce these: DI framework, template engine
 - Every user-facing string translatable with `wpmake-post-purchase-hub` text domain. Translator context (`_x`) on anything ambiguous. Never concatenate translatable strings.
 - Comments explain **why**, never **what**. No comment restating the line below it.
 - Any behavioural default a merchant might reasonably disagree with gets a documented filter at the moment it is introduced.
-- Hook naming: `pph_{noun}_{verb}` for actions, `pph_{noun}` for filters.
+- Hook naming: `wpmphub_{noun}_{verb}` for actions, `wpmphub_{noun}` for filters.
 
 ---
 
@@ -137,7 +137,7 @@ npm run build && composer build && composer verify
 
 Coverage targets: ≥70% on `Timeline/`, `Actions/`, `Requests/`, `Security/`, `Support/Dates`. No target on `Admin/` or `Frontend/` presentation — use e2e there.
 
-Playwright MCP is available for browser tests. Use it for admin UI, customer journeys, error states, 375px and 1440px viewports, and per-theme visual checks. Do not write Playwright tests that depend on theme-specific selectors — target plugin-owned `data-pph-*` attributes.
+Playwright MCP is available for browser tests. Use it for admin UI, customer journeys, error states, 375px and 1440px viewports, and per-theme visual checks. Do not write Playwright tests that depend on theme-specific selectors — target plugin-owned `data-wpmphub-*` attributes.
 
 ---
 

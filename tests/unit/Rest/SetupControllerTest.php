@@ -362,7 +362,7 @@ final class SetupControllerTest extends TestCase {
 		$error = $this->controller->authorise();
 
 		$this->assertInstanceOf( \WP_Error::class, $error );
-		$this->assertSame( 'pph_setup_forbidden', $error->get_error_code() );
+		$this->assertSame( 'wpmphub_setup_forbidden', $error->get_error_code() );
 	}
 
 	/**

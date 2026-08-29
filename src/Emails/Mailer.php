@@ -21,7 +21,7 @@ use PostPurchaseHub\Security\TokenService;
  * customiser and the block email editor for free, and never see a
  * plugin-specific settings screen for something Woo already has one for.
  *
- * The list itself is built behind `pph_registered_emails` rather than
+ * The list itself is built behind `wpmphub_registered_emails` rather than
  * hardcoded here, per docs/EDITIONS.md's extension-point table: that filter
  * is what lets a Pro build add its own return-lifecycle emails without this
  * class knowing Pro exists (CLAUDE.md hard rule 17).
@@ -120,7 +120,7 @@ final class Mailer {
 		 *
 		 * @param array<string, \WC_Email> $emails Emails to register, keyed by class name.
 		 */
-		$emails = apply_filters( 'pph_registered_emails', $defaults );
+		$emails = apply_filters( 'wpmphub_registered_emails', $defaults );
 
 		return is_array( $emails ) ? $emails : $defaults;
 	}

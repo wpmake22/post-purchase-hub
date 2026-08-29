@@ -13,7 +13,7 @@ declare( strict_types = 1 );
 defined( 'ABSPATH' ) || exit;
 
 add_action(
-	'pph_loaded',
+	'wpmphub_loaded',
 	/**
 	 * Attaches the free edition's upsell surfaces once the container exists.
 	 *

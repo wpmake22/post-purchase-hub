@@ -113,7 +113,7 @@ final class Detector {
 		 *
 		 * @param array<int, InvoiceProvider> $providers Adapters to try.
 		 */
-		$providers = apply_filters( 'pph_invoice_providers', array( new PdfInvoicesPackingSlips() ) );
+		$providers = apply_filters( 'wpmphub_invoice_providers', array( new PdfInvoicesPackingSlips() ) );
 
 		if ( ! is_array( $providers ) ) {
 			return array( new PdfInvoicesPackingSlips() );
@@ -179,7 +179,7 @@ final class Detector {
 		 * @param InvoiceSource|null $source Detected source, null when none was found.
 		 * @param \WC_Order          $order  Order being resolved.
 		 */
-		$filtered = apply_filters( 'pph_invoice_source', $source, $order );
+		$filtered = apply_filters( 'wpmphub_invoice_source', $source, $order );
 
 		if ( null === $filtered ) {
 			return null;

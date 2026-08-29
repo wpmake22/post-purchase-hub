@@ -50,7 +50,7 @@ final class HelpTest extends TestCase {
 	private Help $help;
 
 	/**
-	 * Submissions recorded from `pph_help_submitted`.
+	 * Submissions recorded from `wpmphub_help_submitted`.
 	 *
 	 * @var array<int, HelpContext>
 	 */
@@ -80,7 +80,7 @@ final class HelpTest extends TestCase {
 			$this->submitted[] = $context;
 		};
 
-		FakeWordPress::$actions['pph_help_submitted'][] = array(
+		FakeWordPress::$actions['wpmphub_help_submitted'][] = array(
 			'callback' => $recorder,
 			'priority' => 10,
 		);
@@ -292,7 +292,7 @@ final class HelpTest extends TestCase {
 	public function test_a_helpdesk_can_be_the_destination(): void {
 		FakeWordPress::$options[ HelpRequest::SETTINGS_OPTION ] = array( 'enabled' => 'no' );
 
-		FakeWordPress::$filters['pph_help_destination_exists'][] = static function (): bool {
+		FakeWordPress::$filters['wpmphub_help_destination_exists'][] = static function (): bool {
 			return true;
 		};
 
@@ -313,8 +313,8 @@ final class HelpTest extends TestCase {
 
 		$this->assertNotNull( $list );
 		$this->assertNotNull( $detail );
-		$this->assertSame( $order->get_view_order_url() . '#pph-help-8001', $list['url'] );
-		$this->assertSame( '#pph-help-8001', $detail['url'] );
+		$this->assertSame( $order->get_view_order_url() . '#wpmphub-help-8001', $list['url'] );
+		$this->assertSame( '#wpmphub-help-8001', $detail['url'] );
 	}
 
 	/**
@@ -338,7 +338,7 @@ final class HelpTest extends TestCase {
 	 * @return void
 	 */
 	public function test_topics_are_filterable(): void {
-		FakeWordPress::$filters['pph_help_topics'][] = static function (): array {
+		FakeWordPress::$filters['wpmphub_help_topics'][] = static function (): array {
 			return array( 'only_this' );
 		};
 

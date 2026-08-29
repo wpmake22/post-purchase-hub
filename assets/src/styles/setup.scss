@@ -12,12 +12,12 @@
  * the controls inside the card are core's.
  */
 
-$pph-accent: #2271b1;
-$pph-accent-dark: #135e96;
-$pph-ink: #1d2327;
-$pph-muted: #50575e;
-$pph-line: #dcdcde;
-$pph-header: 64px;
+$wpmphub-accent: #2271b1;
+$wpmphub-accent-dark: #135e96;
+$wpmphub-ink: #1d2327;
+$wpmphub-muted: #50575e;
+$wpmphub-line: #dcdcde;
+$wpmphub-header: 64px;
 
 /**
  * The wizard prints its own document, so wp-admin's stylesheet — and with it
@@ -36,15 +36,15 @@ $pph-header: 64px;
 	width: 1px;
 }
 
-body.pph-setup-body {
+body.wpmphub-setup-body {
 	background: #f0f0f1;
 	margin: 0;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
 }
 
-.pph-setup {
-	color: $pph-ink;
+.wpmphub-setup {
+	color: $wpmphub-ink;
 	font-family: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	line-height: 1.5;
@@ -60,11 +60,11 @@ body.pph-setup-body {
 	&__header {
 		align-items: center;
 		background: #fff;
-		border-bottom: 1px solid $pph-line;
+		border-bottom: 1px solid $wpmphub-line;
 		box-sizing: border-box;
 		display: flex;
 		gap: 1.5rem;
-		height: $pph-header;
+		height: $wpmphub-header;
 		left: 0;
 		padding: 0 1.5rem;
 		position: fixed;
@@ -129,8 +129,8 @@ body.pph-setup-body {
 		&:not(:disabled) {
 			cursor: pointer;
 
-			&:hover .pph-setup__step-label {
-				color: $pph-ink;
+			&:hover .wpmphub-setup__step-label {
+				color: $wpmphub-ink;
 			}
 		}
 	}
@@ -149,30 +149,30 @@ body.pph-setup-body {
 	}
 
 	&__step-line {
-		background: $pph-line;
+		background: $wpmphub-line;
 		flex: 1;
 		height: 2px;
 		margin: 0 0.75rem;
 		min-width: 1rem;
 	}
 
-	.pph-setup__step.is-current .pph-setup__step-button {
-		color: $pph-accent;
+	.wpmphub-setup__step.is-current .wpmphub-setup__step-button {
+		color: $wpmphub-accent;
 		font-weight: 600;
 	}
 
-	.pph-setup__step.is-done .pph-setup__step-button {
-		color: $pph-accent;
+	.wpmphub-setup__step.is-done .wpmphub-setup__step-button {
+		color: $wpmphub-accent;
 	}
 
-	.pph-setup__step.is-done .pph-setup__step-marker {
-		background: $pph-accent;
+	.wpmphub-setup__step.is-done .wpmphub-setup__step-marker {
+		background: $wpmphub-accent;
 		color: #fff;
 	}
 
-	.pph-setup__step.is-done .pph-setup__step-line,
-	.pph-setup__step.is-done + .pph-setup__step .pph-setup__step-line {
-		background: $pph-accent;
+	.wpmphub-setup__step.is-done .wpmphub-setup__step-line,
+	.wpmphub-setup__step.is-done + .wpmphub-setup__step .wpmphub-setup__step-line {
+		background: $wpmphub-accent;
 	}
 
 	&__exit {
@@ -186,7 +186,7 @@ body.pph-setup-body {
 		padding: 0.25rem 0.5rem;
 
 		&:hover {
-			color: $pph-ink;
+			color: $wpmphub-ink;
 		}
 	}
 
@@ -195,12 +195,12 @@ body.pph-setup-body {
 		box-sizing: border-box;
 		display: flex;
 		justify-content: center;
-		padding: calc(#{$pph-header} + 2rem) 1rem 4rem;
+		padding: calc(#{$wpmphub-header} + 2rem) 1rem 4rem;
 	}
 
 	&__card {
 		background: #fff;
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 6px;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 		box-sizing: border-box;
@@ -227,7 +227,7 @@ body.pph-setup-body {
 	}
 
 	&__help {
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		margin: 0 0 1.5rem;
 	}
 
@@ -244,7 +244,7 @@ body.pph-setup-body {
 
 	&__choice {
 		align-items: flex-start;
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 5px;
 		cursor: pointer;
 		display: flex;
@@ -258,7 +258,7 @@ body.pph-setup-body {
 
 		&.is-selected {
 			background: #f0f6fc;
-			border-color: $pph-accent;
+			border-color: $wpmphub-accent;
 		}
 
 		input {
@@ -278,7 +278,7 @@ body.pph-setup-body {
 	}
 
 	&__choice-help {
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		display: block;
 		margin-top: 0.25rem;
 	}
@@ -286,7 +286,7 @@ body.pph-setup-body {
 	/* Detected facts and warnings. */
 	&__detected {
 		background: #f6f7f7;
-		border-left: 4px solid $pph-accent;
+		border-left: 4px solid $wpmphub-accent;
 		margin: 0 0 1.5rem;
 		padding: 0.75rem 1rem;
 
@@ -303,7 +303,7 @@ body.pph-setup-body {
 	}
 
 	&__note {
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		font-size: 13px;
 		margin: 1.5rem 0 0;
 	}
@@ -346,11 +346,11 @@ body.pph-setup-body {
 	}
 
 	&__field-suffix {
-		color: $pph-muted;
+		color: $wpmphub-muted;
 	}
 
 	&__disclosure {
-		border-top: 1px solid $pph-line;
+		border-top: 1px solid $wpmphub-line;
 		margin-top: 1.5rem;
 		padding-top: 1rem;
 
@@ -367,7 +367,7 @@ body.pph-setup-body {
 
 	&__preview {
 		background: #fbfbfc;
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 5px;
 		padding: 1rem 1.25rem;
 	}
@@ -390,7 +390,7 @@ body.pph-setup-body {
 	/* Buttons and the footer they sit in. */
 	&__footer {
 		align-items: center;
-		border-top: 1px solid $pph-line;
+		border-top: 1px solid $wpmphub-line;
 		display: flex;
 		justify-content: space-between;
 		margin-top: 2rem;
@@ -411,8 +411,8 @@ body.pph-setup-body {
 	}
 
 	&__button {
-		background: $pph-accent;
-		border: 1px solid $pph-accent;
+		background: $wpmphub-accent;
+		border: 1px solid $wpmphub-accent;
 		border-radius: 3px;
 		color: #fff;
 		cursor: pointer;
@@ -427,8 +427,8 @@ body.pph-setup-body {
 		}
 
 		&:hover:not(:disabled) {
-			background: $pph-accent-dark;
-			border-color: $pph-accent-dark;
+			background: $wpmphub-accent-dark;
+			border-color: $wpmphub-accent-dark;
 			color: #fff;
 		}
 	}
@@ -436,7 +436,7 @@ body.pph-setup-body {
 	&__link-button {
 		background: none;
 		border: 0;
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		cursor: pointer;
 		font: inherit;
 		padding: 0.5rem 0;
@@ -448,7 +448,7 @@ body.pph-setup-body {
 		}
 
 		&:hover:not(:disabled) {
-			color: $pph-accent;
+			color: $wpmphub-accent;
 			text-decoration: underline;
 		}
 	}

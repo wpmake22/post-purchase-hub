@@ -40,7 +40,7 @@ final class WizardPage {
 	 *
 	 * @var string
 	 */
-	public const PAGE = 'pph-setup';
+	public const PAGE = 'wpmphub-setup';
 
 	/**
 	 * Capability required to run setup.
@@ -54,14 +54,14 @@ final class WizardPage {
 	 *
 	 * @var string
 	 */
-	public const HANDLE = 'pph-setup';
+	public const HANDLE = 'wpmphub-setup';
 
 	/**
 	 * Element the app mounts into.
 	 *
 	 * @var string
 	 */
-	public const ROOT_ID = 'pph-setup-wizard';
+	public const ROOT_ID = 'wpmphub-setup-wizard';
 
 	/**
 	 * Build directory, relative to the plugin root.
@@ -147,7 +147,7 @@ final class WizardPage {
 
 		wp_enqueue_script(
 			self::HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'setup.js',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'setup.js',
 			$asset['dependencies'],
 			$asset['version'],
 			true
@@ -155,7 +155,7 @@ final class WizardPage {
 
 		wp_enqueue_style(
 			self::HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'setup.css',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'setup.css',
 			array( 'wp-components' ),
 			$asset['version']
 		);
@@ -166,7 +166,7 @@ final class WizardPage {
 
 		wp_add_inline_script(
 			self::HANDLE,
-			'window.pphSetup = ' . wp_json_encode( self::app_data() ) . ';',
+			'window.wpmphubSetup = ' . wp_json_encode( self::app_data() ) . ';',
 			'before'
 		);
 	}
@@ -209,8 +209,8 @@ final class WizardPage {
 			wp_print_head_scripts();
 			?>
 		</head>
-		<body class="pph-setup-body">
-			<div id="<?php echo esc_attr( self::ROOT_ID ); ?>" data-pph-wizard></div>
+		<body class="wpmphub-setup-body">
+			<div id="<?php echo esc_attr( self::ROOT_ID ); ?>" data-wpmphub-wizard></div>
 			<?php wp_print_footer_scripts(); ?>
 		</body>
 		</html>
@@ -225,14 +225,14 @@ final class WizardPage {
 	 * @return array{version: string, dependencies: string[]}
 	 */
 	private function manifest(): array {
-		$path = PPH_PLUGIN_DIR . self::BUILD_PATH . 'setup.asset.php';
+		$path = WPMPHUB_PLUGIN_DIR . self::BUILD_PATH . 'setup.asset.php';
 
 		if ( is_readable( $path ) ) {
 			$asset = include $path;
 
 			if ( is_array( $asset ) ) {
 				return array(
-					'version'      => isset( $asset['version'] ) && is_string( $asset['version'] ) ? $asset['version'] : PPH_VERSION,
+					'version'      => isset( $asset['version'] ) && is_string( $asset['version'] ) ? $asset['version'] : WPMPHUB_VERSION,
 					'dependencies' => isset( $asset['dependencies'] ) && is_array( $asset['dependencies'] ) ? $asset['dependencies'] : array(),
 				);
 			}
@@ -241,7 +241,7 @@ final class WizardPage {
 		// A build that produced no manifest is a packaging fault, not a reason
 		// to serve an unversioned asset forever.
 		return array(
-			'version'      => PPH_VERSION,
+			'version'      => WPMPHUB_VERSION,
 			'dependencies' => array(),
 		);
 	}

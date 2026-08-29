@@ -17,7 +17,7 @@ namespace PostPurchaseHub\Actions;
  * that context — order number, status, where the order has got to, what is on
  * it — prepared once and read by three unrelated consumers: the form (which
  * shows the customer what it is about to attach), the email templates, and
- * whatever hooks `pph_help_submitted`.
+ * whatever hooks `wpmphub_help_submitted`.
  *
  * Every string here is already formatted for display, so the templates that
  * print it stay logic-free (CLAUDE.md hard rule 10) and the email escapes a

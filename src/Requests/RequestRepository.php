@@ -13,7 +13,7 @@ use PostPurchaseHub\Actions\RequestHistory;
 use PostPurchaseHub\Install\Schema;
 
 /**
- * The only class that reads or writes `pph_requests`.
+ * The only class that reads or writes `wpmphub_requests`.
  *
  * Every statement is prepared. Identifiers — the select list, the sort column,
  * the direction — come from whitelists in this file and in RequestQuery, never

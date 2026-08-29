@@ -199,7 +199,7 @@ final class ReorderControllerTest extends TestCase {
 		$request = $this->request( 20 );
 
 		$this->assertTrue( $this->controller->authorise( $request ) );
-		$this->assertInstanceOf( \WC_Order::class, $request->get_param( 'pph_order' ) );
+		$this->assertInstanceOf( \WC_Order::class, $request->get_param( 'wpmphub_order' ) );
 	}
 
 	/**
@@ -217,7 +217,7 @@ final class ReorderControllerTest extends TestCase {
 
 		$this->assertInstanceOf( \WP_Error::class, $denied );
 		$this->assertInstanceOf( \WP_Error::class, $missing );
-		$this->assertSame( 'pph_forbidden', $denied->get_error_code() );
+		$this->assertSame( 'wpmphub_forbidden', $denied->get_error_code() );
 		$this->assertSame( $missing->get_error_message(), $denied->get_error_message() );
 		$this->assertSame( 403, $denied->get_error_data()['status'] );
 	}
@@ -232,7 +232,7 @@ final class ReorderControllerTest extends TestCase {
 		$order = $this->order( 22, 0 );
 		$token = ( new TokenService() )->issue( $order->get_id(), $order->get_order_key() );
 
-		add_filter( 'pph_current_request_token', static fn (): string => $token );
+		add_filter( 'wpmphub_current_request_token', static fn (): string => $token );
 
 		$request = $this->request( 22 );
 
@@ -269,7 +269,7 @@ final class ReorderControllerTest extends TestCase {
 			$result = $this->controller->authorise( $this->request( 23 ) );
 
 			if ( $result instanceof \WP_Error ) {
-				$this->assertSame( 'pph_rate_limited', $result->get_error_code() );
+				$this->assertSame( 'wpmphub_rate_limited', $result->get_error_code() );
 				$this->assertSame( 429, $result->get_error_data()['status'] );
 
 				return;
@@ -303,7 +303,7 @@ final class ReorderControllerTest extends TestCase {
 		unset( $_SERVER['REMOTE_ADDR'] );
 
 		$this->assertInstanceOf( \WP_Error::class, $result );
-		$this->assertSame( 'pph_rate_limited', $result->get_error_code() );
+		$this->assertSame( 'wpmphub_rate_limited', $result->get_error_code() );
 		$this->assertSame( 429, $result->get_error_data()['status'] );
 	}
 
@@ -372,7 +372,7 @@ final class ReorderControllerTest extends TestCase {
 		$denied = $this->controller->confirm( $request );
 
 		$this->assertInstanceOf( \WP_Error::class, $denied );
-		$this->assertSame( 'pph_ineligible', $denied->get_error_code() );
+		$this->assertSame( 'wpmphub_ineligible', $denied->get_error_code() );
 		$this->assertSame( 403, $denied->get_error_data()['status'] );
 		$this->assertTrue( $this->cart->untouched() );
 	}
@@ -397,7 +397,7 @@ final class ReorderControllerTest extends TestCase {
 		$denied = $this->controller->confirm( $request );
 
 		$this->assertInstanceOf( \WP_Error::class, $denied );
-		$this->assertSame( 'pph_nothing_available', $denied->get_error_code() );
+		$this->assertSame( 'wpmphub_nothing_available', $denied->get_error_code() );
 		$this->assertTrue( $this->cart->untouched() );
 	}
 
@@ -411,7 +411,7 @@ final class ReorderControllerTest extends TestCase {
 		$denied = $this->controller->confirm( $this->request( 27 ) );
 
 		$this->assertInstanceOf( \WP_Error::class, $denied );
-		$this->assertSame( 'pph_forbidden', $denied->get_error_code() );
+		$this->assertSame( 'wpmphub_forbidden', $denied->get_error_code() );
 		$this->assertTrue( $this->cart->untouched() );
 	}
 

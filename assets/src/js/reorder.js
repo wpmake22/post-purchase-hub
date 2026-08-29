@@ -6,7 +6,7 @@
  * thing a link cannot do: confirming over POST, because filling a cart from a
  * GET is exactly what this feature exists not to do.
  *
- * Reads its configuration from `window.pphReorder`, localised by
+ * Reads its configuration from `window.wpmphubReorder`, localised by
  * Frontend\Assets: `restUrl` and `nonce`.
  */
 
@@ -16,7 +16,7 @@ import { __, sprintf } from '@wordpress/i18n';
 	'use strict';
 
 	/** @type {{restUrl: string, nonce: string}} */
-	const config = window.pphReorder || { restUrl: '', nonce: '' };
+	const config = window.wpmphubReorder || { restUrl: '', nonce: '' };
 
 	/**
 	 * Shows the inline error, with the support reference when there is one.
@@ -57,14 +57,14 @@ import { __, sprintf } from '@wordpress/i18n';
 	 * @return {string} 'merge' or 'replace'.
 	 */
 	function chosenMode( form ) {
-		const checked = form.querySelector( '[data-pph-reorder-mode]:checked' );
+		const checked = form.querySelector( '[data-wpmphub-reorder-mode]:checked' );
 
 		if ( checked instanceof HTMLInputElement ) {
 			return checked.value;
 		}
 
 		const fallback = form.querySelector(
-			'[data-pph-reorder-mode-default]'
+			'[data-wpmphub-reorder-mode-default]'
 		);
 
 		return fallback instanceof HTMLInputElement ? fallback.value : 'merge';
@@ -86,7 +86,7 @@ import { __, sprintf } from '@wordpress/i18n';
 		}
 
 		const orderIdField = form.querySelector(
-			'[data-pph-reorder-order-id]'
+			'[data-wpmphub-reorder-order-id]'
 		);
 		const orderId =
 			orderIdField instanceof HTMLInputElement
@@ -97,8 +97,8 @@ import { __, sprintf } from '@wordpress/i18n';
 			return;
 		}
 
-		const error = form.querySelector( '[data-pph-reorder-error]' );
-		const submit = form.querySelector( '[data-pph-reorder-confirm]' );
+		const error = form.querySelector( '[data-wpmphub-reorder-error]' );
+		const submit = form.querySelector( '[data-wpmphub-reorder-confirm]' );
 
 		hideError( error );
 
@@ -181,7 +181,7 @@ import { __, sprintf } from '@wordpress/i18n';
 	 * @return {void}
 	 */
 	function init() {
-		const form = document.querySelector( '[data-pph-reorder-form]' );
+		const form = document.querySelector( '[data-wpmphub-reorder-form]' );
 
 		if ( form instanceof HTMLFormElement ) {
 			form.addEventListener( 'submit', onSubmit );

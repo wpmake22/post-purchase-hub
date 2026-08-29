@@ -192,7 +192,7 @@ final class TimelineView {
 		 * @param string $format Date format string for wp_date().
 		 */
 		return (string) apply_filters(
-			'pph_timeline_date_format',
+			'wpmphub_timeline_date_format',
 			trim( (string) get_option( 'date_format', 'F j, Y' ) . ' ' . (string) get_option( 'time_format', 'g:i a' ) )
 		);
 	}

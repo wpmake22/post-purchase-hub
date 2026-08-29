@@ -2,7 +2,7 @@
 
 **Document status:** Phase 0 deliverable (pre-implementation)
 **Working plugin name:** WPMake Post-Purchase Hub for WooCommerce
-**Slug:** `wpmake-post-purchase-hub` · **Text domain:** `wpmake-post-purchase-hub` · **Prefix:** `pph_` · **Namespace:** `PostPurchaseHub\`
+**Slug:** `wpmake-post-purchase-hub` · **Text domain:** `wpmake-post-purchase-hub` · **Prefix:** `wpmphub_` · **Namespace:** `PostPurchaseHub\`
 **Target:** WordPress 6.5+ · PHP 8.1+ · WooCommerce (latest − 2) · HPOS-first
 
 > Naming note: WP.org and Woo trademark policy forbids leading with "WooCommerce". "Post-Purchase Hub for WooCommerce" is compliant; "WooCommerce Post-Purchase Hub" is not.
@@ -281,7 +281,7 @@ Carrier APIs · own PDF engine as v1 scope · automatic gateway refunds · walle
 | **Analytics** | Which products get returned and why | Aggregate reporting over request tables | Medium | Medium (Pro hook) | ❌ v1.1/Pro |
 | **Roles & permissions** | Support staff shouldn't need full shop-manager | Map to existing `edit_shop_orders`; no custom caps in v1 | Low | Low | ✅ (existing caps) |
 | **Import/export** | Migrating off a competitor | Not a real v1 need — no incumbent to migrate from | Low | Low | ❌ |
-| **REST API** | Internal frontend needs endpoints anyway | `pph/v1` namespace for the plugin's own actions, documented but not marketed | Medium | Medium | ✅ (internal) |
+| **REST API** | Internal frontend needs endpoints anyway | `wpmphub/v1` namespace for the plugin's own actions, documented but not marketed | Medium | Medium | ✅ (internal) |
 | **Webhooks** | Ops teams want lifecycle events | Woo webhook topics on request events | Low | Low | ❌ v1.2 |
 | **Background processing** | Bulk operations, retention cleanup | One daily WP-Cron cleanup job. Action Scheduler only if bulk ops ship. | Low | Low | ✅ (cron only) |
 | **Logs** | "The customer says they cancelled and we never saw it" | Immutable request event log rows + Woo order notes for anything order-affecting | Low | **High** — halves support-diagnosis time | ✅ |
@@ -333,7 +333,7 @@ Carrier APIs · own PDF engine as v1 scope · automatic gateway refunds · walle
 
 ## Integrations
 
-- Tracking adapters: AST, official Shipment Tracking, Woo native fulfilment, generic `pph_tracking_data` filter
+- Tracking adapters: AST, official Shipment Tracking, Woo native fulfilment, generic `wpmphub_tracking_data` filter
 - Invoice detection: common PDF invoice plugins → surface their download URL; else Woo print view
 - Compatibility guards: Subscriptions, Bookings, Deposits, Memberships, WPML/Polylang, caching plugins, HPOS
 - CAPTCHA hook point (reCAPTCHA/Turnstile) on guest lookup
@@ -346,11 +346,11 @@ Carrier APIs · own PDF engine as v1 scope · automatic gateway refunds · walle
 
 ## Developer / API
 
-- `pph/v1` REST: `POST /requests`, `GET /orders/{id}/timeline`, `POST /lookup`, `POST /reorder`
-- Filters: `pph_timeline_stages`, `pph_status_stage_map`, `pph_action_eligibility`, `pph_estimated_delivery`, `pph_tracking_adapters`, `pph_request_reasons`, `pph_locate_template`
-- Actions: `pph_request_created`, `pph_request_approved`, `pph_request_declined`
+- `wpmphub/v1` REST: `POST /requests`, `GET /orders/{id}/timeline`, `POST /lookup`, `POST /reorder`
+- Filters: `wpmphub_timeline_stages`, `wpmphub_status_stage_map`, `wpmphub_action_eligibility`, `wpmphub_estimated_delivery`, `wpmphub_tracking_adapters`, `wpmphub_request_reasons`, `wpmphub_locate_template`
+- Actions: `wpmphub_request_created`, `wpmphub_request_approved`, `wpmphub_request_declined`
 - Template overrides via theme directory (`yourtheme/wpmake-post-purchase-hub/`)
-- WP-CLI: `wp pph backfill-timeline`, `wp pph cleanup`
+- WP-CLI: `wp wpmphub backfill-timeline`, `wp wpmphub cleanup`
 
 ## Security
 
@@ -376,7 +376,7 @@ Carrier APIs · own PDF engine as v1 scope · automatic gateway refunds · walle
 | Feature | User value | Tech complexity | Dependencies | Priority |
 | --- | --- | --- | --- | --- |
 | Plugin foundation (bootstrap, autoload, activation, HPOS declaration) | — | Low | — | P0 |
-| Data layer: `pph_requests` (+ items), migrations, retention | — | Medium | Foundation | P0 |
+| Data layer: `wpmphub_requests` (+ items), migrations, retention | — | Medium | Foundation | P0 |
 | Timeline engine + transition recorder | High — answers "where is it" | Medium | Foundation | P0 |
 | Additive rendering layer (orders list + view order) | High — the surface everything lives on | **High** (theme long tail) | Timeline | P0 |
 | Estimated delivery range | **High** — the only unilateral WISMO lever | Medium | Timeline | P0 |
@@ -475,16 +475,16 @@ wpmake-post-purchase-hub/
 | **Custom Post Types** | ❌ | Requests are transactional records, not content. A CPT would inflate `wp_posts`, inherit revision/autosave/cron overhead, and expose requests to REST and search unless heavily suppressed. Rejected despite the free list table. |
 | **Custom Taxonomies** | ❌ | Reason codes are a bounded, filterable config array, not user-managed terms. |
 | **Custom Tables** | ✅ 2 tables | Justified in Phase 7. The admin queue needs indexed cross-order queries by status/type/date with sorting and pagination — the one workload meta storage handles badly. |
-| **Options API** | ✅ | Settings as a single serialised array (`pph_settings`, `autoload=yes`, one row) + non-autoloaded `pph_schema_version`, `pph_token_secret`, `pph_setup_state`. No option-per-setting sprawl. |
+| **Options API** | ✅ | Settings as a single serialised array (`wpmphub_settings`, `autoload=yes`, one row) + non-autoloaded `wpmphub_schema_version`, `wpmphub_token_secret`, `wpmphub_setup_state`. No option-per-setting sprawl. |
 | **Transients / Object Cache** | ✅ | Rate-limit counters, tracking-plugin detection, invoice-plugin detection, template-conflict scan results. Everything here is regenerable — never authoritative state. |
 | **User Meta** | ❌ | Nothing is per-user rather than per-order. |
-| **Post Meta / Order Meta (CRUD)** | ✅ | `_pph_timeline` (bounded array of forward status transitions, ~10 entries max), `_pph_eta` (cached computed range, invalidated on status/shipping change). Written via `$order->update_meta_data()` + `save()` so HPOS and legacy both work. Deliberately small and denormalised — this data is only ever read *with* its order. |
+| **Post Meta / Order Meta (CRUD)** | ✅ | `_wpmphub_timeline` (bounded array of forward status transitions, ~10 entries max), `_wpmphub_eta` (cached computed range, invalidated on status/shipping change). Written via `$order->update_meta_data()` + `save()` so HPOS and legacy both work. Deliberately small and denormalised — this data is only ever read *with* its order. |
 | **WP Cron** | ✅ 1 daily event | Retention cleanup (expired rate-limit rows, requests past retention, orphaned records). Single event, idempotent, bails fast. |
 | **Action Scheduler** | ❌ v1 | No bulk or long-running work in 1.0. Adopt in 1.1 when bulk approvals and analytics aggregation arrive — Woo already bundles it, so the dependency is free when actually needed. |
-| **REST API** | ✅ `pph/v1` | The frontend needs authenticated mutations for guests *and* logged-in users. REST gives proper permission callbacks, schema validation, and typed args — materially safer than `admin-ajax`. Guest auth via signed token in the request body, never the URL. |
+| **REST API** | ✅ `wpmphub/v1` | The frontend needs authenticated mutations for guests *and* logged-in users. REST gives proper permission callbacks, schema validation, and typed args — materially safer than `admin-ajax`. Guest auth via signed token in the request body, never the URL. |
 | **admin-ajax** | ❌ | Nothing needs it; two request paths means two auth paths means two places to get auth wrong. |
-| **Gutenberg / Blocks** | ✅ 2 blocks | `pph/order-lookup` and `pph/orders` (server-rendered, `render_callback`) so FSE and block-My-Account users are first-class. Registered via `block.json` + `@wordpress/scripts`. |
-| **Shortcodes** | ✅ 2 | `[pph_order_lookup]`, `[pph_orders]` — still the pragmatic path for classic themes and page builders. |
+| **Gutenberg / Blocks** | ✅ 2 blocks | `wpmphub/order-lookup` and `wpmphub/orders` (server-rendered, `render_callback`) so FSE and block-My-Account users are first-class. Registered via `block.json` + `@wordpress/scripts`. |
+| **Shortcodes** | ✅ 2 | `[wpmphub_order_lookup]`, `[wpmphub_orders]` — still the pragmatic path for classic themes and page builders. |
 | **Widgets** | ❌ | Legacy surface, no use case. |
 | **WP-CLI** | ✅ 2 commands | `backfill-timeline` (large stores, must not run in a request) and `cleanup`. Cheap, and the first thing support will ask for. |
 | **Settings API** | ✅ | Familiar, handles nonces and sanitisation callbacks correctly. Custom-rendered fields where needed, standard registration always. |
@@ -495,9 +495,9 @@ wpmake-post-purchase-hub/
 
 # PHASE 7 — DATABASE DESIGN
 
-Two tables. Both prefixed `{$wpdb->prefix}pph_`.
+Two tables. Both prefixed `{$wpdb->prefix}wpmphub_`.
 
-### `pph_requests`
+### `wpmphub_requests`
 
 Purpose: one row per customer-initiated request (cancellation in 1.0, returns in 1.1).
 
@@ -521,7 +521,7 @@ Purpose: one row per customer-initiated request (cancellation in 1.0, returns in
 
 Indexes: `PRIMARY(id)` · `KEY order_id (order_id)` · `KEY status_type_created (status, type, created_at)` (the queue's default query) · `KEY customer_id (customer_id)` · `KEY email_hash_created (customer_email_hash, created_at)` (per-customer rate limiting) · `KEY created_at (created_at)` (retention sweep).
 
-### `pph_request_items`
+### `wpmphub_request_items`
 
 Purpose: per-line-item detail for item-level requests.
 
@@ -539,7 +539,7 @@ Indexes: `PRIMARY(id)` · `KEY request_id (request_id)` · `KEY product_id (prod
 
 **Why two tables now rather than a JSON column.** 1.0 only ever writes whole-order cancellations, so a JSON blob would suffice today. But 1.1's item-level returns and 1.1's "top returned products" report both need item-granular queries, and retrofitting normalisation onto shipped JSON is a migration with a data-quality tail. Creating the second table at install with zero rows in 1.0 costs nothing and removes a known future migration. This is the one place where anticipating a roadmap item is cheaper than deferring.
 
-**Where the event log lives.** Not a third table. Request lifecycle events append to `pph_requests.admin_note`? No — that loses structure. They go to **Woo order notes** (merchant-visible, already searchable, already in the order's audit trail) plus, for security events only, the plugin's `Logger` writing to `WC_Logger` (`wpmake-post-purchase-hub` source, respects Woo's log retention). Rationale: a bespoke log table would duplicate two systems the merchant already checks, and log tables are the #1 cause of runaway plugin table growth.
+**Where the event log lives.** Not a third table. Request lifecycle events append to `wpmphub_requests.admin_note`? No — that loses structure. They go to **Woo order notes** (merchant-visible, already searchable, already in the order's audit trail) plus, for security events only, the plugin's `Logger` writing to `WC_Logger` (`wpmake-post-purchase-hub` source, respects Woo's log retention). Rationale: a bespoke log table would duplicate two systems the merchant already checks, and log tables are the #1 cause of runaway plugin table growth.
 
 **Explicitly not stored anywhere:** signed tokens (HMAC-verified statelessly), timeline stages (derived), estimated delivery (cached in order meta, recomputable), tracking numbers (owned by other plugins), plaintext customer emails beyond what Woo already stores.
 
@@ -549,14 +549,14 @@ Requests run roughly 2–8% of orders. A 5,000-orders/month store generates ~150
 
 ### Migration strategy
 
-- `pph_schema_version` option (non-autoloaded), integer. Checked on `plugins_loaded` at a cost of one cached option read; runs migrations only on mismatch.
+- `wpmphub_schema_version` option (non-autoloaded), integer. Checked on `plugins_loaded` at a cost of one cached option read; runs migrations only on mismatch.
 - `dbDelta()` for additive schema changes; explicit migration classes in `Install/Migrations/` for data transforms, each idempotent and individually re-runnable.
 - Migrations that could touch many rows run through WP-CLI or a batched cron task, never inline in an admin request.
-- Timeline backfill is opt-in (`wp pph backfill-timeline`), batched, resumable, and never automatic — it touches every order.
+- Timeline backfill is opt-in (`wp wpmphub backfill-timeline`), batched, resumable, and never automatic — it touches every order.
 
 ### Cleanup / uninstall
 
-`uninstall.php` respects a "Remove all data on uninstall" setting, default **off** (removing a merchant's return history by default is indefensible). When enabled: drop both tables, delete `pph_*` options, delete `_pph_*` order meta in batches via CRUD, clear transients and the cron event. Deactivation clears the cron event and transients only — never data.
+`uninstall.php` respects a "Remove all data on uninstall" setting, default **off** (removing a merchant's return history by default is indefensible). When enabled: drop both tables, delete `wpmphub_*` options, delete `_wpmphub_*` order meta in batches via CRUD, clear transients and the cron event. Deactivation clears the cron event and transients only — never data.
 
 ---
 
@@ -579,7 +579,7 @@ Anything else is rejected before any order is loaded.
 ```
 payload = order_id | order_key | expiry
 token   = base64url(payload) . '.' . hash_hmac('sha256', payload, $secret)
-$secret = get_option('pph_token_secret')   // 64 random bytes, generated at activation, non-autoloaded
+$secret = get_option('wpmphub_token_secret')   // 64 random bytes, generated at activation, non-autoloaded
 ```
 
 Rules:
@@ -702,7 +702,7 @@ Acceptance: scope frozen; returns confirmed out of 1.0; ETA confirmed in 1.0.
 ### Phase 1 — Foundation
 **30h** · Deps: Phase 0
 Deliverables: bootstrap with PHP/WP/Woo version guards, PSR-4 + container, activation/deactivation, HPOS declaration, schema installer + migrator, settings storage, logger, cache wrapper, WP-CLI shell, CI skeleton (PHPCS + PHPStan + PHPUnit + wp-env matrix).
-Acceptance: activates and deactivates cleanly on WP 6.5→latest × PHP 8.1–8.4 × HPOS on/off with zero notices; tables created; `pph_schema_version` set; PHPCS and PHPStan clean.
+Acceptance: activates and deactivates cleanly on WP 6.5→latest × PHP 8.1–8.4 × HPOS on/off with zero notices; tables created; `wpmphub_schema_version` set; PHPCS and PHPStan clean.
 Testing: activation/deactivation integration tests, migration idempotency test.
 
 ### Phase 2 — Core (timeline + rendering + ETA)
@@ -795,7 +795,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 
 ## Milestone 02 — Data Layer & Migrations
 **Goal:** schema exists, versioned and idempotent.
-**Tasks:** 1) `Install\Schema` with `dbDelta()` for both tables. 2) `Install\Migrator` keyed on `pph_schema_version`. 3) `Requests\RequestRepository` (create/read/update/query/count, all prepared, whitelisted ORDER BY). 4) `Requests\Request` model. 5) `uninstall.php` honouring the retention setting. 6) `wp pph cleanup`.
+**Tasks:** 1) `Install\Schema` with `dbDelta()` for both tables. 2) `Install\Migrator` keyed on `wpmphub_schema_version`. 3) `Requests\RequestRepository` (create/read/update/query/count, all prepared, whitelisted ORDER BY). 4) `Requests\Request` model. 5) `uninstall.php` honouring the retention setting. 6) `wp wpmphub cleanup`.
 **Files:** `src/Install/{Schema,Migrator}.php`, `src/Requests/{Request,RequestRepository}.php`, `uninstall.php`, `src/CLI/CleanupCommand.php`.
 **Acceptance:** tables created with the specified indexes; migrator runs once and is safe to re-run; uninstall removes nothing when retention is on and everything when off.
 **Tests:** schema assertions, repository CRUD, migration idempotency, uninstall both branches.
@@ -804,7 +804,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 
 ## Milestone 03 — Timeline Engine
 **Goal:** any order can be described as an ordered set of stages with timestamps where known.
-**Tasks:** 1) `Timeline\StageMap` with default stages + `pph_timeline_stages` / `pph_status_stage_map` filters. 2) Status auto-detection over recent orders (cached). 3) `Timeline\TransitionRecorder` on `woocommerce_order_status_changed`, writing a bounded `_pph_timeline` array via CRUD. 4) `Timeline\TimelineBuilder` producing a view model, including branch states (cancelled/refunded/failed/on-hold). 5) Graceful degradation for pre-activation orders. 6) `wp pph backfill-timeline` (batched, resumable).
+**Tasks:** 1) `Timeline\StageMap` with default stages + `wpmphub_timeline_stages` / `wpmphub_status_stage_map` filters. 2) Status auto-detection over recent orders (cached). 3) `Timeline\TransitionRecorder` on `woocommerce_order_status_changed`, writing a bounded `_wpmphub_timeline` array via CRUD. 4) `Timeline\TimelineBuilder` producing a view model, including branch states (cancelled/refunded/failed/on-hold). 5) Graceful degradation for pre-activation orders. 6) `wp wpmphub backfill-timeline` (batched, resumable).
 **Files:** `src/Timeline/{StageMap,TransitionRecorder,TimelineBuilder}.php`, `src/CLI/BackfillCommand.php`.
 **Acceptance:** timeline correct for a new order through the full lifecycle; correct-but-timestampless for historical orders; array never exceeds its cap; identical results with HPOS on and off; no order notes parsed.
 **Tests:** unit tests per status path; integration test asserting meta writes; HPOS/legacy parity test.
@@ -813,7 +813,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 
 ## Milestone 04 — Rendering Layer
 **Goal:** the timeline appears on the customer's order pages without breaking themes. *Highest-risk milestone.*
-**Tasks:** 1) `Frontend\Renderer` hooking `woocommerce_view_order`, `woocommerce_order_details_after_order_table`, `woocommerce_my_account_my_orders_column_*` (additive default). 2) `Frontend\TemplateLoader` with theme override support and a name whitelist. 3) Replacement mode via `woocommerce_locate_template`, opt-in only. 4) `Admin\TemplateConflictScanner` detecting theme overrides of the two target templates. 5) `[pph_orders]` shortcode + `pph/orders` block. 6) `Frontend\Assets` with endpoint-scoped conditional enqueue and no global CSS. 7) Accessible timeline markup (ordered list, text labels, contrast).
+**Tasks:** 1) `Frontend\Renderer` hooking `woocommerce_view_order`, `woocommerce_order_details_after_order_table`, `woocommerce_my_account_my_orders_column_*` (additive default). 2) `Frontend\TemplateLoader` with theme override support and a name whitelist. 3) Replacement mode via `woocommerce_locate_template`, opt-in only. 4) `Admin\TemplateConflictScanner` detecting theme overrides of the two target templates. 5) `[wpmphub_orders]` shortcode + `wpmphub/orders` block. 6) `Frontend\Assets` with endpoint-scoped conditional enqueue and no global CSS. 7) Accessible timeline markup (ordered list, text labels, contrast).
 **Files:** `src/Frontend/{Renderer,TemplateLoader,Shortcodes,Blocks,Assets}.php`, `templates/partials/timeline.php`, `templates/myaccount/{orders,view-order}.php`, `src/Admin/TemplateConflictScanner.php`, `assets/src/*`.
 **Acceptance:** renders correctly on the six-theme test set in additive mode; replacement mode warns before enabling when a conflict is detected; zero extra queries per orders-list row; no assets on non-order pages.
 **Tests:** Playwright screenshots per theme (desktop + mobile), query-count assertion, asset-scope assertion, keyboard-navigation pass.
@@ -822,7 +822,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 
 ## Milestone 05 — Estimated Delivery
 **Goal:** a shipped-but-untracked order still gives the customer a date.
-**Tasks:** 1) `Support\Dates` business-day arithmetic with weekend + holiday-list exclusion. 2) `Timeline\EstimatedDelivery` from handling time + shipping method transit config. 3) Range output, locale- and timezone-aware. 4) Cache in `_pph_eta`, invalidate on status or shipping change. 5) Suppress once real tracking data exists. 6) `pph_estimated_delivery` filter.
+**Tasks:** 1) `Support\Dates` business-day arithmetic with weekend + holiday-list exclusion. 2) `Timeline\EstimatedDelivery` from handling time + shipping method transit config. 3) Range output, locale- and timezone-aware. 4) Cache in `_wpmphub_eta`, invalidate on status or shipping change. 5) Suppress once real tracking data exists. 6) `wpmphub_estimated_delivery` filter.
 **Files:** `src/Support/Dates.php`, `src/Timeline/EstimatedDelivery.php`, `templates/partials/eta.php`.
 **Acceptance:** correct across DST boundaries, year boundaries, and a store timezone different from UTC; never shows a past date; disappears when tracking appears.
 **Tests:** unit tests over a date fixture table including DST and leap years.
@@ -840,7 +840,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 
 ## Milestone 07 — Action Engine
 **Goal:** the right buttons on the right orders.
-**Tasks:** 1) `Actions\ActionRegistry` with a registration API. 2) `Actions\EligibilityResolver` (status, age window, payment method, order/product type exclusions, per-order caps, cooldown) + `pph_action_eligibility` filter. 3) Hard exclusions for subscription and bookable orders. 4) Render actions in both list and detail contexts. 5) Reuse Woo's native `woocommerce_my_account_my_orders_actions` rather than duplicating it.
+**Tasks:** 1) `Actions\ActionRegistry` with a registration API. 2) `Actions\EligibilityResolver` (status, age window, payment method, order/product type exclusions, per-order caps, cooldown) + `wpmphub_action_eligibility` filter. 3) Hard exclusions for subscription and bookable orders. 4) Render actions in both list and detail contexts. 5) Reuse Woo's native `woocommerce_my_account_my_orders_actions` rather than duplicating it.
 **Files:** `src/Actions/{ActionRegistry,EligibilityResolver}.php`, `templates/partials/actions.php`, `src/Integrations/Compat/*.php`.
 **Acceptance:** eligibility matrix behaves exactly as specified across statuses × payment methods × order types; excluded types show no cancel or reorder button anywhere, including via direct REST call.
 **Tests:** exhaustive eligibility matrix unit test; REST-level test that ineligibility is enforced server-side, not just hidden in the UI.
@@ -876,7 +876,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 
 ## Milestone 11 — Guest Lookup & Signed Links
 **Goal:** no-login access without an enumeration oracle.
-**Tasks:** 1) `[pph_order_lookup]` + `pph/order-lookup` block. 2) `Rest\LookupController` — order number + email, `hash_equals` comparison, uniform response, uniform timing, rate limited. 3) Send-secure-link-on-failure behaviour (to the address on file only). 4) Token→short-lived cookie context exchange so the token leaves the URL after landing. 5) Nocache headers. 6) CAPTCHA filter hook. 7) Off by default until enabled in the wizard.
+**Tasks:** 1) `[wpmphub_order_lookup]` + `wpmphub/order-lookup` block. 2) `Rest\LookupController` — order number + email, `hash_equals` comparison, uniform response, uniform timing, rate limited. 3) Send-secure-link-on-failure behaviour (to the address on file only). 4) Token→short-lived cookie context exchange so the token leaves the URL after landing. 5) Nocache headers. 6) CAPTCHA filter hook. 7) Off by default until enabled in the wizard.
 **Files:** `src/Rest/LookupController.php`, `templates/lookup/{form,result}.php`, `src/Frontend/GuestContext.php`.
 **Acceptance:** correct pair returns the order; incorrect email returns an indistinguishable response; throttle triggers at the configured threshold; sequential order-number probing yields no information; page is not cached by WP Rocket or LiteSpeed; token is absent from the URL after the first navigation.
 **Tests:** enumeration test asserting response and timing equivalence; replay and tamper tests; cache-plugin verification; e2e guest journey.
@@ -894,7 +894,7 @@ Seventeen milestones. Each is independently testable and small enough to review 
 
 ## Milestone 13 — Invoice Access & Get Help
 **Goal:** two small tickets deflected cheaply.
-**Tasks:** 1) `Integrations\Invoices\Detector` for common invoice plugins → surface their URL; fall back to Woo's print view. 2) Explicitly no PDF generation. 3) Get Help form pre-filled with order number, status, items and timeline state; submits to a configurable email or a `pph_help_submitted` action for helpdesk integrations. 4) Rate limit + sanitisation.
+**Tasks:** 1) `Integrations\Invoices\Detector` for common invoice plugins → surface their URL; fall back to Woo's print view. 2) Explicitly no PDF generation. 3) Get Help form pre-filled with order number, status, items and timeline state; submits to a configurable email or a `wpmphub_help_submitted` action for helpdesk integrations. 4) Rate limit + sanitisation.
 **Files:** `src/Integrations/Invoices/Detector.php`, `src/Actions/{Invoice,Help}.php`, `templates/partials/help-form.php`.
 **Acceptance:** invoice button appears only when a source exists; help submission arrives with full context and no unescaped input; no PDF library is present in the codebase.
 **Tests:** detector tests with each plugin fixture; escaping test on the help email.
@@ -1028,7 +1028,7 @@ Customer journeys: view order → read timeline → request cancellation → rec
 **Given** an order created after activation that has moved Processing → Completed
 **When** the customer views the order
 **Then** stages up to Delivered show as complete with timestamps, and later stages show as pending
-*Error:* corrupt `_pph_timeline` meta → the timeline renders from status alone and logs a warning; it never fatals
+*Error:* corrupt `_wpmphub_timeline` meta → the timeline renders from status alone and logs a warning; it never fatals
 *Unauthorised:* a logged-out user without a token sees Woo's standard login prompt, no order data
 *Empty:* an order created before activation shows stages without timestamps and no error
 *Edge:* a cancelled order shows a terminal branch state, not a half-finished progress bar
@@ -1129,7 +1129,7 @@ Description leading with the deflected ticket, not the feature list · **an expl
 
 ## Upgrade notes
 
-1.0.0 is the initial release. Merchants upgrading from a pre-release must run the wizard again if the stage map changed. `wp pph backfill-timeline` is recommended, never automatic, and documented as safe to interrupt.
+1.0.0 is the initial release. Merchants upgrading from a pre-release must run the wizard again if the stage map changed. `wp wpmphub backfill-timeline` is recommended, never automatic, and documented as safe to interrupt.
 
 ## Known limitations (state these publicly)
 

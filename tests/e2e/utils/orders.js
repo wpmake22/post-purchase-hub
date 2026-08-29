@@ -5,11 +5,11 @@
  * API needs a cart and a checkout, and none of these specs are about
  * purchasing — they are about what the plugin shows once an order exists.
  *
- * Every order is tagged `_pph_e2e_fixture` so a spec can clean up after itself
+ * Every order is tagged `_wpmphub_e2e_fixture` so a spec can clean up after itself
  * without guessing which orders belong to it.
  */
 
-const FIXTURE_META = "_pph_e2e_fixture";
+const FIXTURE_META = "_wpmphub_e2e_fixture";
 
 /**
  * Runs PHP through WP-CLI and returns its stdout.
@@ -65,7 +65,7 @@ async function deleteFixtureOrders(requestUtils) {
 	const php = `
 		$orders = wc_get_orders( array( 'limit' => -1, 'meta_key' => '${FIXTURE_META}', 'meta_value' => '1', 'return' => 'ids', 'status' => 'any' ) );
 		foreach ( $orders as $id ) { $o = wc_get_order( $id ); if ( $o ) { $o->delete( true ); } }
-		global $wpdb; $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}pph_requests" );
+		global $wpdb; $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wpmphub_requests" );
 		echo count( $orders );
 	`.replace(/\s+/g, " ");
 

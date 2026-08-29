@@ -125,7 +125,7 @@ final class RequestLabelsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_it_honours_the_documented_reason_filter(): void {
-		FakeWordPress::$filters['pph_cancel_reason_code_labels'][] = static function ( array $labels ): array {
+		FakeWordPress::$filters['wpmphub_cancel_reason_code_labels'][] = static function ( array $labels ): array {
 			$labels['ordered_by_mistake'] = 'Bought the wrong thing';
 
 			return $labels;

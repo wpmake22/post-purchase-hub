@@ -54,8 +54,8 @@ if ( '' !== $help->placed_on ) {
 
 echo esc_html__( 'Reply to:', 'wpmake-post-purchase-hub' ) . ' ' . esc_html( $help->customer_email ) . "\n\n";
 
-foreach ( $help->items as $pph_item ) {
-	echo '- ' . esc_html( $pph_item ) . "\n";
+foreach ( $help->items as $wpmphub_item ) {
+	echo '- ' . esc_html( $wpmphub_item ) . "\n";
 }
 
 if ( $help->items_omitted > 0 ) {

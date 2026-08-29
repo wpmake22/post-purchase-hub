@@ -57,7 +57,7 @@ final class GuestLookupTest extends \WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 
-		// The plugin's own GuestContext registered `pph_current_request_token`
+		// The plugin's own GuestContext registered `wpmphub_current_request_token`
 		// at bootstrap, and it memoises the first token it resolves for the
 		// life of the process. Every test here mints a fresh secret and builds
 		// its own context, so that ambient one answers each later test with a
@@ -65,12 +65,12 @@ final class GuestLookupTest extends \WP_UnitTestCase {
 		// answer is the one that wins. Clearing it in tear_down does not work:
 		// WP_UnitTestCase snapshots the hooks in set_up and restores them
 		// afterwards, which puts it straight back.
-		remove_all_filters( 'pph_current_request_token' );
+		remove_all_filters( 'wpmphub_current_request_token' );
 
 		update_option( Activator::TOKEN_SECRET_OPTION, bin2hex( random_bytes( 64 ) ), '', false );
 
 		update_option(
-			'pph_settings',
+			'wpmphub_settings',
 			array(
 				GuestAccess::ENABLED_SETTING      => true,
 				GuestAccess::ACKNOWLEDGED_SETTING => true,
@@ -79,7 +79,7 @@ final class GuestLookupTest extends \WP_UnitTestCase {
 		);
 
 		add_filter(
-			'pph_lookup_time_floor_ms',
+			'wpmphub_lookup_time_floor_ms',
 			static function (): int {
 				return 0;
 			}
@@ -207,7 +207,7 @@ final class GuestLookupTest extends \WP_UnitTestCase {
 		$mailed = array();
 
 		add_action(
-			'pph_secure_link_requested',
+			'wpmphub_secure_link_requested',
 			static function ( $subject ) use ( &$mailed ): void {
 				$mailed[] = $subject->get_id();
 			}

@@ -74,7 +74,7 @@ final class ActionAvailability {
 		 * @param bool   $enabled   Whether the action is available.
 		 * @param string $action_id Action id.
 		 */
-		return (bool) apply_filters( 'pph_action_enabled', $enabled, $action_id );
+		return (bool) apply_filters( 'wpmphub_action_enabled', $enabled, $action_id );
 	}
 
 	/**
@@ -138,7 +138,7 @@ final class ActionAvailability {
 	 * @return array<string, mixed>
 	 */
 	private static function stored(): array {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 
 		if ( ! is_array( $settings ) || ! isset( $settings[ self::SETTING ] ) || ! is_array( $settings[ self::SETTING ] ) ) {
 			return array();

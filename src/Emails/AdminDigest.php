@@ -39,7 +39,7 @@ final class AdminDigest extends AbstractEmail {
 	 *
 	 * @var string
 	 */
-	public const LAST_SENT_OPTION = 'pph_digest_last_sent_at';
+	public const LAST_SENT_OPTION = 'wpmphub_digest_last_sent_at';
 
 	/**
 	 * Hook of this feature's own daily cron event.
@@ -75,7 +75,7 @@ final class AdminDigest extends AbstractEmail {
 	 * @param RequestRepository $requests Backs the counts this digest reports.
 	 */
 	public function __construct( private RequestRepository $requests ) {
-		$this->id             = 'pph_admin_digest';
+		$this->id             = 'wpmphub_admin_digest';
 		$this->customer_email = false;
 		$this->title          = __( 'Daily request digest', 'wpmake-post-purchase-hub' );
 		$this->description    = __( 'An opt-in daily summary of pending and new cancellation requests. Disabled by default.', 'wpmake-post-purchase-hub' );

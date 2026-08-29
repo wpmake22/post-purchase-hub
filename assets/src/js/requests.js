@@ -7,7 +7,7 @@
  * WordPress script dependency rather than bundled, for the handful of strings
  * this file itself needs to show without a page reload.
  *
- * Reads its configuration from `window.pphRequests`, localised by
+ * Reads its configuration from `window.wpmphubRequests`, localised by
  * Frontend\Assets: `restUrl`, `nonce`, and `strings`.
  */
 
@@ -17,9 +17,9 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 	'use strict';
 
 	/** @type {{restUrl: string, nonce: string}} */
-	const config = window.pphRequests || { restUrl: '', nonce: '' };
+	const config = window.wpmphubRequests || { restUrl: '', nonce: '' };
 
-	const TRIGGER_SELECTOR = 'a[href^="#pph-cancel-"]';
+	const TRIGGER_SELECTOR = 'a[href^="#wpmphub-cancel-"]';
 	const FOCUSABLE_SELECTOR =
 		'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -33,7 +33,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 	 * @return {number} Order id, or 0 when it cannot be read.
 	 */
 	function orderIdFromTrigger( trigger ) {
-		const match = /^#pph-cancel-(\d+)$/.exec(
+		const match = /^#wpmphub-cancel-(\d+)$/.exec(
 			trigger.getAttribute( 'href' ) || ''
 		);
 
@@ -60,7 +60,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 		resetForm();
 
 		const orderIdField = modal.querySelector(
-			'[data-pph-request-order-id]'
+			'[data-wpmphub-request-order-id]'
 		);
 
 		if ( orderIdField ) {
@@ -69,7 +69,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 
 		lastTrigger = trigger;
 		modal.hidden = false;
-		modal.setAttribute( 'data-pph-modal-open', 'true' );
+		modal.setAttribute( 'data-wpmphub-modal-open', 'true' );
 
 		const firstFocusable = modal.querySelector( FOCUSABLE_SELECTOR );
 
@@ -91,7 +91,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 		}
 
 		modal.hidden = true;
-		modal.removeAttribute( 'data-pph-modal-open' );
+		modal.removeAttribute( 'data-wpmphub-modal-open' );
 		document.removeEventListener( 'keydown', onKeydown, true );
 
 		if ( lastTrigger instanceof HTMLElement ) {
@@ -154,14 +154,14 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 			return;
 		}
 
-		const form = modal.querySelector( '[data-pph-request-form]' );
+		const form = modal.querySelector( '[data-wpmphub-request-form]' );
 		const formError = modal.querySelector(
-			'[data-pph-request-form-error]'
+			'[data-wpmphub-request-form-error]'
 		);
 		const reasonError = modal.querySelector(
-			'[data-pph-request-reason-error]'
+			'[data-wpmphub-request-reason-error]'
 		);
-		const submit = modal.querySelector( '[data-pph-request-submit]' );
+		const submit = modal.querySelector( '[data-wpmphub-request-submit]' );
 
 		if ( form instanceof HTMLFormElement ) {
 			form.hidden = false;
@@ -176,7 +176,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 			submit.removeAttribute( 'aria-busy' );
 		}
 
-		const success = modal.querySelector( '[data-pph-request-success]' );
+		const success = modal.querySelector( '[data-wpmphub-request-success]' );
 
 		if ( success instanceof HTMLElement ) {
 			success.remove();
@@ -229,12 +229,12 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 
 		const form = event.target;
 		const formError = modal.querySelector(
-			'[data-pph-request-form-error]'
+			'[data-wpmphub-request-form-error]'
 		);
 		const reasonError = modal.querySelector(
-			'[data-pph-request-reason-error]'
+			'[data-wpmphub-request-reason-error]'
 		);
-		const reasonField = form.querySelector( '[data-pph-request-reason]' );
+		const reasonField = form.querySelector( '[data-wpmphub-request-reason]' );
 
 		hideError( formError );
 		hideError( reasonError );
@@ -252,7 +252,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 			return;
 		}
 
-		const submit = modal.querySelector( '[data-pph-request-submit]' );
+		const submit = modal.querySelector( '[data-wpmphub-request-submit]' );
 
 		if ( submit instanceof HTMLButtonElement ) {
 			submit.disabled = true;
@@ -260,9 +260,9 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 		}
 
 		const orderIdField = form.querySelector(
-			'[data-pph-request-order-id]'
+			'[data-wpmphub-request-order-id]'
 		);
-		const noteField = form.querySelector( '[data-pph-request-note]' );
+		const noteField = form.querySelector( '[data-wpmphub-request-note]' );
 
 		const body = {
 			order_id:
@@ -317,7 +317,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 			return;
 		}
 
-		const form = modal.querySelector( '[data-pph-request-form]' );
+		const form = modal.querySelector( '[data-wpmphub-request-form]' );
 		const hours = Number( data.expected_response_hours ) || 24;
 
 		if ( form instanceof HTMLFormElement ) {
@@ -326,7 +326,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 
 		const success = document.createElement( 'p' );
 
-		success.setAttribute( 'data-pph-request-success', '' );
+		success.setAttribute( 'data-wpmphub-request-success', '' );
 		success.setAttribute( 'role', 'status' );
 		success.textContent = sprintf(
 			/* translators: %d: expected response time in hours. */
@@ -339,7 +339,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 			hours
 		);
 
-		modal.querySelector( '.pph-modal__panel' ).appendChild( success );
+		modal.querySelector( '.wpmphub-modal__panel' ).appendChild( success );
 
 		updateTimeline( orderId, hours );
 	}
@@ -357,40 +357,40 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 	 */
 	function updateTimeline( orderId, hours ) {
 		const timeline = document.querySelector(
-			'[data-pph-timeline][data-pph-order-id="' + orderId + '"]'
+			'[data-wpmphub-timeline][data-wpmphub-order-id="' + orderId + '"]'
 		);
 
 		if ( ! timeline ) {
 			return;
 		}
 
-		let branch = timeline.querySelector( '[data-pph-branch]' );
+		let branch = timeline.querySelector( '[data-wpmphub-branch]' );
 
 		if ( ! branch ) {
 			branch = document.createElement( 'p' );
 			branch.className =
-				'pph-timeline__branch pph-timeline__branch--cancellation_requested';
-			branch.setAttribute( 'data-pph-branch', 'cancellation_requested' );
+				'wpmphub-timeline__branch wpmphub-timeline__branch--cancellation_requested';
+			branch.setAttribute( 'data-wpmphub-branch', 'cancellation_requested' );
 
 			const label = document.createElement( 'strong' );
 
-			label.className = 'pph-timeline__branch-label';
-			label.setAttribute( 'data-pph-branch-label', '' );
+			label.className = 'wpmphub-timeline__branch-label';
+			label.setAttribute( 'data-wpmphub-branch-label', '' );
 			branch.appendChild( label );
 
 			const note = document.createElement( 'span' );
 
-			note.className = 'pph-timeline__branch-note';
-			note.setAttribute( 'data-pph-branch-note', '' );
+			note.className = 'wpmphub-timeline__branch-note';
+			note.setAttribute( 'data-wpmphub-branch-note', '' );
 			branch.appendChild( note );
 
 			timeline.appendChild( branch );
 		}
 
-		branch.setAttribute( 'data-pph-branch', 'cancellation_requested' );
+		branch.setAttribute( 'data-wpmphub-branch', 'cancellation_requested' );
 
-		const label = branch.querySelector( '[data-pph-branch-label]' );
-		const note = branch.querySelector( '[data-pph-branch-note]' );
+		const label = branch.querySelector( '[data-wpmphub-branch-label]' );
+		const note = branch.querySelector( '[data-wpmphub-branch-note]' );
 
 		if ( label ) {
 			label.textContent = __(
@@ -431,7 +431,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 		}
 
 		const formError = modal.querySelector(
-			'[data-pph-request-form-error]'
+			'[data-wpmphub-request-form-error]'
 		);
 		const message =
 			data && data.message
@@ -462,7 +462,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 	 * @return {void}
 	 */
 	function init() {
-		modal = document.querySelector( '[data-pph-request-modal]' );
+		modal = document.querySelector( '[data-wpmphub-request-modal]' );
 
 		if ( ! modal ) {
 			return;
@@ -479,14 +479,14 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 			}
 
 			if (
-				event.target.closest( '[data-pph-modal-close]' ) ||
-				event.target.closest( '[data-pph-modal-backdrop]' )
+				event.target.closest( '[data-wpmphub-modal-close]' ) ||
+				event.target.closest( '[data-wpmphub-modal-backdrop]' )
 			) {
 				closeModal();
 			}
 		} );
 
-		const form = modal.querySelector( '[data-pph-request-form]' );
+		const form = modal.querySelector( '[data-wpmphub-request-form]' );
 
 		if ( form instanceof HTMLFormElement ) {
 			form.addEventListener( 'submit', onSubmit );

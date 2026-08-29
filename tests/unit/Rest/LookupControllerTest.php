@@ -66,7 +66,7 @@ final class LookupControllerTest extends TestCase {
 		);
 
 		add_filter(
-			'pph_lookup_time_floor_ms',
+			'wpmphub_lookup_time_floor_ms',
 			static function (): int {
 				return 2;
 			}
@@ -79,7 +79,7 @@ final class LookupControllerTest extends TestCase {
 	 * @return void
 	 */
 	private function enable(): void {
-		FakeWordPress::$options['pph_settings'] = array(
+		FakeWordPress::$options['wpmphub_settings'] = array(
 			GuestAccess::ENABLED_SETTING      => true,
 			GuestAccess::ACKNOWLEDGED_SETTING => true,
 		);
@@ -147,7 +147,7 @@ final class LookupControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_disabled_store_registers_no_route(): void {
-		FakeWordPress::$options['pph_settings'] = array();
+		FakeWordPress::$options['wpmphub_settings'] = array();
 
 		$this->controller->register_routes();
 
@@ -161,12 +161,12 @@ final class LookupControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_permission_callback_refuses_a_disabled_store(): void {
-		FakeWordPress::$options['pph_settings'] = array();
+		FakeWordPress::$options['wpmphub_settings'] = array();
 
 		$denial = $this->controller->authorise( new \WP_REST_Request() );
 
 		$this->assertInstanceOf( \WP_Error::class, $denial );
-		$this->assertSame( 'pph_lookup_unavailable', $denial->get_error_code() );
+		$this->assertSame( 'wpmphub_lookup_unavailable', $denial->get_error_code() );
 	}
 
 	/**
@@ -250,7 +250,7 @@ final class LookupControllerTest extends TestCase {
 	 */
 	public function test_paired_requests_are_indistinguishable(): void {
 		add_filter(
-			'pph_lookup_time_floor_ms',
+			'wpmphub_lookup_time_floor_ms',
 			static function (): int {
 				return 0;
 			},
@@ -307,7 +307,7 @@ final class LookupControllerTest extends TestCase {
 		$floor_ms = 8;
 
 		add_filter(
-			'pph_lookup_time_floor_ms',
+			'wpmphub_lookup_time_floor_ms',
 			static function () use ( $floor_ms ): int {
 				return $floor_ms;
 			},

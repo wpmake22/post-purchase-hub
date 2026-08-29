@@ -24,4 +24,4 @@ parameters:
 	# in source is not its value in either distribution. Without this, PHPStan
 	# folds it to the literal and calls the Pro branch unreachable.
 	dynamicConstantNames:
-		- PPH_EDITION
+		- WPMPHUB_EDITION

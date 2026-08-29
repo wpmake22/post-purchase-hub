@@ -79,12 +79,15 @@ if ( is_file( $free_zip ) ) {
 	// check guards the requirement rather than the old habit.
 	check( 'contains source assets', has_prefix( $files, SLUG . '/assets/src/' ) );
 	check( 'contains build tooling', in_array( SLUG . '/package.json', $files, true ) && in_array( SLUG . '/webpack.config.js', $files, true ) );
-	check( 'no dev config', ! has_any_suffix( $files, array( 'phpcs.xml.dist', 'phpstan.neon.dist', 'composer.lock', 'CLAUDE.md' ) ) );
+	check( 'no dev config', ! has_any_suffix( $files, array( 'phpcs.xml.dist', 'phpstan.neon.dist', 'composer.lock', 'CLAUDE.md', 'eslint.config.cjs' ) ) );
+	// WP.org allows php/js/css/txt/md, common media and json/xml, and asks about
+	// anything else. It asked about `.cjs` in the second review round.
+	check( 'no unexpected file types', ! has_unexpected_types( $files ) );
 
 	// Headers.
 	$main = read_zip_entry( $free_zip, SLUG . '/' . MAIN_FILE );
 	check( "Version header is {$version}", header_value( $main, 'Version' ) === $version );
-	check( 'edition constant is free', (bool) preg_match( "/define\(\s*'PPH_EDITION'\s*,\s*'free'\s*\)/", $main ) );
+	check( 'edition constant is free', (bool) preg_match( "/define\(\s*'WPMPHUB_EDITION'\s*,\s*'free'\s*\)/", $main ) );
 	check( 'no Update URI header', ! preg_match( '/^\s*\*\s*Update URI:/m', $main ) );
 
 	$readme = read_zip_entry( $free_zip, SLUG . '/readme.txt' );
@@ -115,7 +118,7 @@ if ( is_file( $pro_zip ) ) {
 
 	$main = read_zip_entry( $pro_zip, SLUG . '/' . MAIN_FILE );
 	check( "Version header is {$version}", header_value( $main, 'Version' ) === $version );
-	check( 'edition constant is pro', (bool) preg_match( "/define\(\s*'PPH_EDITION'\s*,\s*'pro'\s*\)/", $main ) );
+	check( 'edition constant is pro', (bool) preg_match( "/define\(\s*'WPMPHUB_EDITION'\s*,\s*'pro'\s*\)/", $main ) );
 
 	// Without Update URI, WP.org will overwrite a paying customer's Pro install
 	// with the free version on the next update check.
@@ -329,6 +332,31 @@ function has_any_suffix( array $files, array $suffixes ): bool {
 			if ( str_ends_with( $f, $s ) ) {
 				return true;
 			}
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Whether the artifact holds a file type WP.org does not expect in a plugin.
+ * Extensionless files, such as vendor LICENSE files, are left alone.
+ *
+ * @param string[] $files Entries.
+ * @return bool
+ */
+function has_unexpected_types( array $files ): bool {
+	$allowed = array( 'php', 'js', 'json', 'css', 'scss', 'txt', 'md', 'html', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'woff', 'woff2', 'po', 'pot', 'mo', 'xml' );
+
+	foreach ( $files as $file ) {
+		if ( str_ends_with( $file, '/' ) ) {
+			continue;
+		}
+
+		$ext = strtolower( (string) pathinfo( $file, PATHINFO_EXTENSION ) );
+
+		if ( '' !== $ext && ! in_array( $ext, $allowed, true ) ) {
+			return true;
 		}
 	}
 

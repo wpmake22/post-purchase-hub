@@ -196,12 +196,12 @@ final class DetectorTest extends TestCase {
 	}
 
 	/**
-	 * The `pph_invoice_source` filter can supply a source for a plugin no adapter covers.
+	 * The `wpmphub_invoice_source` filter can supply a source for a plugin no adapter covers.
 	 *
 	 * @return void
 	 */
 	public function test_the_filter_can_supply_a_source(): void {
-		FakeWordPress::$filters['pph_invoice_source'][] = static function () {
+		FakeWordPress::$filters['wpmphub_invoice_source'][] = static function () {
 			return new InvoiceSource( InvoiceSource::KIND_DOCUMENT, 'https://shop.test/filtered.pdf', 'someone-else' );
 		};
 
@@ -217,7 +217,7 @@ final class DetectorTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_filter_can_remove_a_source(): void {
-		FakeWordPress::$filters['pph_invoice_source'][] = static function () {
+		FakeWordPress::$filters['wpmphub_invoice_source'][] = static function () {
 			return null;
 		};
 

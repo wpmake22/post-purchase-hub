@@ -8,7 +8,7 @@
  * identical for every outcome and there is nothing here to branch on.
  */
 
-const SETTINGS = window.pphLookup || {};
+const SETTINGS = window.wpmphubLookup || {};
 
 /**
  * Replaces a form's notice with a message.
@@ -18,9 +18,9 @@ const SETTINGS = window.pphLookup || {};
  * @param {string}          type    Notice type, for styling only.
  */
 function showNotice( form, message, type ) {
-	const container = form.closest( '[data-pph-lookup]' ) || form.parentNode;
+	const container = form.closest( '[data-wpmphub-lookup]' ) || form.parentNode;
 
-	let notice = container.querySelector( '[data-pph-lookup-notice]' );
+	let notice = container.querySelector( '[data-wpmphub-lookup-notice]' );
 
 	if ( ! notice ) {
 		notice = document.createElement( 'p' );
@@ -28,8 +28,8 @@ function showNotice( form, message, type ) {
 		container.insertBefore( notice, container.firstChild );
 	}
 
-	notice.className = `pph-lookup__notice pph-lookup__notice--${ type }`;
-	notice.setAttribute( 'data-pph-lookup-notice', type );
+	notice.className = `wpmphub-lookup__notice wpmphub-lookup__notice--${ type }`;
+	notice.setAttribute( 'data-wpmphub-lookup-notice', type );
 	notice.textContent = message;
 }
 
@@ -47,14 +47,14 @@ async function submit( event ) {
 
 	event.preventDefault();
 
-	const number = form.querySelector( '[data-pph-lookup-number]' );
-	const email = form.querySelector( '[data-pph-lookup-email]' );
+	const number = form.querySelector( '[data-wpmphub-lookup-number]' );
+	const email = form.querySelector( '[data-wpmphub-lookup-email]' );
 
 	if ( ! number || ! email ) {
 		return;
 	}
 
-	const button = form.querySelector( '[data-pph-lookup-submit]' );
+	const button = form.querySelector( '[data-wpmphub-lookup-submit]' );
 
 	if ( button ) {
 		button.disabled = true;
@@ -100,7 +100,7 @@ async function submit( event ) {
 document.addEventListener( 'submit', ( event ) => {
 	if (
 		event.target instanceof HTMLFormElement &&
-		event.target.matches( '[data-pph-lookup-form]' )
+		event.target.matches( '[data-wpmphub-lookup-form]' )
 	) {
 		submit( event );
 	}

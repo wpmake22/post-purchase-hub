@@ -31,12 +31,12 @@ export default function Actions( { actions, value, onChange } ) {
 				'wpmake-post-purchase-hub'
 			) }
 		>
-			<div className="pph-setup__toggles">
+			<div className="wpmphub-setup__toggles">
 				{ actions.map( ( action ) => (
 					<div
-						className="pph-setup__toggle"
+						className="wpmphub-setup__toggle"
 						key={ action.id }
-						data-pph-wizard-action={ action.id }
+						data-wpmphub-wizard-action={ action.id }
 					>
 						<ToggleControl
 							__nextHasNoMarginBottom

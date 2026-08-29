@@ -18,16 +18,16 @@ if ( empty( $eta['visible'] ) ) {
 	return;
 }
 ?>
-<p class="pph-eta" data-pph-eta>
-	<span class="pph-eta__label" data-pph-eta-label>
+<p class="wpmphub-eta" data-wpmphub-eta>
+	<span class="wpmphub-eta__label" data-wpmphub-eta-label>
 		<?php esc_html_e( 'Estimated delivery:', 'wpmake-post-purchase-hub' ); ?>
 	</span>
 
 	<time
-		class="pph-eta__range"
+		class="wpmphub-eta__range"
 		datetime="<?php echo esc_attr( $eta['start'] ); ?>"
-		data-pph-eta-start="<?php echo esc_attr( $eta['start'] ); ?>"
-		data-pph-eta-end="<?php echo esc_attr( $eta['end'] ); ?>"
+		data-wpmphub-eta-start="<?php echo esc_attr( $eta['start'] ); ?>"
+		data-wpmphub-eta-end="<?php echo esc_attr( $eta['end'] ); ?>"
 	>
 		<?php echo esc_html( $eta['label'] ); ?>
 	</time>

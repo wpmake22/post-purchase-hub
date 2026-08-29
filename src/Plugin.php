@@ -884,8 +884,8 @@ final class Plugin {
 		$this->mailer()->register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command( 'pph cleanup', new CleanupCommand( $this->sweeper() ) );
-			\WP_CLI::add_command( 'pph backfill-timeline', new BackfillCommand( $this->transition_recorder(), $this->stage_map() ) );
+			\WP_CLI::add_command( 'wpmphub cleanup', new CleanupCommand( $this->sweeper() ) );
+			\WP_CLI::add_command( 'wpmphub backfill-timeline', new BackfillCommand( $this->transition_recorder(), $this->stage_map() ) );
 		}
 
 		// Registered unconditionally and early: a stored stage map is what the
@@ -893,7 +893,7 @@ final class Plugin {
 		// storefront, the admin queue, the emails and WP-CLI alike.
 		$this->stage_map_config()->register();
 
-		// Core's own actions fill the registry before pph_loaded fires, so
+		// Core's own actions fill the registry before wpmphub_loaded fires, so
 		// anything hooking that action — Pro, a filter-driven extension — sees
 		// core's actions already registered rather than racing them.
 		$this->cancel()->register( $this->action_registry() );
@@ -912,7 +912,7 @@ final class Plugin {
 		 *
 		 * @param Plugin $plugin The service container.
 		 */
-		do_action( 'pph_loaded', $this );
+		do_action( 'wpmphub_loaded', $this );
 	}
 
 	/**

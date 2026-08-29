@@ -22,12 +22,12 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 export default function Stepper( { steps, current, onStepClick, onExit } ) {
 	return (
-		<header className="pph-setup__header" data-pph-wizard-progress>
-			<p className="pph-setup__brand">
+		<header className="wpmphub-setup__header" data-wpmphub-wizard-progress>
+			<p className="wpmphub-setup__brand">
 				{ __( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ) }
 			</p>
 
-			<ol className="pph-setup__steps">
+			<ol className="wpmphub-setup__steps">
 				{ steps.map( ( step, index ) => {
 					const done = step.number < current;
 					const isCurrent = step.number === current;
@@ -36,35 +36,35 @@ export default function Stepper( { steps, current, onStepClick, onExit } ) {
 						<li
 							key={ step.id }
 							className={ [
-								'pph-setup__step',
+								'wpmphub-setup__step',
 								done ? 'is-done' : '',
 								isCurrent ? 'is-current' : '',
 							]
 								.filter( Boolean )
 								.join( ' ' ) }
-							data-pph-wizard-step-item={ step.id }
+							data-wpmphub-wizard-step-item={ step.id }
 						>
 							<button
 								type="button"
-								className="pph-setup__step-button"
+								className="wpmphub-setup__step-button"
 								disabled={ ! done }
 								aria-current={ isCurrent ? 'step' : undefined }
 								onClick={ () => onStepClick( step.number ) }
 							>
 								<span
-									className="pph-setup__step-marker"
+									className="wpmphub-setup__step-marker"
 									aria-hidden="true"
 								>
 									{ done ? '✓' : step.number }
 								</span>
-								<span className="pph-setup__step-label">
+								<span className="wpmphub-setup__step-label">
 									{ step.label }
 								</span>
 							</button>
 
 							{ index < steps.length - 1 && (
 								<span
-									className="pph-setup__step-line"
+									className="wpmphub-setup__step-line"
 									aria-hidden="true"
 								/>
 							) }
@@ -75,9 +75,9 @@ export default function Stepper( { steps, current, onStepClick, onExit } ) {
 
 			<button
 				type="button"
-				className="pph-setup__exit"
+				className="wpmphub-setup__exit"
 				onClick={ onExit }
-				data-pph-wizard-exit
+				data-wpmphub-wizard-exit
 				title={ sprintf(
 					/* translators: %s: number of steps in the wizard. */
 					__(

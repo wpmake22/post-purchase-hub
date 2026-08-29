@@ -84,7 +84,7 @@ final class TemplateConflictScannerTest extends \WP_UnitTestCase {
 	public function test_replacement_refuses_to_enable_on_a_conflict(): void {
 		$this->use_conflicting_theme();
 
-		update_option( 'pph_settings', array( TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT ) );
+		update_option( 'wpmphub_settings', array( TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT ) );
 
 		$plugin = new Plugin();
 		$plugin->conflict_scanner()->conflicts( true );

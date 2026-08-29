@@ -5,7 +5,7 @@
  * be told the same thing whatever happens, follow the emailed link, land on the
  * order with the token gone from the address bar.
  *
- * Every selector is a plugin-owned `data-pph-*` attribute, per tests/e2e/README.
+ * Every selector is a plugin-owned `data-wpmphub-*` attribute, per tests/e2e/README.
  *
  * Guest lookup is off until a merchant enables it and acknowledges what it
  * means (CLAUDE.md hard rule 15), so these specs set both flags through the CLI
@@ -15,13 +15,13 @@
 const { test, expect } = require("@wordpress/e2e-test-utils-playwright");
 const { completeSetup } = require("./utils/setup");
 
-const FORM = "[data-pph-lookup-form]";
-const NOTICE = "[data-pph-lookup-notice]";
-const NUMBER = "[data-pph-lookup-number]";
-const EMAIL = "[data-pph-lookup-email]";
-const TIMELINE = "[data-pph-timeline]";
-const GUEST_ORDER = "[data-pph-guest-order]";
-const ACTIONS = "[data-pph-actions]";
+const FORM = "[data-wpmphub-lookup-form]";
+const NOTICE = "[data-wpmphub-lookup-notice]";
+const NUMBER = "[data-wpmphub-lookup-number]";
+const EMAIL = "[data-wpmphub-lookup-email]";
+const TIMELINE = "[data-wpmphub-timeline]";
+const GUEST_ORDER = "[data-wpmphub-guest-order]";
+const ACTIONS = "[data-wpmphub-actions]";
 
 const LOOKUP_PAGE_TITLE = "Track my order";
 
@@ -37,7 +37,7 @@ async function setGuestLookup(requestUtils, guestLookupOn, acknowledged) {
 		method: "POST",
 		path: "/wp/v2/settings",
 		data: {
-			pph_settings: {
+			wpmphub_settings: {
 				guest_lookup_enabled: guestLookupOn,
 				guest_lookup_acknowledged: acknowledged,
 			},
@@ -55,7 +55,7 @@ test.describe("Guest order lookup", () => {
 		lookupPage = await requestUtils.createPage({
 			title: LOOKUP_PAGE_TITLE,
 			content:
-				"<!-- wp:shortcode -->[pph_order_lookup]<!-- /wp:shortcode -->",
+				"<!-- wp:shortcode -->[wpmphub_order_lookup]<!-- /wp:shortcode -->",
 			status: "publish",
 		});
 	});
@@ -96,7 +96,7 @@ test.describe("Guest order lookup", () => {
 
 			await page.locator(NUMBER).fill("99999999");
 			await page.locator(EMAIL).fill("nobody@example.com");
-			await page.locator("[data-pph-lookup-submit]").click();
+			await page.locator("[data-wpmphub-lookup-submit]").click();
 
 			const notice = page.locator(NOTICE);
 
@@ -110,7 +110,7 @@ test.describe("Guest order lookup", () => {
 			await page.goto(lookupPage.link);
 			await page.locator(NUMBER).fill("1");
 			await page.locator(EMAIL).fill("nobody@example.com");
-			await page.locator("[data-pph-lookup-submit]").click();
+			await page.locator("[data-wpmphub-lookup-submit]").click();
 
 			await expect(notice).toHaveText(missText.trim());
 		});
@@ -122,7 +122,7 @@ test.describe("Guest order lookup", () => {
 
 			await page.locator(NUMBER).fill("1");
 			await page.locator(EMAIL).fill("customer@example.com");
-			await page.locator("[data-pph-lookup-submit]").click();
+			await page.locator("[data-wpmphub-lookup-submit]").click();
 
 			await expect(page.locator(NOTICE)).toBeVisible();
 			expect(page.url()).not.toContain("customer@example.com");
@@ -139,7 +139,7 @@ test.describe("Guest order lookup", () => {
 				await expect(page.locator(NUMBER)).toBeVisible();
 				await expect(page.locator(EMAIL)).toBeVisible();
 				await expect(
-					page.locator("[data-pph-lookup-submit]"),
+					page.locator("[data-wpmphub-lookup-submit]"),
 				).toBeVisible();
 			}
 		});
@@ -159,10 +159,10 @@ test.describe("Signed order links", () => {
 			'wp eval "echo (new PostPurchaseHub\\\\Security\\\\TokenService())->issue( 1, wc_get_order( 1 )->get_order_key() );"',
 		);
 
-		await page.goto(`/my-account/view-order/1/?pph_token=${token.trim()}`);
+		await page.goto(`/my-account/view-order/1/?wpmphub_token=${token.trim()}`);
 
-		expect(page.url()).not.toContain("pph_token");
-		expect(page.url()).toContain("pph_context=ready");
+		expect(page.url()).not.toContain("wpmphub_token");
+		expect(page.url()).toContain("wpmphub_context=ready");
 
 		// The order itself, not a login form: the guest has no password.
 		await expect(page.locator(GUEST_ORDER)).toBeVisible();
@@ -180,7 +180,7 @@ test.describe("Signed order links", () => {
 			'wp eval "echo (new PostPurchaseHub\\Security\\TokenService())->issue( 1, wc_get_order( 1 )->get_order_key() );"',
 		);
 
-		await page.goto(`/my-account/view-order/1/?pph_token=${token.trim()}`);
+		await page.goto(`/my-account/view-order/1/?wpmphub_token=${token.trim()}`);
 
 		// Core's own order details table renders through the same
 		// woocommerce_view_order hook this plugin's guest template re-fires.
@@ -194,11 +194,11 @@ test.describe("Signed order links", () => {
 		page,
 	}) => {
 		await page.goto(
-			"/my-account/view-order/1/?pph_token=ZXhwaXJlZA." + "a".repeat(64),
+			"/my-account/view-order/1/?wpmphub_token=ZXhwaXJlZA." + "a".repeat(64),
 		);
 
-		expect(page.url()).not.toContain("pph_token");
-		expect(page.url()).toContain("pph_context=expired");
+		expect(page.url()).not.toContain("wpmphub_token");
+		expect(page.url()).toContain("wpmphub_context=expired");
 		await expect(page.locator(TIMELINE)).toHaveCount(0);
 
 		// Explained, not silently answered with a password prompt.

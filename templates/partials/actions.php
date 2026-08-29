@@ -18,21 +18,21 @@ if ( empty( $actions ) ) {
 	return;
 }
 ?>
-<section class="pph-actions" data-pph-actions aria-label="<?php esc_attr_e( 'Available actions', 'wpmake-post-purchase-hub' ); ?>">
-	<ul class="pph-actions__list" data-pph-actions-list>
-		<?php foreach ( $actions as $pph_action ) : ?>
-			<li class="pph-actions__item" data-pph-action="<?php echo esc_attr( $pph_action['id'] ); ?>">
+<section class="wpmphub-actions" data-wpmphub-actions aria-label="<?php esc_attr_e( 'Available actions', 'wpmake-post-purchase-hub' ); ?>">
+	<ul class="wpmphub-actions__list" data-wpmphub-actions-list>
+		<?php foreach ( $actions as $wpmphub_action ) : ?>
+			<li class="wpmphub-actions__item" data-wpmphub-action="<?php echo esc_attr( $wpmphub_action['id'] ); ?>">
 				<a
-					class="pph-actions__link button"
-					href="<?php echo esc_url( $pph_action['url'] ); ?>"
-					data-pph-action-link
+					class="wpmphub-actions__link button"
+					href="<?php echo esc_url( $wpmphub_action['url'] ); ?>"
+					data-wpmphub-action-link
 				>
-					<?php echo esc_html( $pph_action['label'] ); ?>
+					<?php echo esc_html( $wpmphub_action['label'] ); ?>
 				</a>
 
-				<?php if ( '' !== $pph_action['description'] ) : ?>
-					<p class="pph-actions__description" data-pph-action-description>
-						<?php echo esc_html( $pph_action['description'] ); ?>
+				<?php if ( '' !== $wpmphub_action['description'] ) : ?>
+					<p class="wpmphub-actions__description" data-wpmphub-action-description>
+						<?php echo esc_html( $wpmphub_action['description'] ); ?>
 					</p>
 				<?php endif; ?>
 			</li>

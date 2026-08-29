@@ -20,7 +20,7 @@ use PostPurchaseHub\Timeline\StageMapConfig;
 /**
  * One `args` declaration per wizard route, and one rule about what they may do.
  *
- * Every parameter that ends up in `pph_settings` is sanitised by handing it to
+ * Every parameter that ends up in `wpmphub_settings` is sanitised by handing it to
  * `SettingsSanitizer::sanitize_field()` with the same declaration the settings
  * screen renders from. The wizard is a friendlier way to write that option, not
  * a second set of rules for writing it (CLAUDE.md hard rule 3 wants a

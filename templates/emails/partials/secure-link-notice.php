@@ -21,7 +21,7 @@ if ( $plain_text ) {
 	return;
 }
 
-$pph_notice = sprintf(
+$wpmphub_notice = sprintf(
 	/* translators: 1: opening <a> tag linking to the secure order link, 2: closing </a> tag. */
 	__( 'You can also %1$sview this order without signing in%2$s.', 'wpmake-post-purchase-hub' ),
 	'<a href="' . esc_url( $link_url ) . '">',
@@ -29,6 +29,6 @@ $pph_notice = sprintf(
 );
 ?>
 <p>
-	<?php echo wp_kses( $pph_notice, array( 'a' => array( 'href' => array() ) ) ); ?>
+	<?php echo wp_kses( $wpmphub_notice, array( 'a' => array( 'href' => array() ) ) ); ?>
 </p>
 <?php

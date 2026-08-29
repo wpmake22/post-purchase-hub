@@ -21,7 +21,7 @@ declare( strict_types = 1 );
  * `ABSPATH . 'wp-admin/...'` against this machine's filesystem and reports the
  * WordPress files it cannot find.
  */
-define( 'ABSPATH', (string) getenv( 'PPH_STUB_ABSPATH' ) );
+define( 'ABSPATH', (string) getenv( 'WPMPHUB_STUB_ABSPATH' ) );
 define( 'ARRAY_A', 'ARRAY_A' );
 define( 'ARRAY_N', 'ARRAY_N' );
 define( 'OBJECT', 'OBJECT' );
@@ -40,6 +40,6 @@ define( 'YEAR_IN_SECONDS', 31536000 );
  * these are computed from plugin_dir_path() and plugin_dir_url(). Values are
  * irrelevant — only the fact that the constants exist, and their type.
  */
-define( 'PPH_PLUGIN_DIR', (string) getenv( 'PPH_STUB_PLUGIN_DIR' ) );
-define( 'PPH_PLUGIN_URL', (string) getenv( 'PPH_STUB_PLUGIN_URL' ) );
-define( 'PPH_PLUGIN_FILE', (string) getenv( 'PPH_STUB_PLUGIN_FILE' ) );
+define( 'WPMPHUB_PLUGIN_DIR', (string) getenv( 'WPMPHUB_STUB_PLUGIN_DIR' ) );
+define( 'WPMPHUB_PLUGIN_URL', (string) getenv( 'WPMPHUB_STUB_PLUGIN_URL' ) );
+define( 'WPMPHUB_PLUGIN_FILE', (string) getenv( 'WPMPHUB_STUB_PLUGIN_FILE' ) );

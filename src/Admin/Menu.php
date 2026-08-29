@@ -46,7 +46,7 @@ final class Menu {
 	 *
 	 * @var string
 	 */
-	public const REQUESTS_PAGE = 'pph-requests';
+	public const REQUESTS_PAGE = 'wpmphub-requests';
 
 	/**
 	 * Constructor.

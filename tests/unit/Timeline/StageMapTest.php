@@ -122,14 +122,14 @@ final class StageMapTest extends TestCase {
 	 */
 	public function test_filters_add_a_stage_and_a_status(): void {
 		add_filter(
-			'pph_timeline_stages',
+			'wpmphub_timeline_stages',
 			static function ( array $stages ): array {
 				return array_merge( $stages, array( 'collected' => 'Collected' ) );
 			}
 		);
 
 		add_filter(
-			'pph_status_stage_map',
+			'wpmphub_status_stage_map',
 			static function ( array $map ): array {
 				return array_merge( $map, array( 'wc-collected' => 'collected' ) );
 			}
@@ -148,7 +148,7 @@ final class StageMapTest extends TestCase {
 	 */
 	public function test_status_mapped_to_an_unknown_stage_is_dropped(): void {
 		add_filter(
-			'pph_status_stage_map',
+			'wpmphub_status_stage_map',
 			static function ( array $map ): array {
 				return array_merge( $map, array( 'processing' => 'teleported' ) );
 			}
@@ -167,7 +167,7 @@ final class StageMapTest extends TestCase {
 	 */
 	public function test_broken_stage_filter_falls_back_to_defaults( $value ): void {
 		add_filter(
-			'pph_timeline_stages',
+			'wpmphub_timeline_stages',
 			static function () use ( $value ) {
 				return $value;
 			}

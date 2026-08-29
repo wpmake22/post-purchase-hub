@@ -135,7 +135,7 @@ final class RendererTest extends TestCase {
 	 */
 	public function test_the_column_can_be_switched_off(): void {
 		add_filter(
-			'pph_orders_list_column',
+			'wpmphub_orders_list_column',
 			static function (): bool {
 				return false;
 			}

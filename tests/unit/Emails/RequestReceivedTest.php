@@ -66,12 +66,12 @@ final class RequestReceivedTest extends TestCase {
 
 	/**
 	 * Nothing sends once a merchant disables the notification — even though
-	 * `pph_request_created` still fires.
+	 * `wpmphub_request_created` still fires.
 	 *
 	 * @return void
 	 */
 	public function test_sends_nothing_when_disabled(): void {
-		FakeWordPress::$options['woocommerce_pph_request_received_settings'] = array( 'enabled' => 'no' );
+		FakeWordPress::$options['woocommerce_wpmphub_request_received_settings'] = array( 'enabled' => 'no' );
 
 		$order   = new \WC_Order( 501 );
 		$request = Request::from_row(
@@ -90,7 +90,7 @@ final class RequestReceivedTest extends TestCase {
 	}
 
 	/**
-	 * An order that no longer resolves (the fixture invariant `pph_request_created`
+	 * An order that no longer resolves (the fixture invariant `wpmphub_request_created`
 	 * always passes when it exists) is a silent no-op, not a fatal.
 	 *
 	 * @return void

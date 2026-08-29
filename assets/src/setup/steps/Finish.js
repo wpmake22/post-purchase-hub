@@ -31,11 +31,11 @@ export default function Finish( { completed, summary, queueUrl, exitUrl } ) {
 					'wpmake-post-purchase-hub'
 				) }
 			>
-				<p className="pph-setup__actions" data-pph-wizard-done>
-					<a className="pph-setup__button" href={ queueUrl }>
+				<p className="wpmphub-setup__actions" data-wpmphub-wizard-done>
+					<a className="wpmphub-setup__button" href={ queueUrl }>
 						{ __( 'Go to the request queue', 'wpmake-post-purchase-hub' ) }
 					</a>
-					<a className="pph-setup__link-button" href={ exitUrl }>
+					<a className="wpmphub-setup__link-button" href={ exitUrl }>
 						{ __( 'Review the settings', 'wpmake-post-purchase-hub' ) }
 					</a>
 				</p>
@@ -51,13 +51,13 @@ export default function Finish( { completed, summary, queueUrl, exitUrl } ) {
 				'wpmake-post-purchase-hub'
 			) }
 		>
-			<ul className="pph-setup__summary" data-pph-wizard-summary>
+			<ul className="wpmphub-setup__summary" data-wpmphub-wizard-summary>
 				{ summary.map( ( line ) => (
 					<li key={ line }>{ line }</li>
 				) ) }
 			</ul>
 
-			<p className="pph-setup__note">
+			<p className="wpmphub-setup__note">
 				{ sprintf(
 					/* translators: %s: name of the settings screen section. */
 					__(

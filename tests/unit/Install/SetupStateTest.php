@@ -69,7 +69,7 @@ final class SetupStateTest extends TestCase {
 	public function test_completion_fires_its_action(): void {
 		$fired = 0;
 
-		FakeWordPress::$actions['pph_setup_completed'][] = array(
+		FakeWordPress::$actions['wpmphub_setup_completed'][] = array(
 			'callback' => static function () use ( &$fired ): void {
 				++$fired;
 			},
@@ -88,7 +88,7 @@ final class SetupStateTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_filter_can_declare_a_store_configured(): void {
-		FakeWordPress::$filters['pph_setup_complete'][] = static function (): bool {
+		FakeWordPress::$filters['wpmphub_setup_complete'][] = static function (): bool {
 			return true;
 		};
 
@@ -187,7 +187,7 @@ final class SetupStateTest extends TestCase {
 	public function test_drafts_do_not_touch_the_live_settings(): void {
 		SetupState::remember_draft( array( 'template_mode' => 'replacement' ) );
 
-		$this->assertArrayNotHasKey( 'pph_settings', FakeWordPress::$options );
+		$this->assertArrayNotHasKey( 'wpmphub_settings', FakeWordPress::$options );
 		$this->assertFalse( SetupState::is_complete() );
 	}
 

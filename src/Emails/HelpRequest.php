@@ -25,7 +25,7 @@ use PostPurchaseHub\Actions\HelpContext;
  * Unlike this plugin's other emails, this one carries no `Requests\Request`:
  * a help submission is never stored, so everything the merchant reads comes
  * from the `HelpContext` the action assembled and handed to
- * `pph_help_submitted`.
+ * `wpmphub_help_submitted`.
  *
  * @since 0.13.0
  */
@@ -36,7 +36,7 @@ final class HelpRequest extends AbstractEmail {
 	 *
 	 * @var string
 	 */
-	public const ID = 'pph_help_request';
+	public const ID = 'wpmphub_help_request';
 
 	/**
 	 * The option `WC_Settings_API` stores this email's settings under.
@@ -83,7 +83,7 @@ final class HelpRequest extends AbstractEmail {
 			'{order_number}' => '',
 		);
 
-		add_action( 'pph_help_submitted', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'wpmphub_help_submitted', array( $this, 'trigger' ), 10, 2 );
 
 		parent::__construct();
 
@@ -105,7 +105,7 @@ final class HelpRequest extends AbstractEmail {
 	}
 
 	/**
-	 * Trigger. Hooked to `pph_help_submitted`.
+	 * Trigger. Hooked to `wpmphub_help_submitted`.
 	 *
 	 * @since 0.13.0
 	 *

@@ -215,7 +215,7 @@ final class ReorderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_plugin_status_filter_widens_eligibility(): void {
-		add_filter( 'pph_reorder_allowed_statuses', static fn (): array => array( 'completed', 'on-hold' ) );
+		add_filter( 'wpmphub_reorder_allowed_statuses', static fn (): array => array( 'completed', 'on-hold' ) );
 
 		$this->assertTrue( $this->reorder->check( $this->order( 'on-hold' ) )->eligible );
 	}
@@ -473,7 +473,7 @@ final class ReorderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_item_cap_marks_the_rest_unchecked(): void {
-		add_filter( 'pph_reorder_item_cap', static fn (): int => 2 );
+		add_filter( 'wpmphub_reorder_item_cap', static fn (): int => 2 );
 
 		$order = $this->order();
 		$order->set_items(
@@ -672,7 +672,7 @@ final class ReorderTest extends TestCase {
 		$seen = 0;
 
 		add_action(
-			'pph_reorder_completed',
+			'wpmphub_reorder_completed',
 			static function () use ( &$seen ): void {
 				++$seen;
 			}
@@ -695,7 +695,7 @@ final class ReorderTest extends TestCase {
 	public function test_the_default_mode_is_merge_and_filterable(): void {
 		$this->assertSame( ReorderOptions::MODE_MERGE, ReorderOptions::default_mode() );
 
-		add_filter( 'pph_reorder_default_mode', static fn (): string => ReorderOptions::MODE_REPLACE );
+		add_filter( 'wpmphub_reorder_default_mode', static fn (): string => ReorderOptions::MODE_REPLACE );
 
 		$this->assertSame( ReorderOptions::MODE_REPLACE, ReorderOptions::default_mode() );
 	}
@@ -707,7 +707,7 @@ final class ReorderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_nonsense_default_mode_falls_back_to_merge(): void {
-		add_filter( 'pph_reorder_default_mode', static fn (): string => 'nonsense' );
+		add_filter( 'wpmphub_reorder_default_mode', static fn (): string => 'nonsense' );
 
 		$this->assertSame( ReorderOptions::MODE_MERGE, ReorderOptions::default_mode() );
 	}
@@ -718,7 +718,7 @@ final class ReorderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_item_cap_cannot_be_zero(): void {
-		add_filter( 'pph_reorder_item_cap', static fn (): int => 0 );
+		add_filter( 'wpmphub_reorder_item_cap', static fn (): int => 0 );
 
 		$this->assertSame( 1, ReorderOptions::item_cap() );
 	}
@@ -730,7 +730,7 @@ final class ReorderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_status_filters_are_normalised(): void {
-		add_filter( 'pph_reorder_allowed_statuses', static fn (): array => array( 'wc-completed' ) );
+		add_filter( 'wpmphub_reorder_allowed_statuses', static fn (): array => array( 'wc-completed' ) );
 
 		$this->assertSame( array( 'completed' ), ReorderOptions::allowed_statuses() );
 	}
@@ -742,7 +742,7 @@ final class ReorderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_an_empty_status_list_falls_back(): void {
-		add_filter( 'pph_reorder_allowed_statuses', static fn (): array => array() );
+		add_filter( 'wpmphub_reorder_allowed_statuses', static fn (): array => array() );
 
 		$this->assertSame( array( 'completed' ), ReorderOptions::allowed_statuses() );
 	}

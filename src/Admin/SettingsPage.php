@@ -16,7 +16,7 @@ use PostPurchaseHub\Timeline\StageMapConfig;
 /**
  * WooCommerce → Post-Purchase Hub → Settings, on the Settings API.
  *
- * One option (`pph_settings`), six tabs, and one sanitisation pass per save.
+ * One option (`wpmphub_settings`), six tabs, and one sanitisation pass per save.
  * `SettingsLayout` draws the two-pane chrome around whatever this routes to.
  * The tabs post only their own fields, so `SettingsSanitizer::sanitize_tab()`
  * merges over what is stored rather than replacing it — otherwise saving the
@@ -26,7 +26,7 @@ use PostPurchaseHub\Timeline\StageMapConfig;
  * Rendering is deliberately dull: `SettingsFields` says what exists,
  * `SettingsRenderer` draws one field, and this class routes, registers and
  * saves. Nothing here decides plugin behaviour — the services that read
- * `pph_settings` do, and they were reading it before this screen existed.
+ * `wpmphub_settings` do, and they were reading it before this screen existed.
  *
  * @since 0.14.0
  */
@@ -49,21 +49,21 @@ final class SettingsPage {
 	 *
 	 * @var string
 	 */
-	public const PAGE = 'pph-settings';
+	public const PAGE = 'wpmphub-settings';
 
 	/**
 	 * Settings group, per tab, as register_setting() needs one.
 	 *
 	 * @var string
 	 */
-	public const GROUP_PREFIX = 'pph_settings_';
+	public const GROUP_PREFIX = 'wpmphub_settings_';
 
 	/**
 	 * Hidden field naming the tab a save came from.
 	 *
 	 * @var string
 	 */
-	public const TAB_FIELD = 'pph_tab';
+	public const TAB_FIELD = 'wpmphub_tab';
 
 	/**
 	 * Constructor.
@@ -193,7 +193,7 @@ final class SettingsPage {
 	 * @return void
 	 */
 	private function render_form( string $tab ): void {
-		echo '<form method="post" action="' . esc_url( admin_url( 'options.php' ) ) . '" data-pph-settings-form>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'options.php' ) ) . '" data-wpmphub-settings-form>';
 
 		settings_fields( self::GROUP_PREFIX . $tab );
 
@@ -201,7 +201,7 @@ final class SettingsPage {
 
 		$this->layout->render_sections( $tab, new SettingsRenderer( $this->stages, self::stored() ) );
 
-		echo '<div class="pph-settings__save">';
+		echo '<div class="wpmphub-settings__save">';
 
 		submit_button( __( 'Save changes', 'wpmake-post-purchase-hub' ), 'primary', 'submit', false );
 
@@ -217,7 +217,7 @@ final class SettingsPage {
 	 * @return void
 	 */
 	private function render_signpost_tab( string $tab ): void {
-		echo '<div class="pph-settings__cards" data-pph-settings-cards>';
+		echo '<div class="wpmphub-settings__cards" data-wpmphub-settings-cards>';
 
 		if ( 'emails' === $tab ) {
 			$this->layout->open_card(
@@ -247,7 +247,7 @@ final class SettingsPage {
 	 * @return void
 	 */
 	private static function render_emails_tab(): void {
-		echo '<div class="pph-settings__panel" data-pph-settings-emails>';
+		echo '<div class="wpmphub-settings__panel" data-wpmphub-settings-emails>';
 
 		printf(
 			'<p>%s</p>',

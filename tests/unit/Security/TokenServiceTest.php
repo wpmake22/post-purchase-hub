@@ -249,7 +249,7 @@ final class TokenServiceTest extends TestCase {
 	 * @return void
 	 */
 	public function test_configured_ttl_is_capped_at_ninety_days(): void {
-		FakeWordPress::$options['pph_settings'] = array( TokenService::TTL_SETTING => 365 );
+		FakeWordPress::$options['wpmphub_settings'] = array( TokenService::TTL_SETTING => 365 );
 
 		$tokens = new TokenService();
 
@@ -264,7 +264,7 @@ final class TokenServiceTest extends TestCase {
 	 */
 	public function test_filter_cannot_raise_ttl_past_the_ceiling(): void {
 		add_filter(
-			'pph_token_ttl_days',
+			'wpmphub_token_ttl_days',
 			static function (): int {
 				return 9999;
 			}

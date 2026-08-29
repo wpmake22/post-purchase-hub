@@ -45,7 +45,7 @@ final class CacheTest extends TestCase {
 
 		$this->assertTrue( $cache->set( 'stages', array( 'placed' ), 60 ) );
 		$this->assertSame( array( 'placed' ), $cache->get( 'stages' ) );
-		$this->assertSame( array( 'pph_0_stages' ), FakeWordPress::transient_names() );
+		$this->assertSame( array( 'wpmphub_0_stages' ), FakeWordPress::transient_names() );
 		$this->assertSame( array(), FakeWordPress::object_cache_keys( Cache::GROUP ) );
 
 		$this->assertTrue( $cache->delete( 'stages' ) );
@@ -64,7 +64,7 @@ final class CacheTest extends TestCase {
 
 		$this->assertTrue( $cache->set( 'stages', array( 'placed' ), 60 ) );
 		$this->assertSame( array( 'placed' ), $cache->get( 'stages' ) );
-		$this->assertSame( array( 'pph_0_stages' ), FakeWordPress::object_cache_keys( Cache::GROUP ) );
+		$this->assertSame( array( 'wpmphub_0_stages' ), FakeWordPress::object_cache_keys( Cache::GROUP ) );
 		$this->assertSame( array(), FakeWordPress::transient_names() );
 
 		$this->assertTrue( $cache->delete( 'stages' ) );
@@ -143,11 +143,11 @@ final class CacheTest extends TestCase {
 		$cache->incr( 'ip:198.51.100.4', 900 );
 
 		// Pretend the window opened 893 seconds ago.
-		FakeWordPress::$options['_transient_timeout_pph_0_ip_198_51_100_4'] = time() + 7;
+		FakeWordPress::$options['_transient_timeout_wpmphub_0_ip_198_51_100_4'] = time() + 7;
 
 		$cache->incr( 'ip:198.51.100.4', 900 );
 
-		$writes = FakeWordPress::$transient_writes['pph_0_ip_198_51_100_4'];
+		$writes = FakeWordPress::$transient_writes['wpmphub_0_ip_198_51_100_4'];
 
 		$this->assertSame( 900, $writes[0] );
 		$this->assertLessThanOrEqual( 7, $writes[1] );
@@ -165,13 +165,13 @@ final class CacheTest extends TestCase {
 		$cache = new Cache();
 
 		$cache->incr( 'ip:198.51.100.4', 900 );
-		$opened = FakeWordPress::$object_cache[ Cache::GROUP ]['pph_0_ip_198_51_100_4']['expires'];
+		$opened = FakeWordPress::$object_cache[ Cache::GROUP ]['wpmphub_0_ip_198_51_100_4']['expires'];
 
 		$cache->incr( 'ip:198.51.100.4', 900 );
 
 		$this->assertSame(
 			$opened,
-			FakeWordPress::$object_cache[ Cache::GROUP ]['pph_0_ip_198_51_100_4']['expires']
+			FakeWordPress::$object_cache[ Cache::GROUP ]['wpmphub_0_ip_198_51_100_4']['expires']
 		);
 	}
 
@@ -185,7 +185,7 @@ final class CacheTest extends TestCase {
 
 		$cache = new Cache();
 
-		FakeWordPress::$object_cache[ Cache::GROUP ]['pph_0_ip_198_51_100_4'] = array(
+		FakeWordPress::$object_cache[ Cache::GROUP ]['wpmphub_0_ip_198_51_100_4'] = array(
 			'value'   => 'not-a-number',
 			'expires' => time() + 900,
 		);
@@ -242,7 +242,7 @@ final class CacheTest extends TestCase {
 		$names = FakeWordPress::transient_names();
 
 		$this->assertCount( 1, $names );
-		$this->assertStringStartsWith( 'pph_0_', $names[0] );
+		$this->assertStringStartsWith( 'wpmphub_0_', $names[0] );
 		$this->assertLessThanOrEqual( 172, strlen( $names[0] ) );
 	}
 

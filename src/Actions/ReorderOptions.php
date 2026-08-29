@@ -94,7 +94,7 @@ final class ReorderOptions {
 		 *
 		 * @param string $mode One of ReorderOptions::modes().
 		 */
-		return self::normalise_mode( (string) apply_filters( 'pph_reorder_default_mode', self::MODE_MERGE ) );
+		return self::normalise_mode( (string) apply_filters( 'wpmphub_reorder_default_mode', self::MODE_MERGE ) );
 	}
 
 	/**
@@ -111,7 +111,7 @@ final class ReorderOptions {
 		 *
 		 * @param int $cap Maximum lines per attempt.
 		 */
-		$cap = (int) apply_filters( 'pph_reorder_item_cap', self::DEFAULT_ITEM_CAP );
+		$cap = (int) apply_filters( 'wpmphub_reorder_item_cap', self::DEFAULT_ITEM_CAP );
 
 		return max( 1, $cap );
 	}
@@ -140,7 +140,7 @@ final class ReorderOptions {
 		 *
 		 * @param string[] $statuses Unprefixed order statuses.
 		 */
-		$statuses = (array) apply_filters( 'pph_reorder_allowed_statuses', array_values( $statuses ) );
+		$statuses = (array) apply_filters( 'wpmphub_reorder_allowed_statuses', array_values( $statuses ) );
 
 		$clean = array();
 

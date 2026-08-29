@@ -20,7 +20,7 @@
  */
 async function completeSetup(requestUtils) {
 	const php =
-		"update_option( 'pph_setup_state', array( 'step' => 5, 'completed_at' => gmdate( 'Y-m-d H:i:s' ) ), false );";
+		"update_option( 'wpmphub_setup_state', array( 'step' => 5, 'completed_at' => gmdate( 'Y-m-d H:i:s' ) ), false );";
 
 	await requestUtils.rest({
 		method: "POST",

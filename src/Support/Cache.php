@@ -30,14 +30,14 @@ final class Cache {
 	 *
 	 * @var string
 	 */
-	public const GROUP = 'pph';
+	public const GROUP = 'wpmphub';
 
 	/**
 	 * Non-autoloaded option holding the current key generation.
 	 *
 	 * @var string
 	 */
-	public const GENERATION_OPTION = 'pph_cache_generation';
+	public const GENERATION_OPTION = 'wpmphub_cache_generation';
 
 	/**
 	 * Longest key we pass through verbatim.
@@ -204,7 +204,7 @@ final class Cache {
 			$clean = substr( $clean, 0, self::MAX_KEY_LENGTH - 33 ) . '_' . md5( $key );
 		}
 
-		return 'pph_' . $this->generation() . '_' . $clean;
+		return 'wpmphub_' . $this->generation() . '_' . $clean;
 	}
 
 	/**

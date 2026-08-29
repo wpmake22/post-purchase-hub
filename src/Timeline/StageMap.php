@@ -96,7 +96,7 @@ final class StageMap {
 		 *
 		 * @param array<string, string> $stages Stage key => label.
 		 */
-		$filtered = apply_filters( 'pph_timeline_stages', self::default_stages() );
+		$filtered = apply_filters( 'wpmphub_timeline_stages', self::default_stages() );
 
 		$this->stages = self::clean_labels( $filtered, self::default_stages() );
 
@@ -109,7 +109,7 @@ final class StageMap {
 	 * Not filterable: a branch stage without matching handling in eligibility,
 	 * emails and the admin queue is a broken state rather than an extension
 	 * point. Statuses can still be pointed at a different branch through
-	 * `pph_status_stage_map`.
+	 * `wpmphub_status_stage_map`.
 	 *
 	 * @since 0.3.0
 	 *
@@ -148,7 +148,7 @@ final class StageMap {
 		 *
 		 * @param array<string, string> $map Status slug => stage key.
 		 */
-		$filtered = apply_filters( 'pph_status_stage_map', self::default_status_map() );
+		$filtered = apply_filters( 'wpmphub_status_stage_map', self::default_status_map() );
 
 		$this->map = $this->clean_map( $filtered );
 

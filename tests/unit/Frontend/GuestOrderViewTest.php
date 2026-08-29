@@ -191,7 +191,7 @@ final class GuestOrderViewTest extends TestCase {
 
 		$fired = array();
 
-		foreach ( array( 'pph_render_order_detail', 'pph_render_order_notes', 'woocommerce_view_order' ) as $hook ) {
+		foreach ( array( 'wpmphub_render_order_detail', 'wpmphub_render_order_notes', 'woocommerce_view_order' ) as $hook ) {
 			add_action(
 				$hook,
 				static function ( $payload ) use ( &$fired, $hook ): void {
@@ -204,11 +204,11 @@ final class GuestOrderViewTest extends TestCase {
 		$this->view->render();
 		$markup = (string) ob_get_clean();
 
-		$this->assertSame( $order, $fired['pph_render_order_detail'] ?? null );
-		$this->assertSame( $order, $fired['pph_render_order_notes'] ?? null );
+		$this->assertSame( $order, $fired['wpmphub_render_order_detail'] ?? null );
+		$this->assertSame( $order, $fired['wpmphub_render_order_notes'] ?? null );
 		$this->assertSame( 42, $fired['woocommerce_view_order'] ?? null );
-		$this->assertStringContainsString( 'data-pph-guest-order="42"', $markup );
-		$this->assertStringContainsString( 'data-pph-guest-order-summary', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-guest-order="42"', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-guest-order-summary', $markup );
 	}
 
 	/**
@@ -415,7 +415,7 @@ final class GuestOrderViewTest extends TestCase {
 		$this->view->register();
 
 		$this->assertArrayHasKey( 'wc_get_template', FakeWordPress::$filters );
-		$this->assertArrayHasKey( 'pph_render_guest_order', FakeWordPress::$actions );
+		$this->assertArrayHasKey( 'wpmphub_render_guest_order', FakeWordPress::$actions );
 		$this->assertArrayHasKey( 'woocommerce_my_account_message', FakeWordPress::$filters );
 	}
 }

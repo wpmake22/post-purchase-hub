@@ -40,7 +40,7 @@ final class EstimatedDeliveryTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function tear_down(): void { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Name fixed by WP_UnitTestCase.
-		delete_option( 'pph_settings' );
+		delete_option( 'wpmphub_settings' );
 
 		parent::tear_down();
 	}
@@ -93,7 +93,7 @@ final class EstimatedDeliveryTest extends \WP_UnitTestCase {
 	 */
 	public function test_placing_an_order_caches_a_range_via_crud(): void {
 		update_option(
-			'pph_settings',
+			'wpmphub_settings',
 			array(
 				EstimatedDelivery::HANDLING_SETTING => 1,
 				EstimatedDelivery::TRANSIT_SETTING  => array(
@@ -124,7 +124,7 @@ final class EstimatedDeliveryTest extends \WP_UnitTestCase {
 	 */
 	public function test_a_status_change_resyncs_the_cache(): void {
 		update_option(
-			'pph_settings',
+			'wpmphub_settings',
 			array(
 				EstimatedDelivery::HANDLING_SETTING => 1,
 				EstimatedDelivery::TRANSIT_SETTING  => array(
@@ -141,7 +141,7 @@ final class EstimatedDeliveryTest extends \WP_UnitTestCase {
 		$this->assertIsArray( $first );
 
 		update_option(
-			'pph_settings',
+			'wpmphub_settings',
 			array(
 				EstimatedDelivery::HANDLING_SETTING => 6,
 				EstimatedDelivery::TRANSIT_SETTING  => array(
@@ -174,7 +174,7 @@ final class EstimatedDeliveryTest extends \WP_UnitTestCase {
 	 */
 	public function test_a_status_change_clears_the_cache_once_tracking_appears(): void {
 		update_option(
-			'pph_settings',
+			'wpmphub_settings',
 			array(
 				EstimatedDelivery::TRANSIT_SETTING => array(
 					'flat_rate' => array(
@@ -188,12 +188,12 @@ final class EstimatedDeliveryTest extends \WP_UnitTestCase {
 		$order = $this->order_with_shipping( 'flat_rate' );
 		$this->assertIsArray( $this->cached_meta( $order->get_id() ) );
 
-		add_filter( 'pph_has_tracking_data', '__return_true' );
+		add_filter( 'wpmphub_has_tracking_data', '__return_true' );
 
 		$order->set_status( 'processing' );
 		$order->save();
 
-		remove_filter( 'pph_has_tracking_data', '__return_true' );
+		remove_filter( 'wpmphub_has_tracking_data', '__return_true' );
 
 		$this->assertSame( '', $this->cached_meta( $order->get_id() ) );
 	}
@@ -205,7 +205,7 @@ final class EstimatedDeliveryTest extends \WP_UnitTestCase {
 	 */
 	public function test_a_shipping_line_change_resyncs_the_cache(): void {
 		update_option(
-			'pph_settings',
+			'wpmphub_settings',
 			array(
 				EstimatedDelivery::HANDLING_SETTING => 1,
 				EstimatedDelivery::TRANSIT_SETTING  => array(

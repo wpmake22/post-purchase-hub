@@ -48,7 +48,7 @@ final class EstimatedDelivery {
 	 *
 	 * @var string
 	 */
-	public const META_KEY = '_pph_eta';
+	public const META_KEY = '_wpmphub_eta';
 
 	/**
 	 * Settings key: global handling time, in business days.
@@ -115,7 +115,7 @@ final class EstimatedDelivery {
 	 * infinite loop that hangs the request: checkout, on a store that has
 	 * configured transit days for its shipping method. The idempotence check in
 	 * `write_cache()` closes the cycle on its own for a stable range, but the
-	 * `pph_estimated_delivery_range` filter is public and nothing stops a
+	 * `wpmphub_estimated_delivery_range` filter is public and nothing stops a
 	 * merchant returning a value derived from `time()` — which would never
 	 * settle. This is what makes that survivable rather than fatal.
 	 *
@@ -169,7 +169,7 @@ final class EstimatedDelivery {
 	/**
 	 * Recomputes an order's range and rewrites its cache, in one save.
 	 *
-	 * The only method that writes `_pph_eta`. Callback for the order events
+	 * The only method that writes `_wpmphub_eta`. Callback for the order events
 	 * that already exist for other reasons: the shipping line being created
 	 * at checkout, a later status change, a later shipping-line edit. Safe to
 	 * call whether or not anything is cached yet, and safe to call when the
@@ -313,7 +313,7 @@ final class EstimatedDelivery {
 		 * @param int    $days      Handling time in business days.
 		 * @param string $method_id Shipping method id the estimate is being built for.
 		 */
-		return max( 0, (int) apply_filters( 'pph_estimated_delivery_handling_days', $days, $method_id ) );
+		return max( 0, (int) apply_filters( 'wpmphub_estimated_delivery_handling_days', $days, $method_id ) );
 	}
 
 	/**
@@ -341,7 +341,7 @@ final class EstimatedDelivery {
 		 * @param array{min: int, max: int}|null $config    Transit config, or null when unconfigured.
 		 * @param string                          $method_id Shipping method id the estimate is being built for.
 		 */
-		$config = apply_filters( 'pph_estimated_delivery_transit_days', $config, $method_id );
+		$config = apply_filters( 'wpmphub_estimated_delivery_transit_days', $config, $method_id );
 
 		if ( ! is_array( $config ) || ! isset( $config['min'], $config['max'] ) ) {
 			return null;
@@ -378,7 +378,7 @@ final class EstimatedDelivery {
 		 *
 		 * @param array<int, int> $days Non-business days of the week.
 		 */
-		$days = apply_filters( 'pph_estimated_delivery_weekend_days', $days );
+		$days = apply_filters( 'wpmphub_estimated_delivery_weekend_days', $days );
 
 		$clean = array();
 
@@ -409,7 +409,7 @@ final class EstimatedDelivery {
 		 *
 		 * @param array<int, string> $holidays Holiday dates as `Y-m-d` strings.
 		 */
-		$holidays = apply_filters( 'pph_estimated_delivery_holidays', $holidays );
+		$holidays = apply_filters( 'wpmphub_estimated_delivery_holidays', $holidays );
 
 		$clean = array();
 
@@ -430,7 +430,7 @@ final class EstimatedDelivery {
 	 * @return array<string, mixed>
 	 */
 	private function settings(): array {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 
 		return is_array( $settings ) ? $settings : array();
 	}
@@ -452,7 +452,7 @@ final class EstimatedDelivery {
 		 *
 		 * @param string $format Date format string for wp_date().
 		 */
-		$format = (string) apply_filters( 'pph_estimated_delivery_date_format', (string) get_option( 'date_format', 'F j, Y' ) );
+		$format = (string) apply_filters( 'wpmphub_estimated_delivery_date_format', (string) get_option( 'date_format', 'F j, Y' ) );
 
 		$start_label = (string) wp_date( $format, $start->getTimestamp(), $start->getTimezone() );
 		$end_label   = (string) wp_date( $format, $end->getTimestamp(), $end->getTimezone() );
@@ -589,14 +589,14 @@ final class EstimatedDelivery {
 		 * @param EstimatedDeliveryRange|null $range Computed range, or null.
 		 * @param \WC_Order                   $order Order being described.
 		 */
-		$filtered = apply_filters( 'pph_estimated_delivery', $range, $order );
+		$filtered = apply_filters( 'wpmphub_estimated_delivery', $range, $order );
 
 		if ( null === $filtered || $filtered instanceof EstimatedDeliveryRange ) {
 			return $filtered;
 		}
 
 		$this->logger->warning(
-			'Ignored a pph_estimated_delivery filter that returned an invalid type.',
+			'Ignored a wpmphub_estimated_delivery filter that returned an invalid type.',
 			array(
 				'order_id' => $order->get_id(),
 				'type'     => get_debug_type( $filtered ),

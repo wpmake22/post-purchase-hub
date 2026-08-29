@@ -73,7 +73,7 @@ final class CancelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_reason_codes_are_filterable(): void {
-		add_filter( 'pph_cancel_reason_codes', static fn (): array => array( 'custom_code' ) );
+		add_filter( 'wpmphub_cancel_reason_codes', static fn (): array => array( 'custom_code' ) );
 
 		$this->assertSame( array( 'custom_code' ), Cancel::reason_codes() );
 	}
@@ -84,7 +84,7 @@ final class CancelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_an_empty_filtered_reason_list_falls_back_to_defaults(): void {
-		add_filter( 'pph_cancel_reason_codes', static fn (): array => array() );
+		add_filter( 'wpmphub_cancel_reason_codes', static fn (): array => array() );
 
 		$this->assertSame( Cancel::DEFAULT_REASON_CODES, Cancel::reason_codes() );
 	}
@@ -110,7 +110,7 @@ final class CancelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_custom_code_without_a_label_is_humanised(): void {
-		add_filter( 'pph_cancel_reason_codes', static fn (): array => array( 'store_credit_instead' ) );
+		add_filter( 'wpmphub_cancel_reason_codes', static fn (): array => array( 'store_credit_instead' ) );
 
 		$this->assertSame(
 			array( 'store_credit_instead' => 'Store credit instead' ),
@@ -130,7 +130,7 @@ final class CancelTest extends TestCase {
 
 		$this->assertNotNull( $payload );
 		$this->assertSame( Cancel::label(), $payload['name'] );
-		$this->assertSame( '#pph-cancel-1', $payload['url'] );
+		$this->assertSame( '#wpmphub-cancel-1', $payload['url'] );
 	}
 
 	/**
@@ -150,7 +150,7 @@ final class CancelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_check_reflects_the_configured_allowed_statuses(): void {
-		FakeWordPress::$options['pph_settings'] = array( Cancel::STATUSES_SETTING => array( 'on-hold' ) );
+		FakeWordPress::$options['wpmphub_settings'] = array( Cancel::STATUSES_SETTING => array( 'on-hold' ) );
 
 		$this->assertTrue( $this->cancel->check( new \WC_Order( 1, 'on-hold' ) )->eligible );
 		$this->assertFalse( $this->cancel->check( new \WC_Order( 1, 'processing' ) )->eligible );
@@ -296,11 +296,11 @@ final class CancelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_response_time_is_configurable_and_floored(): void {
-		FakeWordPress::$options['pph_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 0 );
+		FakeWordPress::$options['wpmphub_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 0 );
 
 		$this->assertSame( 1, Cancel::response_time_hours() );
 
-		FakeWordPress::$options['pph_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 48 );
+		FakeWordPress::$options['wpmphub_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 48 );
 
 		$this->assertSame( 48, Cancel::response_time_hours() );
 	}
@@ -342,7 +342,7 @@ final class CancelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_approve_does_not_restock_when_the_setting_is_off(): void {
-		FakeWordPress::$options['pph_settings'] = array( Cancel::RESTOCK_SETTING => false );
+		FakeWordPress::$options['wpmphub_settings'] = array( Cancel::RESTOCK_SETTING => false );
 
 		$order = new \WC_Order( 5, 'processing' );
 

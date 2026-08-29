@@ -62,7 +62,7 @@ jobs:
             FAIL=1
           fi
 
-          if grep -rn 'pph_is_pro' src/; then
+          if grep -rn 'wpmphub_is_pro' src/; then
             echo "::error::Core branches on edition. If Pro cannot be built on core's public surface, the surface is wrong."
             FAIL=1
           fi

@@ -198,12 +198,12 @@ final class ReorderViewTest extends TestCase {
 
 		$html = $this->render( 300 );
 
-		$this->assertStringContainsString( 'data-pph-reorder', $html );
+		$this->assertStringContainsString( 'data-wpmphub-reorder', $html );
 		$this->assertStringContainsString( 'Espresso beans', $html );
 		$this->assertStringContainsString( 'Discontinued mug', $html );
-		$this->assertStringContainsString( 'data-pph-reorder-outcome="added"', $html );
-		$this->assertStringContainsString( 'data-pph-reorder-outcome="unavailable"', $html );
-		$this->assertStringContainsString( 'data-pph-reorder-confirm', $html );
+		$this->assertStringContainsString( 'data-wpmphub-reorder-outcome="added"', $html );
+		$this->assertStringContainsString( 'data-wpmphub-reorder-outcome="unavailable"', $html );
+		$this->assertStringContainsString( 'data-wpmphub-reorder-confirm', $html );
 		$this->assertTrue( $this->cart->untouched() );
 	}
 
@@ -237,7 +237,7 @@ final class ReorderViewTest extends TestCase {
 		$empty_cart_html = $this->render( 300 );
 
 		$this->assertStringNotContainsString( 'type="radio"', $empty_cart_html );
-		$this->assertStringContainsString( 'data-pph-reorder-mode-default', $empty_cart_html );
+		$this->assertStringContainsString( 'data-wpmphub-reorder-mode-default', $empty_cart_html );
 
 		$this->cart->existing = 2;
 		$fresh                = new ReorderView(
@@ -274,8 +274,8 @@ final class ReorderViewTest extends TestCase {
 
 		$html = $this->render( 300 );
 
-		$this->assertStringContainsString( 'data-pph-reorder-unavailable', $html );
-		$this->assertStringNotContainsString( 'data-pph-reorder-confirm', $html );
+		$this->assertStringContainsString( 'data-wpmphub-reorder-unavailable', $html );
+		$this->assertStringNotContainsString( 'data-wpmphub-reorder-confirm', $html );
 		$this->assertTrue( $this->cart->untouched() );
 	}
 
@@ -389,7 +389,7 @@ final class ReorderViewTest extends TestCase {
 		$this->order();
 		$this->register_core_button();
 
-		add_filter( 'pph_reorder_supersedes_core_button', static fn (): bool => false );
+		add_filter( 'wpmphub_reorder_supersedes_core_button', static fn (): bool => false );
 
 		$this->view->supersede_core_button( 300 );
 

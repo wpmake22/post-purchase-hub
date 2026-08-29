@@ -20,12 +20,12 @@ use PostPurchaseHub\Security\Sanitizer;
 use PostPurchaseHub\Support\Logger;
 
 /**
- * `POST /pph/v1/requests` and `DELETE /pph/v1/requests/{id}`.
+ * `POST /wpmphub/v1/requests` and `DELETE /wpmphub/v1/requests/{id}`.
  *
  * Every mutation passes through the same order: rate limit by IP (cheapest,
  * no order needed) → `OwnershipResolver::assertCanAccess()` (loads and
  * authorises the order; a guest's token arrives as a request param, wired
- * through `pph_current_request_token` for the life of this request only) →
+ * through `wpmphub_current_request_token` for the life of this request only) →
  * rate limit by the order's own billing email → the action's own `check()`
  * re-run at execution time, never trusted from anything the client sent.
  *
@@ -48,7 +48,7 @@ final class RequestsController {
 	 *
 	 * @var string
 	 */
-	public const NAMESPACE = 'pph/v1';
+	public const NAMESPACE = 'wpmphub/v1';
 
 	/**
 	 * Route base.
@@ -245,7 +245,7 @@ final class RequestsController {
 			return $this->too_many_requests( array( 'stage' => 'email' ) );
 		}
 
-		$request->set_param( 'pph_order', $order );
+		$request->set_param( 'wpmphub_order', $order );
 
 		return true;
 	}
@@ -264,10 +264,10 @@ final class RequestsController {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function create( \WP_REST_Request $request ) {
-		$order = $request->get_param( 'pph_order' );
+		$order = $request->get_param( 'wpmphub_order' );
 
 		if ( ! $order instanceof \WC_Order ) {
-			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
+			return $this->deny( 'wpmphub_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		try {
@@ -280,7 +280,7 @@ final class RequestsController {
 			);
 		} catch ( IneligibleActionException $e ) {
 			$status = EligibilityResponse::status_for( $e->result );
-			$code   = 429 === $status ? 'pph_cooldown' : 'pph_ineligible';
+			$code   = 429 === $status ? 'wpmphub_cooldown' : 'wpmphub_ineligible';
 
 			return $this->deny(
 				$code,
@@ -316,7 +316,7 @@ final class RequestsController {
 		$found = $this->service->find( (int) $request->get_param( 'id' ) );
 
 		if ( null === $found ) {
-			return $this->deny( 'pph_forbidden', __( 'This request could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
+			return $this->deny( 'wpmphub_forbidden', __( 'This request could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		$order = $this->authorise_order( $found->order_id, 'rest:requests.delete' );
@@ -325,7 +325,7 @@ final class RequestsController {
 			return $order;
 		}
 
-		$request->set_param( 'pph_request', $found );
+		$request->set_param( 'wpmphub_request', $found );
 
 		return true;
 	}
@@ -339,15 +339,15 @@ final class RequestsController {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function withdraw( \WP_REST_Request $request ) {
-		$found = $request->get_param( 'pph_request' );
+		$found = $request->get_param( 'wpmphub_request' );
 
 		if ( ! $found instanceof Request ) {
-			return $this->deny( 'pph_forbidden', __( 'This request could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
+			return $this->deny( 'wpmphub_forbidden', __( 'This request could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		if ( ! $this->service->withdraw( $found ) ) {
 			return $this->deny(
-				'pph_already_resolved',
+				'wpmphub_already_resolved',
 				__( 'This request has already been resolved and can no longer be withdrawn.', 'wpmake-post-purchase-hub' ),
 				409,
 				array( 'request_id' => $found->id )
@@ -376,7 +376,7 @@ final class RequestsController {
 			// requesting another customer's order learns nothing about whether
 			// that order exists. The reason_code still reaches the log.
 			return $this->deny(
-				'pph_forbidden',
+				'wpmphub_forbidden',
 				__( 'You do not have access to this order.', 'wpmake-post-purchase-hub' ),
 				403,
 				array(
@@ -399,7 +399,7 @@ final class RequestsController {
 	 */
 	private static function supply_token( string $token ): void {
 		add_filter(
-			'pph_current_request_token',
+			'wpmphub_current_request_token',
 			static function () use ( $token ): string {
 				return $token;
 			}
@@ -425,7 +425,7 @@ final class RequestsController {
 	 * @return \WP_Error
 	 */
 	private function too_many_requests( array $log_context ): \WP_Error {
-		return $this->deny( 'pph_rate_limited', __( 'Too many requests. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
+		return $this->deny( 'wpmphub_rate_limited', __( 'Too many requests. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
 	}
 
 	/**

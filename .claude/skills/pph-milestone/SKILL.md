@@ -1,5 +1,5 @@
 ---
-name: pph-milestone
+name: wpmphub-milestone
 description: Run one development milestone of the Post-Purchase Hub WooCommerce plugin end to end — confirm scope, inspect, plan, implement, test, review, report, stop. Use when the user says "implement milestone NN", "run milestone NN", "next milestone", or names a milestone from docs/MILESTONE-PROMPTS.md. Also use when the user asks to review, audit, or hand off milestone work on this plugin.
 ---
 
@@ -36,7 +36,7 @@ composer lint && composer analyse && composer test:unit
 composer test:int              # run with HPOS=1 and HPOS=0
 npm run build
 ```
-Plus the milestone's named tests. Use Playwright MCP for browser tests, targeting `data-pph-*` attributes only — never theme selectors.
+Plus the milestone's named tests. Use Playwright MCP for browser tests, targeting `data-wpmphub-*` attributes only — never theme selectors.
 
 ### Step 5 — Review
 Re-read the diff against all 15 hard rules, answering each explicitly. Then against the spec's Phase 8 threat table for anything touching order data, requests, tokens or REST.

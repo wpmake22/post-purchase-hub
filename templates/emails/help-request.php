@@ -76,8 +76,8 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <?php if ( array() !== $help->items ) : ?>
 <ul>
-	<?php foreach ( $help->items as $pph_item ) : ?>
-		<li><?php echo esc_html( $pph_item ); ?></li>
+	<?php foreach ( $help->items as $wpmphub_item ) : ?>
+		<li><?php echo esc_html( $wpmphub_item ); ?></li>
 	<?php endforeach; ?>
 	<?php if ( $help->items_omitted > 0 ) : ?>
 		<li>

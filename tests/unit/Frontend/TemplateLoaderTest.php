@@ -53,7 +53,7 @@ final class TemplateLoaderTest extends TestCase {
 	 */
 	public function test_a_known_template_resolves_to_the_plugin_copy(): void {
 		$this->assertSame(
-			PPH_PLUGIN_DIR . 'templates/partials/timeline.php',
+			WPMPHUB_PLUGIN_DIR . 'templates/partials/timeline.php',
 			$this->loader->locate( 'partials/timeline.php' )
 		);
 	}
@@ -120,7 +120,7 @@ final class TemplateLoaderTest extends TestCase {
 	 * @return void
 	 */
 	public function test_traversal_is_refused_even_when_the_target_exists(): void {
-		$this->assertFileExists( PPH_PLUGIN_DIR . 'wpmake-post-purchase-hub.php' );
+		$this->assertFileExists( WPMPHUB_PLUGIN_DIR . 'wpmake-post-purchase-hub.php' );
 		$this->assertNull( $this->loader->locate( '../wpmake-post-purchase-hub.php' ) );
 	}
 
@@ -131,7 +131,7 @@ final class TemplateLoaderTest extends TestCase {
 	 */
 	public function test_the_filter_can_redirect_a_template(): void {
 		add_filter(
-			'pph_locate_template',
+			'wpmphub_locate_template',
 			static function () {
 				return __FILE__;
 			}
@@ -147,14 +147,14 @@ final class TemplateLoaderTest extends TestCase {
 	 */
 	public function test_an_unreadable_filtered_path_falls_back(): void {
 		add_filter(
-			'pph_locate_template',
+			'wpmphub_locate_template',
 			static function () {
 				return '/definitely/not/here.php';
 			}
 		);
 
 		$this->assertSame(
-			PPH_PLUGIN_DIR . 'templates/partials/timeline.php',
+			WPMPHUB_PLUGIN_DIR . 'templates/partials/timeline.php',
 			$this->loader->locate( 'partials/timeline.php' )
 		);
 	}

@@ -144,7 +144,7 @@ final class WooCommerceCart implements CartGateway {
 		 * @param array<string, mixed> $data Cart item data.
 		 * @param ReorderLine          $line Line being added.
 		 */
-		$data = apply_filters( 'pph_reorder_cart_item_data', array(), $line );
+		$data = apply_filters( 'wpmphub_reorder_cart_item_data', array(), $line );
 
 		return is_array( $data ) ? $data : array();
 	}

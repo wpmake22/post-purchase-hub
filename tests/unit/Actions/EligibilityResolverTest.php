@@ -400,13 +400,13 @@ final class EligibilityResolverTest extends TestCase {
 	}
 
 	/**
-	 * The pph_action_eligibility filter can override a computed result.
+	 * The wpmphub_action_eligibility filter can override a computed result.
 	 *
 	 * @return void
 	 */
 	public function test_the_eligibility_filter_can_override_the_result(): void {
 		add_filter(
-			'pph_action_eligibility',
+			'wpmphub_action_eligibility',
 			static function ( EligibilityResult $result, string $action_id ): EligibilityResult {
 				return 'cancel' === $action_id ? EligibilityResult::denied( 'merchant_override', 'Not right now.' ) : $result;
 			}
@@ -426,7 +426,7 @@ final class EligibilityResolverTest extends TestCase {
 	 */
 	public function test_a_malformed_filter_return_is_ignored(): void {
 		add_filter(
-			'pph_action_eligibility',
+			'wpmphub_action_eligibility',
 			static function () {
 				return 'not-a-result';
 			}

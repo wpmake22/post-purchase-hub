@@ -36,7 +36,7 @@ final class TransitionRecorder {
 	 *
 	 * @var string
 	 */
-	public const META_KEY = '_pph_timeline';
+	public const META_KEY = '_wpmphub_timeline';
 
 	/**
 	 * Most entries one order may hold.

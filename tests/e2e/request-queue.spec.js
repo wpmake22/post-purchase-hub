@@ -17,7 +17,7 @@ const {
 	refundCount,
 } = require("./utils/orders");
 
-const QUEUE_PAGE = "page=pph-requests";
+const QUEUE_PAGE = "page=wpmphub-requests";
 
 /**
  * Files a cancellation request against an order, server-side.
@@ -68,7 +68,7 @@ test.describe("Admin request queue", () => {
 		// A request a merchant does not notice for six hours is worse than an
 		// email (docs/SPEC.md Phase 1, UX problem 6), so the count is not polish.
 		await expect(
-			page.locator('#adminmenu a[href*="page=pph-requests"]'),
+			page.locator('#adminmenu a[href*="page=wpmphub-requests"]'),
 		).toContainText("1");
 	});
 
@@ -83,7 +83,7 @@ test.describe("Admin request queue", () => {
 		await admin.visitAdminPage("admin.php", `${QUEUE_PAGE}&request_id=${requestId}`);
 
 		// The decision form posts to admin-post.php and carries a nonce.
-		const form = page.locator('form:has(input[value="pph_approve_request"])');
+		const form = page.locator('form:has(input[value="wpmphub_approve_request"])');
 		await expect(form.locator('input[name="_wpnonce"]')).toHaveCount(1);
 
 		await form.locator('[type="submit"]').click();
@@ -104,7 +104,7 @@ test.describe("Admin request queue", () => {
 
 		await admin.visitAdminPage("admin.php", `${QUEUE_PAGE}&request_id=${requestId}`);
 		await page
-			.locator('form:has(input[value="pph_decline_request"]) [type="submit"]')
+			.locator('form:has(input[value="wpmphub_decline_request"]) [type="submit"]')
 			.click();
 
 		expect(await orderStatus(requestUtils, order.id)).toBe("processing");
@@ -127,13 +127,13 @@ test.describe("Admin request queue", () => {
 
 		await admin.visitAdminPage("admin.php", detail);
 		await page
-			.locator('form:has(input[value="pph_approve_request"]) [type="submit"]')
+			.locator('form:has(input[value="wpmphub_approve_request"]) [type="submit"]')
 			.click();
 
 		// A merchant double-submitting must not transition twice or mail twice.
 		await admin.visitAdminPage("admin.php", detail);
 		await expect(
-			page.locator('form:has(input[value="pph_approve_request"])'),
+			page.locator('form:has(input[value="wpmphub_approve_request"])'),
 		).toHaveCount(0);
 
 		expect(await orderStatus(requestUtils, order.id)).toBe("cancelled");
@@ -150,8 +150,8 @@ test.describe("Admin request queue", () => {
 
 		await admin.visitAdminPage("admin.php", `${QUEUE_PAGE}&request_id=${requestId}`);
 
-		expect(await page.evaluate(() => window.pphXss)).toBeUndefined();
-		await expect(page.locator(".pph-request-detail")).toContainText(
+		expect(await page.evaluate(() => window.wpmphubXss)).toBeUndefined();
+		await expect(page.locator(".wpmphub-request-detail")).toContainText(
 			"Please cancel.",
 		);
 	});

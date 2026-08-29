@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Requests;
 
 /**
- * One customer-initiated request, as stored in `pph_requests`.
+ * One customer-initiated request, as stored in `wpmphub_requests`.
  *
  * Immutable and storage-free: it holds no database handle and performs no
  * queries, so it can be constructed in a test, handed to a template, or built
@@ -175,7 +175,7 @@ final class Request {
 		 *
 		 * @param string[] $types Accepted type slugs.
 		 */
-		$types = apply_filters( 'pph_request_types', $defaults );
+		$types = apply_filters( 'wpmphub_request_types', $defaults );
 
 		return self::narrow( $types, $defaults );
 	}
@@ -203,7 +203,7 @@ final class Request {
 		 *
 		 * @param string[] $statuses Accepted status slugs.
 		 */
-		$statuses = apply_filters( 'pph_request_statuses', $defaults );
+		$statuses = apply_filters( 'wpmphub_request_statuses', $defaults );
 
 		return self::narrow( $statuses, $defaults );
 	}
@@ -225,7 +225,7 @@ final class Request {
 		 *
 		 * @param string[] $sources Accepted source slugs.
 		 */
-		$sources = apply_filters( 'pph_request_sources', $defaults );
+		$sources = apply_filters( 'wpmphub_request_sources', $defaults );
 
 		return self::narrow( $sources, $defaults );
 	}

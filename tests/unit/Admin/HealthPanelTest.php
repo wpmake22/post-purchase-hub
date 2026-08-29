@@ -129,7 +129,7 @@ final class HealthPanelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_tracking_row_is_filterable(): void {
-		FakeWordPress::$filters['pph_detected_tracking_plugin'][] = static function (): string {
+		FakeWordPress::$filters['wpmphub_detected_tracking_plugin'][] = static function (): string {
 			return 'Our courier integration';
 		};
 
@@ -206,7 +206,7 @@ final class HealthPanelTest extends TestCase {
 	 * @return void
 	 */
 	public function test_it_renders_escaped_rows(): void {
-		FakeWordPress::$filters['pph_detected_tracking_plugin'][] = static function (): string {
+		FakeWordPress::$filters['wpmphub_detected_tracking_plugin'][] = static function (): string {
 			return '<script>alert(1)</script>';
 		};
 
@@ -214,8 +214,8 @@ final class HealthPanelTest extends TestCase {
 		$this->panel()->render();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'data-pph-health-row="tracking"', $html );
-		$this->assertStringContainsString( 'data-pph-health-state=', $html );
+		$this->assertStringContainsString( 'data-wpmphub-health-row="tracking"', $html );
+		$this->assertStringContainsString( 'data-wpmphub-health-state=', $html );
 		$this->assertStringNotContainsString( '<script>', $html );
 		$this->assertStringContainsString( 'alert(1)', $html );
 	}

@@ -60,7 +60,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 
-		delete_option( 'pph_settings' );
+		delete_option( 'wpmphub_settings' );
 
 		$this->sweeper    = new RetentionSweeper( new Logger() );
 		$this->repository = new RequestRepository();
@@ -95,7 +95,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_a_configured_window_removes_old_closed_requests(): void {
-		update_option( 'pph_settings', array( RetentionSweeper::RETENTION_SETTING => 30 ) );
+		update_option( 'wpmphub_settings', array( RetentionSweeper::RETENTION_SETTING => 30 ) );
 
 		$old    = $this->seed( Request::STATUS_COMPLETED, gmdate( 'Y-m-d H:i:s', time() - ( 60 * DAY_IN_SECONDS ) ) );
 		$recent = $this->seed( Request::STATUS_COMPLETED, gmdate( 'Y-m-d H:i:s', time() - ( 5 * DAY_IN_SECONDS ) ) );
@@ -113,7 +113,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_an_open_request_is_never_swept(): void {
-		update_option( 'pph_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
+		update_option( 'wpmphub_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
 
 		$pending = $this->seed( Request::STATUS_PENDING, '2019-01-01 09:00:00' );
 
@@ -130,7 +130,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	public function test_item_rows_are_cascaded(): void {
 		global $wpdb;
 
-		update_option( 'pph_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
+		update_option( 'wpmphub_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
 
 		$id = $this->seed( Request::STATUS_APPROVED, '2019-01-01 09:00:00' );
 
@@ -183,7 +183,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_a_dry_run_deletes_nothing(): void {
-		update_option( 'pph_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
+		update_option( 'wpmphub_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
 
 		$id     = $this->seed( Request::STATUS_COMPLETED, '2019-01-01 09:00:00' );
 		$result = $this->sweeper->sweep( 1, true );
@@ -199,7 +199,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_sweeping_is_idempotent(): void {
-		update_option( 'pph_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
+		update_option( 'wpmphub_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
 
 		$this->seed( Request::STATUS_COMPLETED, '2019-01-01 09:00:00' );
 
@@ -214,7 +214,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_a_pass_is_bounded_by_the_batch_size(): void {
-		update_option( 'pph_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
+		update_option( 'wpmphub_settings', array( RetentionSweeper::RETENTION_SETTING => 1 ) );
 
 		$result = $this->sweeper->sweep( 1 );
 
@@ -228,7 +228,7 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 	 */
 	public function test_the_window_is_filterable_and_clamped(): void {
 		add_filter(
-			'pph_request_retention_days',
+			'wpmphub_request_retention_days',
 			static function (): int {
 				return 99999;
 			}
@@ -236,10 +236,10 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 
 		$this->assertSame( RetentionSweeper::MAX_RETENTION_DAYS, $this->sweeper->retention_days() );
 
-		remove_all_filters( 'pph_request_retention_days' );
+		remove_all_filters( 'wpmphub_request_retention_days' );
 
 		add_filter(
-			'pph_request_retention_days',
+			'wpmphub_request_retention_days',
 			static function (): int {
 				return -30;
 			}
@@ -258,16 +258,16 @@ final class RetentionSweeperTest extends \WP_UnitTestCase {
 			$this->markTestSkipped( 'Transients are not in the options table on this install.' );
 		}
 
-		set_transient( 'pph_0_expired_counter', 3, 1 );
-		set_transient( 'pph_0_live_counter', 3, HOUR_IN_SECONDS );
+		set_transient( 'wpmphub_0_expired_counter', 3, 1 );
+		set_transient( 'wpmphub_0_live_counter', 3, HOUR_IN_SECONDS );
 
 		// Age the first one past its window without waiting for it.
-		update_option( '_transient_timeout_pph_0_expired_counter', time() - 60, false );
+		update_option( '_transient_timeout_wpmphub_0_expired_counter', time() - 60, false );
 
 		$result = $this->sweeper->sweep();
 
 		$this->assertSame( 1, $result['expired_transients'] );
-		$this->assertSame( 3, get_transient( 'pph_0_live_counter' ) );
+		$this->assertSame( 3, get_transient( 'wpmphub_0_live_counter' ) );
 	}
 
 	/**

@@ -44,7 +44,7 @@ use PostPurchaseHub\Support\Urls;
  * arrived pre-broken.
  *
  * Access itself is still decided in exactly one place: this class only supplies
- * the token through `pph_current_request_token`, and
+ * the token through `wpmphub_current_request_token`, and
  * `Security\OwnershipResolver` remains the thing that compares it to an order.
  *
  * @since 0.11.0
@@ -56,7 +56,7 @@ final class GuestContext {
 	 *
 	 * @var string
 	 */
-	public const COOKIE = 'pph_guest_context';
+	public const COOKIE = 'wpmphub_guest_context';
 
 	/**
 	 * Query argument set on the redirect, so a browser that refused the cookie
@@ -64,7 +64,7 @@ final class GuestContext {
 	 *
 	 * @var string
 	 */
-	public const STATE_PARAM = 'pph_context';
+	public const STATE_PARAM = 'wpmphub_context';
 
 	/**
 	 * Value of the state argument after a successful exchange.
@@ -142,7 +142,7 @@ final class GuestContext {
 	 */
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'maybe_exchange_token' ), 1 );
-		add_filter( 'pph_current_request_token', array( $this, 'supply_token' ), 20 );
+		add_filter( 'wpmphub_current_request_token', array( $this, 'supply_token' ), 20 );
 	}
 
 	/**
@@ -193,7 +193,7 @@ final class GuestContext {
 		if ( null === $payload ) {
 			$this->logger->warning(
 				'Rejected a secure order link that did not verify.',
-				array( 'event' => 'pph.context.rejected' )
+				array( 'event' => 'wpmphub.context.rejected' )
 			);
 
 			return self::target( self::STATE_EXPIRED );

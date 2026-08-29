@@ -270,7 +270,7 @@ final class EmailsTest extends \WP_UnitTestCase {
 		$digest = $this->mailer()->admin_digest();
 		$this->assertFalse( $digest->maybe_send(), 'Disabled by default.' );
 
-		update_option( 'woocommerce_pph_admin_digest_settings', array( 'enabled' => 'yes' ) );
+		update_option( 'woocommerce_wpmphub_admin_digest_settings', array( 'enabled' => 'yes' ) );
 
 		// Enabled, but there is nothing to report yet.
 		$this->assertFalse( $this->mailer()->admin_digest()->maybe_send(), 'Opting in never means a daily email that says zero.' );

@@ -81,8 +81,8 @@ final class ShortcodesTest extends TestCase {
 
 		$output = $this->shortcodes->render( array() );
 
-		$this->assertStringContainsString( 'data-pph-orders-empty', $output );
-		$this->assertStringNotContainsString( 'data-pph-timeline', $output );
+		$this->assertStringContainsString( 'data-wpmphub-orders-empty', $output );
+		$this->assertStringNotContainsString( 'data-wpmphub-timeline', $output );
 	}
 
 	/**
@@ -102,7 +102,7 @@ final class ShortcodesTest extends TestCase {
 
 		$output = $this->shortcodes->render( $atts );
 
-		$this->assertStringNotContainsString( 'data-pph-order-id="99"', $output );
+		$this->assertStringNotContainsString( 'data-wpmphub-order-id="99"', $output );
 	}
 
 	/**
@@ -137,7 +137,7 @@ final class ShortcodesTest extends TestCase {
 
 		$output = $this->shortcodes->render( array( 'limit' => $requested ) );
 
-		$this->assertSame( $expected, substr_count( $output, 'class="pph-orders__order"' ) );
+		$this->assertSame( $expected, substr_count( $output, 'class="wpmphub-orders__order"' ) );
 	}
 
 	/**

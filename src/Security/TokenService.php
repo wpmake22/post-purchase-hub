@@ -151,7 +151,7 @@ final class TokenService {
 	 * @return int
 	 */
 	public function ttl_seconds(): int {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 		$settings = is_array( $settings ) ? $settings : array();
 		$days     = isset( $settings[ self::TTL_SETTING ] ) ? (int) $settings[ self::TTL_SETTING ] : self::DEFAULT_TTL_DAYS;
 
@@ -162,7 +162,7 @@ final class TokenService {
 		 *
 		 * @param int $days Configured TTL in days.
 		 */
-		$days = (int) apply_filters( 'pph_token_ttl_days', $days );
+		$days = (int) apply_filters( 'wpmphub_token_ttl_days', $days );
 
 		// The cap applies after the filter too: a filter raising this is a
 		// merchant preference the plugin does not get to honour past 90 days.

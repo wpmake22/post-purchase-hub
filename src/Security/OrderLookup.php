@@ -121,7 +121,7 @@ final class OrderLookup {
 		 * @param int    $order_id Resolved order id, 0 when unresolved.
 		 * @param string $number   Submitted order number.
 		 */
-		$order_id = (int) apply_filters( 'pph_lookup_order_id', is_scalar( $resolved ) ? (int) $resolved : 0, $number );
+		$order_id = (int) apply_filters( 'wpmphub_lookup_order_id', is_scalar( $resolved ) ? (int) $resolved : 0, $number );
 
 		return max( 0, $order_id );
 	}

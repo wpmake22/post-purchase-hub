@@ -36,7 +36,7 @@ final class Notices {
 	 *
 	 * @var string
 	 */
-	public const DISMISSED_META = 'pph_setup_notice_dismissed';
+	public const DISMISSED_META = 'wpmphub_setup_notice_dismissed';
 
 	/**
 	 * Capability that sees the notice at all.
@@ -50,14 +50,14 @@ final class Notices {
 	 *
 	 * @var string
 	 */
-	public const DISMISS_ACTION = 'pph_dismiss_setup_notice';
+	public const DISMISS_ACTION = 'wpmphub_dismiss_setup_notice';
 
 	/**
 	 * Nonce action for the dismissal.
 	 *
 	 * @var string
 	 */
-	public const NONCE_ACTION = 'pph_dismiss_notice';
+	public const NONCE_ACTION = 'wpmphub_dismiss_notice';
 
 	/**
 	 * Screen id prefixes the notice is allowed on.
@@ -88,7 +88,7 @@ final class Notices {
 			return;
 		}
 
-		echo '<div class="notice notice-info pph-notice" data-pph-setup-notice>';
+		echo '<div class="notice notice-info wpmphub-notice" data-wpmphub-setup-notice>';
 
 		printf(
 			'<p><strong>%1$s</strong> %2$s</p>',
@@ -103,7 +103,7 @@ final class Notices {
 		);
 
 		printf(
-			' <form method="post" action="%1$s" class="pph-notice__dismiss" data-pph-notice-dismiss>',
+			' <form method="post" action="%1$s" class="wpmphub-notice__dismiss" data-wpmphub-notice-dismiss>',
 			esc_url( admin_url( 'admin-post.php' ) )
 		);
 

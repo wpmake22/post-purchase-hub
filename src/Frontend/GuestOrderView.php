@@ -97,7 +97,7 @@ final class GuestOrderView {
 	 */
 	public function register(): void {
 		add_filter( 'wc_get_template', array( $this, 'replace_login_form' ), 10, 2 );
-		add_action( 'pph_render_guest_order', array( $this, 'render' ) );
+		add_action( 'wpmphub_render_guest_order', array( $this, 'render' ) );
 		add_filter( 'woocommerce_my_account_message', array( $this, 'explain_dead_link' ) );
 	}
 
@@ -167,13 +167,13 @@ final class GuestOrderView {
 		// cacheable, whoever else asks for this URL next.
 		Sanitizer::nocache();
 
-		$handoff = PPH_PLUGIN_DIR . 'templates/myaccount/guest-order-handoff.php';
+		$handoff = WPMPHUB_PLUGIN_DIR . 'templates/myaccount/guest-order-handoff.php';
 
 		return is_readable( $handoff ) ? $handoff : $template;
 	}
 
 	/**
-	 * Renders the order. Hooked to `pph_render_guest_order`.
+	 * Renders the order. Hooked to `wpmphub_render_guest_order`.
 	 *
 	 * @since 0.11.0
 	 * @return void

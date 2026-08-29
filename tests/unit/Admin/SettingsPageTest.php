@@ -217,8 +217,8 @@ final class SettingsPageTest extends TestCase {
 		$this->page->render();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'data-pph-health', $html );
-		$this->assertStringContainsString( 'data-pph-health-row="setup"', $html );
+		$this->assertStringContainsString( 'data-wpmphub-health', $html );
+		$this->assertStringContainsString( 'data-wpmphub-health-row="setup"', $html );
 	}
 
 	/**
@@ -235,7 +235,7 @@ final class SettingsPageTest extends TestCase {
 			$this->page->render();
 			$html = (string) ob_get_clean();
 
-			$this->assertStringContainsString( 'data-pph-confirm', $html, $tab . ' asks before its risky setting takes effect.' );
+			$this->assertStringContainsString( 'data-wpmphub-confirm', $html, $tab . ' asks before its risky setting takes effect.' );
 		}
 	}
 
@@ -253,12 +253,12 @@ final class SettingsPageTest extends TestCase {
 			$this->page->render();
 			$html = (string) ob_get_clean();
 
-			$this->assertStringContainsString( 'data-pph-settings-sidebar', $html, $tab . ' draws the rail.' );
-			$this->assertStringContainsString( 'data-pph-settings-search', $html, $tab . ' can be searched.' );
+			$this->assertStringContainsString( 'data-wpmphub-settings-sidebar', $html, $tab . ' draws the rail.' );
+			$this->assertStringContainsString( 'data-wpmphub-settings-search', $html, $tab . ' can be searched.' );
 
 			foreach ( array_keys( SettingsFields::tab_labels() ) as $other ) {
 				$this->assertStringContainsString(
-					'data-pph-settings-tab="' . $other . '"',
+					'data-wpmphub-settings-tab="' . $other . '"',
 					$html,
 					'Every tab stays reachable from ' . $tab . '.'
 				);
@@ -286,7 +286,7 @@ final class SettingsPageTest extends TestCase {
 
 			foreach ( array_keys( SettingsFields::for_tab( $tab ) ) as $key ) {
 				$this->assertStringContainsString(
-					'data-pph-settings-field="' . $key . '"',
+					'data-wpmphub-settings-field="' . $key . '"',
 					$html,
 					$key . ' is missing from the ' . $tab . ' tab.'
 				);
@@ -315,8 +315,8 @@ final class SettingsPageTest extends TestCase {
 		$this->page->render();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'pph-switch', $html );
-		$this->assertStringContainsString( 'data-pph-switch-states', $html );
+		$this->assertStringContainsString( 'wpmphub-switch', $html );
+		$this->assertStringContainsString( 'data-wpmphub-switch-states', $html );
 	}
 
 	/**
@@ -332,7 +332,7 @@ final class SettingsPageTest extends TestCase {
 		$this->page->render();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'data-pph-settings-terms="handling time', $html );
+		$this->assertStringContainsString( 'data-wpmphub-settings-terms="handling time', $html );
 	}
 
 	/**

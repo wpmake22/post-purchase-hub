@@ -20,8 +20,8 @@ namespace PostPurchaseHub\Install;
  * both HPOS and legacy storage identically. That makes it the slow part: a
  * plugin-deletion request cannot be allowed to run out of time part way, so the
  * sweep is bounded by orders and by seconds, and whatever is left is reported.
- * Meta left behind is inert — nothing reads `_pph_*` once the plugin is gone —
- * and `wp pph cleanup --order-meta` finishes the job on a large store.
+ * Meta left behind is inert — nothing reads `_wpmphub_*` once the plugin is gone —
+ * and `wp wpmphub cleanup --order-meta` finishes the job on a large store.
  *
  * @since 0.2.0
  */
@@ -39,7 +39,7 @@ final class Uninstaller {
 	 *
 	 * @var string
 	 */
-	public const ORDER_META_PREFIX = '_pph_';
+	public const ORDER_META_PREFIX = '_wpmphub_';
 
 	/**
 	 * Orders loaded per batch.
@@ -87,7 +87,7 @@ final class Uninstaller {
 	 * @return bool
 	 */
 	public static function deletion_allowed(): bool {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 
 		return is_array( $settings ) && ! empty( $settings[ self::SETTING ] );
 	}
@@ -112,7 +112,7 @@ final class Uninstaller {
 	}
 
 	/**
-	 * Deletes `_pph_*` meta from orders, in batches, through the CRUD layer.
+	 * Deletes `_wpmphub_*` meta from orders, in batches, through the CRUD layer.
 	 *
 	 * @since 0.2.0
 	 *
@@ -207,7 +207,7 @@ final class Uninstaller {
 	}
 
 	/**
-	 * Deletes every `pph_*` option through the options API.
+	 * Deletes every `wpmphub_*` option through the options API.
 	 *
 	 * @since 0.2.0
 	 *
@@ -220,7 +220,7 @@ final class Uninstaller {
 		$names = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( 'pph_' ) . '%'
+				$wpdb->esc_like( 'wpmphub_' ) . '%'
 			)
 		);
 

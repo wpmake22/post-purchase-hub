@@ -8,27 +8,27 @@
  * path, and being able to walk away halfway without losing anything.
  *
  * The wizard is a React app on a page of its own, so every wait is on a
- * `data-pph-*` attribute the app sets rather than on a navigation: clicking
+ * `data-wpmphub-*` attribute the app sets rather than on a navigation: clicking
  * "Next" is a REST call and a re-render, not a form post.
  *
  * Not executed in the session that rewrote it: this environment has no wp-env
  * (no Docker, and the local site's database is down), so `npm run test:e2e`
  * could not be run here. Written to the conventions of the specs beside it —
- * `data-pph-*` selectors only, state seeded through WP-CLI rather than assumed
+ * `data-wpmphub-*` selectors only, state seeded through WP-CLI rather than assumed
  * — so it runs as soon as an environment is available.
  */
 
 const { test, expect } = require("@wordpress/e2e-test-utils-playwright");
 
-const WIZARD = "[data-pph-wizard-step]";
-const PROGRESS = "[data-pph-wizard-progress]";
-const CONTINUE = "[data-pph-wizard-continue]";
-const SKIP = "[data-pph-wizard-skip]";
-const BACK = "[data-pph-wizard-back]";
-const HANDLING = "[data-pph-wizard-handling]";
-const DONE = "[data-pph-wizard-done]";
-const TIMELINE = "[data-pph-timeline]";
-const HEALTH_SETUP = '[data-pph-health-row="setup"]';
+const WIZARD = "[data-wpmphub-wizard-step]";
+const PROGRESS = "[data-wpmphub-wizard-progress]";
+const CONTINUE = "[data-wpmphub-wizard-continue]";
+const SKIP = "[data-wpmphub-wizard-skip]";
+const BACK = "[data-wpmphub-wizard-back]";
+const HANDLING = "[data-wpmphub-wizard-handling]";
+const DONE = "[data-wpmphub-wizard-done]";
+const TIMELINE = "[data-wpmphub-timeline]";
+const HEALTH_SETUP = '[data-wpmphub-health-row="setup"]';
 
 /**
  * Puts the store back to a freshly installed state.
@@ -41,7 +41,7 @@ async function resetSetup(requestUtils) {
 		method: "POST",
 		path: "/wp-cli/v1/run",
 		data: {
-			command: "option delete pph_setup_state pph_settings",
+			command: "option delete wpmphub_setup_state wpmphub_settings",
 		},
 	});
 }
@@ -82,7 +82,7 @@ async function seedOrder(requestUtils) {
  * @return {Promise<void>}
  */
 async function openWizard(page, admin) {
-	await admin.visitAdminPage("admin.php", "page=pph-setup");
+	await admin.visitAdminPage("admin.php", "page=wpmphub-setup");
 	await expect(page.locator(WIZARD)).toBeVisible();
 	await expect(page.locator(PROGRESS)).toBeVisible();
 }
@@ -96,7 +96,7 @@ async function openWizard(page, admin) {
  */
 async function expectStep(page, step) {
 	await expect(page.locator(WIZARD)).toHaveAttribute(
-		"data-pph-wizard-step",
+		"data-wpmphub-wizard-step",
 		step,
 	);
 }
@@ -120,10 +120,10 @@ test.describe("Setup wizard", () => {
 
 		// None of ours is on it, and no raw shortcode text either.
 		await expect(page.locator(TIMELINE)).toHaveCount(0);
-		await expect(page.locator("[data-pph-actions]")).toHaveCount(0);
-		await expect(page.locator("body")).not.toContainText("[pph_");
+		await expect(page.locator("[data-wpmphub-actions]")).toHaveCount(0);
+		await expect(page.locator("body")).not.toContainText("[wpmphub_");
 
-		await admin.visitAdminPage("admin.php", "page=pph-settings");
+		await admin.visitAdminPage("admin.php", "page=wpmphub-settings");
 		await expect(page.locator(HEALTH_SETUP)).toContainText("Not finished");
 	});
 
@@ -137,7 +137,7 @@ test.describe("Setup wizard", () => {
 		await openWizard(page, admin);
 		await expectStep(page, "welcome");
 
-		await page.click('[data-pph-wizard-path="complete"] input');
+		await page.click('[data-wpmphub-wizard-path="complete"] input');
 		await page.click(CONTINUE);
 
 		await expectStep(page, "statuses");
@@ -154,16 +154,16 @@ test.describe("Setup wizard", () => {
 		await page.click(CONTINUE);
 
 		await expectStep(page, "display");
-		await expect(page.locator("[data-pph-wizard-preview]")).toBeVisible();
+		await expect(page.locator("[data-wpmphub-wizard-preview]")).toBeVisible();
 		await page.click(CONTINUE);
 
 		await expectStep(page, "finish");
-		await expect(page.locator("[data-pph-wizard-summary]")).toBeVisible();
+		await expect(page.locator("[data-wpmphub-wizard-summary]")).toBeVisible();
 		await page.click(CONTINUE);
 
 		await expect(page.locator(DONE)).toBeVisible();
 
-		await admin.visitAdminPage("admin.php", "page=pph-settings");
+		await admin.visitAdminPage("admin.php", "page=wpmphub-settings");
 		await expect(page.locator(HEALTH_SETUP)).toContainText("Complete");
 
 		await page.goto(`/my-account/view-order/${orderId}/`);
@@ -176,7 +176,7 @@ test.describe("Setup wizard", () => {
 	}) => {
 		await openWizard(page, admin);
 
-		await page.click('[data-pph-wizard-path="actions"] input');
+		await page.click('[data-wpmphub-wizard-path="actions"] input');
 		await page.click(CONTINUE);
 
 		// Straight past the timeline questions, which this path never asks.
@@ -191,7 +191,7 @@ test.describe("Setup wizard", () => {
 		await page.click(CONTINUE);
 		await expect(page.locator(DONE)).toBeVisible();
 
-		await admin.visitAdminPage("admin.php", "page=pph-settings");
+		await admin.visitAdminPage("admin.php", "page=wpmphub-settings");
 		await expect(page.locator(HEALTH_SETUP)).toContainText("Complete");
 	});
 
@@ -244,7 +244,7 @@ test.describe("Setup wizard", () => {
 		await page.click(CONTINUE);
 		await expect(page.locator(DONE)).toBeVisible();
 
-		await admin.visitAdminPage("admin.php", "page=pph-settings");
+		await admin.visitAdminPage("admin.php", "page=wpmphub-settings");
 		await expect(page.locator(HEALTH_SETUP)).toContainText("Complete");
 	});
 
@@ -252,14 +252,14 @@ test.describe("Setup wizard", () => {
 		page,
 		admin,
 	}) => {
-		await admin.visitAdminPage("admin.php", "page=pph-settings&tab=guest");
+		await admin.visitAdminPage("admin.php", "page=wpmphub-settings&tab=guest");
 
 		// Tick "enabled" only, leaving the acknowledgement unticked.
-		await page.check('[name="pph_settings[guest_lookup_enabled]"]');
+		await page.check('[name="wpmphub_settings[guest_lookup_enabled]"]');
 		await page.click("input[type=submit], button[type=submit]");
 
 		await expect(
-			page.locator('[name="pph_settings[guest_lookup_enabled]"]'),
+			page.locator('[name="wpmphub_settings[guest_lookup_enabled]"]'),
 		).not.toBeChecked();
 	});
 });

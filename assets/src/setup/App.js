@@ -3,7 +3,7 @@
  *
  * Two rules shape everything here. The server owns which step comes next — an
  * answer on the welcome screen can remove steps further along, so the client is
- * told rather than computing it. And nothing reaches `pph_settings` until the
+ * told rather than computing it. And nothing reaches `wpmphub_settings` until the
  * last screen, so closing the tab halfway is safe by construction: what a
  * merchant typed is a draft on the server, and their store is untouched.
  *
@@ -149,15 +149,15 @@ export default function App() {
 
 	if ( error && ! state ) {
 		return (
-			<div className="pph-setup pph-setup--message">
-				<p className="pph-setup__warning">{ error }</p>
+			<div className="wpmphub-setup wpmphub-setup--message">
+				<p className="wpmphub-setup__warning">{ error }</p>
 			</div>
 		);
 	}
 
 	if ( ! state || ! context || ! values || ! current ) {
 		return (
-			<div className="pph-setup pph-setup--message">
+			<div className="wpmphub-setup wpmphub-setup--message">
 				<Spinner />
 			</div>
 		);
@@ -326,7 +326,7 @@ export default function App() {
 	};
 
 	return (
-		<div className="pph-setup" data-pph-wizard-step={ current.id }>
+		<div className="wpmphub-setup" data-wpmphub-wizard-step={ current.id }>
 			<Stepper
 				steps={ steps }
 				current={ current.number }
@@ -334,25 +334,25 @@ export default function App() {
 				onExit={ exit }
 			/>
 
-			<main className="pph-setup__main">
-				<div className="pph-setup__card">
+			<main className="wpmphub-setup__main">
+				<div className="wpmphub-setup__card">
 					{ screen() }
 
 					{ error && (
-						<p className="pph-setup__warning" role="alert">
+						<p className="wpmphub-setup__warning" role="alert">
 							{ error }
 						</p>
 					) }
 
 					{ ! ( isFinish && state.completed ) && (
-						<footer className="pph-setup__footer">
+						<footer className="wpmphub-setup__footer">
 							{ current.number > 1 ? (
 								<button
 									type="button"
-									className="pph-setup__link-button"
+									className="wpmphub-setup__link-button"
 									onClick={ goBack }
 									disabled={ busy }
-									data-pph-wizard-back
+									data-wpmphub-wizard-back
 								>
 									{ __( 'Back', 'wpmake-post-purchase-hub' ) }
 								</button>
@@ -360,16 +360,16 @@ export default function App() {
 								<span />
 							) }
 
-							<div className="pph-setup__footer-actions">
+							<div className="wpmphub-setup__footer-actions">
 								{ ! isFinish && (
 									<button
 										type="button"
-										className="pph-setup__link-button"
+										className="wpmphub-setup__link-button"
 										onClick={ () =>
 											run( () => skipStep( current.id ) )
 										}
 										disabled={ busy }
-										data-pph-wizard-skip
+										data-wpmphub-wizard-skip
 									>
 										{ __(
 											'Skip this step',
@@ -380,7 +380,7 @@ export default function App() {
 
 								<button
 									type="button"
-									className="pph-setup__button"
+									className="wpmphub-setup__button"
 									onClick={ () =>
 										run( () =>
 											isFinish
@@ -389,7 +389,7 @@ export default function App() {
 										)
 									}
 									disabled={ busy }
-									data-pph-wizard-continue
+									data-wpmphub-wizard-continue
 								>
 									{ isFinish
 										? __(

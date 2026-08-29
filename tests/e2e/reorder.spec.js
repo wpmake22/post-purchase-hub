@@ -8,7 +8,7 @@
  * The order is seeded through WP-CLI rather than assumed, so the three outcomes
  * under test are the three the fixture actually contains.
  *
- * Selectors are plugin-owned `data-pph-*` attributes, per tests/e2e/README. The
+ * Selectors are plugin-owned `data-wpmphub-*` attributes, per tests/e2e/README. The
  * two exceptions are core WooCommerce classes (`a.order-again`, the empty-cart
  * message), asserted precisely because they belong to core rather than to us:
  * one must be gone, the other must still be true while the summary is on screen.
@@ -17,10 +17,10 @@
 const { test, expect } = require("@wordpress/e2e-test-utils-playwright");
 const { completeSetup } = require("./utils/setup");
 
-const SUMMARY = "[data-pph-reorder]";
-const LINE = "[data-pph-reorder-line]";
-const CONFIRM = "[data-pph-reorder-confirm]";
-const REORDER_ACTION = '[data-pph-action="reorder"] a';
+const SUMMARY = "[data-wpmphub-reorder]";
+const LINE = "[data-wpmphub-reorder-line]";
+const CONFIRM = "[data-wpmphub-reorder-confirm]";
+const REORDER_ACTION = '[data-wpmphub-action="reorder"] a';
 
 /**
  * Seeds a completed order for the logged-in admin containing one buyable line,
@@ -101,13 +101,13 @@ test.describe("Reorder", () => {
 		await expect(page.locator(LINE)).toHaveCount(3);
 
 		await expect(
-			page.locator('[data-pph-reorder-outcome="added"]'),
+			page.locator('[data-wpmphub-reorder-outcome="added"]'),
 		).toHaveCount(1);
 		await expect(
-			page.locator('[data-pph-reorder-outcome="out_of_stock"]'),
+			page.locator('[data-wpmphub-reorder-outcome="out_of_stock"]'),
 		).toHaveCount(1);
 		await expect(
-			page.locator('[data-pph-reorder-outcome="unavailable"]'),
+			page.locator('[data-wpmphub-reorder-outcome="unavailable"]'),
 		).toHaveCount(1);
 
 		// Nothing has been added yet, which is the whole claim of the screen.
@@ -121,7 +121,7 @@ test.describe("Reorder", () => {
 		page,
 	}) => {
 		await page.goto(
-			`/my-account/view-order/${orderId}/?pph_reorder=${orderId}`,
+			`/my-account/view-order/${orderId}/?wpmphub_reorder=${orderId}`,
 		);
 
 		await expect(page.locator(SUMMARY)).toBeVisible();
@@ -141,7 +141,7 @@ test.describe("Reorder", () => {
 		// The summary is scoped to the order whose page it is on: asking for
 		// another order's summary from this page must render nothing.
 		await page.goto(
-			`/my-account/view-order/${orderId}/?pph_reorder=999999`,
+			`/my-account/view-order/${orderId}/?wpmphub_reorder=999999`,
 		);
 
 		await expect(page.locator(SUMMARY)).toHaveCount(0);
@@ -151,7 +151,7 @@ test.describe("Reorder", () => {
 		for (const width of [375, 1440]) {
 			await page.setViewportSize({ width, height: 900 });
 			await page.goto(
-				`/my-account/view-order/${orderId}/?pph_reorder=${orderId}`,
+				`/my-account/view-order/${orderId}/?wpmphub_reorder=${orderId}`,
 			);
 
 			await expect(page.locator(SUMMARY)).toBeVisible();

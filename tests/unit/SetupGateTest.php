@@ -11,6 +11,7 @@ namespace PostPurchaseHub\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use PostPurchaseHub\Install\SetupState;
+use PostPurchaseHub\Frontend\Renderer;
 use PostPurchaseHub\Plugin;
 use PostPurchaseHub\Rest\SetupController;
 use PostPurchaseHub\Tests\Unit\Support\FakeWordPress;
@@ -38,17 +39,26 @@ final class SetupGateTest extends TestCase {
 	 * Hooks the storefront is drawn from. None of them may be wired before
 	 * setup completes.
 	 *
-	 * @var string[]
+	 * A method rather than a constant because the orders-column hook's name is
+	 * built from `Renderer::LIST_COLUMN`, and this list spent its whole life
+	 * carrying a hand-typed copy of it that had never matched: the constant is
+	 * hyphenated, the copy was not, so that entry asserted the absence of a hook
+	 * name nothing could ever register. It passed, every time, and covered
+	 * nothing.
+	 *
+	 * @return string[]
 	 */
-	private const STOREFRONT_HOOKS = array(
-		'woocommerce_view_order',
-		'woocommerce_my_account_my_orders_actions',
-		'woocommerce_my_account_my_orders_column_pph_timeline',
-		'wp_enqueue_scripts',
-		'wp_footer',
-		'wc_get_template',
-		'template_include',
-	);
+	private static function storefront_hooks(): array {
+		return array(
+			'woocommerce_view_order',
+			'woocommerce_my_account_my_orders_actions',
+			'woocommerce_my_account_my_orders_column_' . Renderer::LIST_COLUMN,
+			'wp_enqueue_scripts',
+			'wp_footer',
+			'wc_get_template',
+			'template_include',
+		);
+	}
 
 	/**
 	 * Resets the in-memory WordPress state.
@@ -92,7 +102,7 @@ final class SetupGateTest extends TestCase {
 
 		$wired = $this->wired_hooks();
 
-		foreach ( self::STOREFRONT_HOOKS as $hook ) {
+		foreach ( self::storefront_hooks() as $hook ) {
 			$this->assertNotContains(
 				$hook,
 				$wired,
@@ -159,6 +169,7 @@ final class SetupGateTest extends TestCase {
 
 		$this->assertContains( 'woocommerce_view_order', $wired );
 		$this->assertContains( 'woocommerce_my_account_my_orders_actions', $wired );
+		$this->assertContains( 'woocommerce_my_account_my_orders_column_' . Renderer::LIST_COLUMN, $wired );
 		$this->assertContains( 'wp_enqueue_scripts', $wired );
 	}
 
@@ -192,7 +203,7 @@ final class SetupGateTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_filter_opens_the_storefront_too(): void {
-		FakeWordPress::$filters['pph_setup_complete'][] = static function (): bool {
+		FakeWordPress::$filters['wpmphub_setup_complete'][] = static function (): bool {
 			return true;
 		};
 

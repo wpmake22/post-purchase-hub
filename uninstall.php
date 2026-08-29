@@ -16,13 +16,13 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-$pph_autoload = __DIR__ . '/vendor/autoload.php';
+$wpmphub_autoload = __DIR__ . '/vendor/autoload.php';
 
-if ( ! is_readable( $pph_autoload ) ) {
+if ( ! is_readable( $wpmphub_autoload ) ) {
 	// Without the autoloader there is nothing to run; leaving data is the safe outcome.
 	return;
 }
 
-require_once $pph_autoload;
+require_once $wpmphub_autoload;
 
 PostPurchaseHub\Install\Uninstaller::run();

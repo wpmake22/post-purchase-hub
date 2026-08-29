@@ -22,7 +22,7 @@ use PostPurchaseHub\Security\Sanitizer;
 use PostPurchaseHub\Support\Logger;
 
 /**
- * `POST /pph/v1/reorder` — the only route in this plugin that writes a cart.
+ * `POST /wpmphub/v1/reorder` — the only route in this plugin that writes a cart.
  *
  * POST, not GET, for the reason CLAUDE.md hard rule 4 exists and core's own
  * `order_again` link ignores: a corporate mail scanner or a link prefetcher
@@ -50,7 +50,7 @@ final class ReorderController {
 	 *
 	 * @var string
 	 */
-	public const NAMESPACE = 'pph/v1';
+	public const NAMESPACE = 'wpmphub/v1';
 
 	/**
 	 * Route base.
@@ -190,7 +190,7 @@ final class ReorderController {
 			// Deliberately the same message whether the order does not exist or
 			// belongs to someone else. The reason still reaches the log.
 			return $this->deny(
-				'pph_forbidden',
+				'wpmphub_forbidden',
 				__( 'You do not have access to this order.', 'wpmake-post-purchase-hub' ),
 				403,
 				array(
@@ -204,7 +204,7 @@ final class ReorderController {
 			return $this->too_many_requests( array( 'stage' => 'email' ) );
 		}
 
-		$request->set_param( 'pph_order', $order );
+		$request->set_param( 'wpmphub_order', $order );
 
 		return true;
 	}
@@ -218,10 +218,10 @@ final class ReorderController {
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function confirm( \WP_REST_Request $request ) {
-		$order = $request->get_param( 'pph_order' );
+		$order = $request->get_param( 'wpmphub_order' );
 
 		if ( ! $order instanceof \WC_Order ) {
-			return $this->deny( 'pph_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
+			return $this->deny( 'wpmphub_forbidden', __( 'This order could not be found.', 'wpmake-post-purchase-hub' ), 403, array() );
 		}
 
 		try {
@@ -230,7 +230,7 @@ final class ReorderController {
 			$status = EligibilityResponse::status_for( $e->result );
 
 			return $this->deny(
-				Reorder::REASON_NOTHING_AVAILABLE === $e->result->reason_code ? 'pph_nothing_available' : 'pph_ineligible',
+				Reorder::REASON_NOTHING_AVAILABLE === $e->result->reason_code ? 'wpmphub_nothing_available' : 'wpmphub_ineligible',
 				'' !== $e->result->message ? $e->result->message : __( 'This order cannot be bought again right now.', 'wpmake-post-purchase-hub' ),
 				$status,
 				array(
@@ -302,7 +302,7 @@ final class ReorderController {
 	 * @return \WP_Error
 	 */
 	private function too_many_requests( array $log_context ): \WP_Error {
-		return $this->deny( 'pph_rate_limited', __( 'Too many requests. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
+		return $this->deny( 'wpmphub_rate_limited', __( 'Too many requests. Please try again later.', 'wpmake-post-purchase-hub' ), 429, $log_context );
 	}
 
 	/**

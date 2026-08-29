@@ -34,35 +34,35 @@ final class Assets {
 	 *
 	 * @var string
 	 */
-	public const STYLE_HANDLE = 'pph-frontend';
+	public const STYLE_HANDLE = 'wpmphub-frontend';
 
 	/**
 	 * Request-modal script handle.
 	 *
 	 * @var string
 	 */
-	public const SCRIPT_HANDLE = 'pph-requests';
+	public const SCRIPT_HANDLE = 'wpmphub-requests';
 
 	/**
 	 * Guest-lookup script handle.
 	 *
 	 * @var string
 	 */
-	public const LOOKUP_HANDLE = 'pph-lookup';
+	public const LOOKUP_HANDLE = 'wpmphub-lookup';
 
 	/**
 	 * Reorder-confirmation script handle.
 	 *
 	 * @var string
 	 */
-	public const REORDER_HANDLE = 'pph-reorder';
+	public const REORDER_HANDLE = 'wpmphub-reorder';
 
 	/**
 	 * Help-form script handle.
 	 *
 	 * @var string
 	 */
-	public const HELP_HANDLE = 'pph-help';
+	public const HELP_HANDLE = 'wpmphub-help';
 
 	/**
 	 * Build directory, relative to the plugin root.
@@ -96,7 +96,7 @@ final class Assets {
 
 		wp_enqueue_style(
 			self::STYLE_HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'index.css',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'index.css',
 			array(),
 			$style['version']
 		);
@@ -107,7 +107,7 @@ final class Assets {
 
 		wp_enqueue_script(
 			self::SCRIPT_HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'requests.js',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'requests.js',
 			$script['dependencies'],
 			$script['version'],
 			true
@@ -115,7 +115,7 @@ final class Assets {
 
 		wp_localize_script(
 			self::SCRIPT_HANDLE,
-			'pphRequests',
+			'wpmphubRequests',
 			array(
 				'restUrl' => rest_url( RequestsController::NAMESPACE . RequestsController::ROUTE ),
 				'nonce'   => wp_create_nonce( 'wp_rest' ),
@@ -143,7 +143,7 @@ final class Assets {
 
 		wp_enqueue_script(
 			self::HELP_HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'help.js',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'help.js',
 			$script['dependencies'],
 			$script['version'],
 			true
@@ -151,7 +151,7 @@ final class Assets {
 
 		wp_localize_script(
 			self::HELP_HANDLE,
-			'pphHelp',
+			'wpmphubHelp',
 			array(
 				'restUrl' => rest_url( HelpController::NAMESPACE . HelpController::ROUTE ),
 				'nonce'   => wp_create_nonce( 'wp_rest' ),
@@ -179,7 +179,7 @@ final class Assets {
 
 		wp_enqueue_script(
 			self::REORDER_HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'reorder.js',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'reorder.js',
 			$script['dependencies'],
 			$script['version'],
 			true
@@ -187,7 +187,7 @@ final class Assets {
 
 		wp_localize_script(
 			self::REORDER_HANDLE,
-			'pphReorder',
+			'wpmphubReorder',
 			array(
 				'restUrl' => rest_url( ReorderController::NAMESPACE . ReorderController::ROUTE ),
 				'nonce'   => wp_create_nonce( 'wp_rest' ),
@@ -227,7 +227,7 @@ final class Assets {
 
 		wp_enqueue_script(
 			self::LOOKUP_HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'lookup.js',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'lookup.js',
 			$script['dependencies'],
 			$script['version'],
 			true
@@ -235,7 +235,7 @@ final class Assets {
 
 		wp_localize_script(
 			self::LOOKUP_HANDLE,
-			'pphLookup',
+			'wpmphubLookup',
 			array(
 				'restUrl'      => rest_url( LookupController::NAMESPACE . LookupController::ROUTE ),
 				'errorMessage' => __( 'That could not be submitted. Please check your connection and try again.', 'wpmake-post-purchase-hub' ),
@@ -265,7 +265,7 @@ final class Assets {
 		 *
 		 * @param bool $required Whether to enqueue.
 		 */
-		return (bool) apply_filters( 'pph_enqueue_assets', $required );
+		return (bool) apply_filters( 'wpmphub_enqueue_assets', $required );
 	}
 
 	/**
@@ -325,14 +325,14 @@ final class Assets {
 	 * @return array{version: string, dependencies: string[]}
 	 */
 	private function manifest( string $filename ): array {
-		$path = PPH_PLUGIN_DIR . self::BUILD_PATH . $filename;
+		$path = WPMPHUB_PLUGIN_DIR . self::BUILD_PATH . $filename;
 
 		if ( is_readable( $path ) ) {
 			$asset = include $path;
 
 			if ( is_array( $asset ) ) {
 				return array(
-					'version'      => isset( $asset['version'] ) && is_string( $asset['version'] ) ? $asset['version'] : PPH_VERSION,
+					'version'      => isset( $asset['version'] ) && is_string( $asset['version'] ) ? $asset['version'] : WPMPHUB_VERSION,
 					'dependencies' => isset( $asset['dependencies'] ) && is_array( $asset['dependencies'] ) ? $asset['dependencies'] : array(),
 				);
 			}
@@ -341,7 +341,7 @@ final class Assets {
 		// A build that did not produce a manifest is a packaging fault, not a
 		// reason to serve an unversioned, dependency-less asset forever.
 		return array(
-			'version'      => PPH_VERSION,
+			'version'      => WPMPHUB_VERSION,
 			'dependencies' => array(),
 		);
 	}

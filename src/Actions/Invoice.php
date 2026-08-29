@@ -50,7 +50,7 @@ final class Invoice {
 	 *
 	 * @since 0.13.0
 	 *
-	 * @param EligibilityResolver $eligibility Eligibility engine, for the `pph_action_eligibility` filter.
+	 * @param EligibilityResolver $eligibility Eligibility engine, for the `wpmphub_action_eligibility` filter.
 	 * @param Detector            $detector    Where an order's invoice is read from.
 	 */
 	public function __construct( private EligibilityResolver $eligibility, private Detector $detector ) {}
@@ -105,7 +105,7 @@ final class Invoice {
 	 * Constrains nothing by itself: an invoice exists or it does not, and no
 	 * status, age or product type changes that. The rule is still evaluated
 	 * through `EligibilityResolver` so a merchant can hang a restriction off
-	 * `pph_action_eligibility` here exactly as they can on cancel and reorder.
+	 * `wpmphub_action_eligibility` here exactly as they can on cancel and reorder.
 	 *
 	 * @since 0.13.0
 	 *
@@ -163,7 +163,7 @@ final class Invoice {
 		 * @param bool      $enabled Whether to offer the fallback. Default true.
 		 * @param \WC_Order $order   Order being resolved.
 		 */
-		return (bool) apply_filters( 'pph_invoice_print_fallback', true, $order );
+		return (bool) apply_filters( 'wpmphub_invoice_print_fallback', true, $order );
 	}
 
 	/**

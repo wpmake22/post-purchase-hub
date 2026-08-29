@@ -102,12 +102,12 @@ final class PluginHeaderTest extends TestCase {
 			'The Version header must be semver, or bin/build.php refuses to build.'
 		);
 
-		preg_match( "/define\(\s*'PPH_VERSION'\s*,\s*'([^']+)'\s*\)/", $this->main_file(), $constant );
+		preg_match( "/define\(\s*'WPMPHUB_VERSION'\s*,\s*'([^']+)'\s*\)/", $this->main_file(), $constant );
 
 		$this->assertSame(
 			$header,
 			$constant[1] ?? '',
-			'PPH_VERSION must match the Version header. The build rewrites the header but never the constant.'
+			'WPMPHUB_VERSION must match the Version header. The build rewrites the header but never the constant.'
 		);
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading a file from this repository, not a remote URL.

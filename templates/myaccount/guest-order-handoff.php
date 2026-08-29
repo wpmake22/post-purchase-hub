@@ -24,4 +24,4 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.11.0
  */
-do_action( 'pph_render_guest_order' );
+do_action( 'wpmphub_render_guest_order' );

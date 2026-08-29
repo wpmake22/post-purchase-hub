@@ -57,7 +57,7 @@ final class HelpTopics {
 		 *
 		 * @param string[] $topics Accepted topic codes.
 		 */
-		$topics = apply_filters( 'pph_help_topics', self::DEFAULTS );
+		$topics = apply_filters( 'wpmphub_help_topics', self::DEFAULTS );
 
 		return is_array( $topics ) && array() !== $topics ? array_values( $topics ) : self::DEFAULTS;
 	}
@@ -88,7 +88,7 @@ final class HelpTopics {
 		 *
 		 * @param array<string, string> $labels Labels keyed by topic code.
 		 */
-		$labels = apply_filters( 'pph_help_topic_labels', $defaults );
+		$labels = apply_filters( 'wpmphub_help_topic_labels', $defaults );
 		$labels = is_array( $labels ) ? $labels : $defaults;
 
 		$result = array();

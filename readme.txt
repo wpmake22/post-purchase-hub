@@ -101,10 +101,10 @@ over unless you ask it to.
 
 **Placement for developers and site builders**
 
-* **Shortcode** — `[pph_orders]` renders the timeline view on any page.
-* **Shortcode** — `[pph_order_lookup]` renders the guest lookup form.
+* **Shortcode** — `[wpmphub_orders]` renders the timeline view on any page.
+* **Shortcode** — `[wpmphub_order_lookup]` renders the guest lookup form.
 * **Block** — an Order timeline block for the block editor.
-* **WP-CLI** — `wp pph backfill-timeline` fills in what can be derived for
+* **WP-CLI** — `wp wpmphub backfill-timeline` fills in what can be derived for
   orders placed before you installed the plugin.
 * **Filters throughout**, including the stage map, action availability, tracking
   detection and invoice sources.
@@ -198,9 +198,9 @@ before.
 **Optional**
 
 * To offer guest order lookup, enable it under **Settings → Guest Access**, then
-  add `[pph_order_lookup]` to a page and link it from your footer or your order
+  add `[wpmphub_order_lookup]` to a page and link it from your footer or your order
   emails.
-* To place the timeline somewhere of your own, use the `[pph_orders]` shortcode
+* To place the timeline somewhere of your own, use the `[wpmphub_orders]` shortcode
   or the Order timeline block.
 
 == Frequently Asked Questions ==
@@ -230,7 +230,7 @@ estimates**.
 
 WooCommerce does not keep a history of status changes, so a plugin can only
 record them from the moment it is installed. Older orders show their stages
-without dates rather than showing invented ones. `wp pph backfill-timeline` fills
+without dates rather than showing invented ones. `wp wpmphub backfill-timeline` fills
 in what can be derived from the dates WooCommerce does store.
 
 = Does it cancel orders automatically? =
@@ -273,7 +273,7 @@ test suite runs against both HPOS and legacy post storage.
 
 = Can I show the timeline somewhere other than the order page? =
 
-Yes. Use the `[pph_orders]` shortcode or the Order timeline block on any page.
+Yes. Use the `[wpmphub_orders]` shortcode or the Order timeline block on any page.
 Each signed-in customer sees their own orders.
 
 = What happens to my data if I delete the plugin? =
@@ -312,6 +312,6 @@ First public release.
 * Cancellation requests arrive in a merchant queue to approve or decline, with optional restocking on approval.
 * Guest order lookup, off by default, sending a signed link to the billing address already on the order.
 * Setup wizard that keeps the storefront unchanged until it is finished.
-* `[pph_orders]` shortcode and an Order timeline block.
-* `wp pph backfill-timeline` for orders placed before installation.
+* `[wpmphub_orders]` shortcode and an Order timeline block.
+* `wp wpmphub backfill-timeline` for orders placed before installation.
 * Works with both High-Performance Order Storage and legacy post storage.

@@ -63,57 +63,57 @@ export default function Delivery( {
 				'wpmake-post-purchase-hub'
 			) }
 		>
-			<div className="pph-setup__field">
+			<div className="wpmphub-setup__field">
 				<label
-					className="pph-setup__field-label"
-					htmlFor="pph-handling-days"
+					className="wpmphub-setup__field-label"
+					htmlFor="wpmphub-handling-days"
 				>
 					{ __( 'Handling time', 'wpmake-post-purchase-hub' ) }
 				</label>
-				<div className="pph-setup__field-inline">
+				<div className="wpmphub-setup__field-inline">
 					<input
-						id="pph-handling-days"
+						id="wpmphub-handling-days"
 						type="number"
 						inputMode="numeric"
 						min={ bounds.min }
 						max={ bounds.max }
 						value={ days }
-						data-pph-wizard-handling
+						data-wpmphub-wizard-handling
 						onChange={ ( event ) =>
 							onDaysChange( event.target.value )
 						}
 					/>
-					<span className="pph-setup__field-suffix">
+					<span className="wpmphub-setup__field-suffix">
 						{ __( 'business days', 'wpmake-post-purchase-hub' ) }
 					</span>
 				</div>
 			</div>
 
 			{ methods.length > 0 && (
-				<details className="pph-setup__disclosure">
+				<details className="wpmphub-setup__disclosure">
 					<summary>
 						{ __(
 							'Some shipping methods take longer',
 							'wpmake-post-purchase-hub'
 						) }
 					</summary>
-					<p className="pph-setup__help">
+					<p className="wpmphub-setup__help">
 						{ __(
 							'Leave a box blank to use the handling time above.',
 							'wpmake-post-purchase-hub'
 						) }
 					</p>
 					{ methods.map( ( method ) => (
-						<div className="pph-setup__field" key={ method.value }>
+						<div className="wpmphub-setup__field" key={ method.value }>
 							<label
-								className="pph-setup__field-label"
-								htmlFor={ `pph-override-${ method.value }` }
+								className="wpmphub-setup__field-label"
+								htmlFor={ `wpmphub-override-${ method.value }` }
 							>
 								{ method.label }
 							</label>
-							<div className="pph-setup__field-inline">
+							<div className="wpmphub-setup__field-inline">
 								<input
-									id={ `pph-override-${ method.value }` }
+									id={ `wpmphub-override-${ method.value }` }
 									type="number"
 									inputMode="numeric"
 									min={ bounds.min }
@@ -126,7 +126,7 @@ export default function Delivery( {
 										)
 									}
 								/>
-								<span className="pph-setup__field-suffix">
+								<span className="wpmphub-setup__field-suffix">
 									{ __(
 										'business days',
 										'wpmake-post-purchase-hub'

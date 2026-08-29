@@ -32,14 +32,14 @@ final class Assets {
 	 *
 	 * @var string
 	 */
-	public const STYLE_HANDLE = 'pph-admin';
+	public const STYLE_HANDLE = 'wpmphub-admin';
 
 	/**
 	 * Script handle.
 	 *
 	 * @var string
 	 */
-	public const SCRIPT_HANDLE = 'pph-admin';
+	public const SCRIPT_HANDLE = 'wpmphub-admin';
 
 	/**
 	 * Build directory, relative to the plugin root.
@@ -73,7 +73,7 @@ final class Assets {
 
 		wp_enqueue_style(
 			self::STYLE_HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'admin.css',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'admin.css',
 			array(),
 			$asset['version']
 		);
@@ -82,7 +82,7 @@ final class Assets {
 
 		wp_enqueue_script(
 			self::SCRIPT_HANDLE,
-			PPH_PLUGIN_URL . self::BUILD_PATH . 'admin.js',
+			WPMPHUB_PLUGIN_URL . self::BUILD_PATH . 'admin.js',
 			$asset['dependencies'],
 			$asset['version'],
 			true
@@ -109,7 +109,7 @@ final class Assets {
 		 * @param bool   $ours Whether to enqueue.
 		 * @param string $page The `page` query argument, empty on screens that have none.
 		 */
-		return (bool) apply_filters( 'pph_enqueue_admin_assets', $ours, $page );
+		return (bool) apply_filters( 'wpmphub_enqueue_admin_assets', $ours, $page );
 	}
 
 	/**
@@ -121,14 +121,14 @@ final class Assets {
 	 * @return array{version: string, dependencies: string[]}
 	 */
 	private function manifest( string $filename ): array {
-		$path = PPH_PLUGIN_DIR . self::BUILD_PATH . $filename;
+		$path = WPMPHUB_PLUGIN_DIR . self::BUILD_PATH . $filename;
 
 		if ( is_readable( $path ) ) {
 			$asset = include $path;
 
 			if ( is_array( $asset ) ) {
 				return array(
-					'version'      => isset( $asset['version'] ) && is_string( $asset['version'] ) ? $asset['version'] : PPH_VERSION,
+					'version'      => isset( $asset['version'] ) && is_string( $asset['version'] ) ? $asset['version'] : WPMPHUB_VERSION,
 					'dependencies' => isset( $asset['dependencies'] ) && is_array( $asset['dependencies'] ) ? $asset['dependencies'] : array(),
 				);
 			}
@@ -137,7 +137,7 @@ final class Assets {
 		// A build that produced no manifest is a packaging fault, not a reason
 		// to serve an unversioned asset forever.
 		return array(
-			'version'      => PPH_VERSION,
+			'version'      => WPMPHUB_VERSION,
 			'dependencies' => array(),
 		);
 	}

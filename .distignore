@@ -29,6 +29,7 @@
 .wp-env.ci.json
 CLAUDE.md
 SECURITY.md
+eslint.config.cjs
 composer.lock
 package-lock.json
 phpcs.xml.dist

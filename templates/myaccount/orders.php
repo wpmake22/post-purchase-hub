@@ -29,7 +29,7 @@ defined( 'ABSPATH' ) || exit;
  * @param string                $empty_text Message shown when there are none.
  */
 do_action(
-	'pph_render_orders_list',
+	'wpmphub_render_orders_list',
 	( isset( $has_orders ) && $has_orders && isset( $customer_orders->orders ) && is_array( $customer_orders->orders ) )
 		? $customer_orders->orders
 		: array(),

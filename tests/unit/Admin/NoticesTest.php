@@ -90,7 +90,7 @@ final class NoticesTest extends TestCase {
 	public function test_it_points_at_the_wizard(): void {
 		$html = $this->render();
 
-		$this->assertStringContainsString( 'data-pph-setup-notice', $html );
+		$this->assertStringContainsString( 'data-wpmphub-setup-notice', $html );
 		$this->assertStringContainsString( WizardPage::PAGE, $html );
 		$this->assertStringNotContainsString( '<script>', $html );
 		$this->assertStringContainsString( 'method="post"', $html, 'Dismissal is a POST: nothing this plugin does mutates on a GET.' );

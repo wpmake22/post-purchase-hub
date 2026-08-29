@@ -218,7 +218,7 @@ final class GuestLookupService {
 		 * @param array          $attempt    Attempt context: `ip` and `email_hash`.
 		 */
 		$rejection = apply_filters(
-			'pph_lookup_challenge',
+			'wpmphub_lookup_challenge',
 			null,
 			array(
 				'ip'         => $ip,
@@ -267,7 +267,7 @@ final class GuestLookupService {
 				 *
 				 * @param bool $finish Whether to close the connection first.
 				 */
-				if ( function_exists( 'fastcgi_finish_request' ) && apply_filters( 'pph_lookup_finish_request', true ) ) {
+				if ( function_exists( 'fastcgi_finish_request' ) && apply_filters( 'wpmphub_lookup_finish_request', true ) ) {
 					fastcgi_finish_request();
 				}
 
@@ -284,7 +284,7 @@ final class GuestLookupService {
 				 *
 				 * @param \WC_Order $order Order the link is for.
 				 */
-				do_action( 'pph_secure_link_requested', $order );
+				do_action( 'wpmphub_secure_link_requested', $order );
 			},
 			PHP_INT_MAX - 1
 		);
@@ -322,7 +322,7 @@ final class GuestLookupService {
 		 *
 		 * @param int $milliseconds Floor in milliseconds.
 		 */
-		$floor_ms = (int) apply_filters( 'pph_lookup_time_floor_ms', self::TIME_FLOOR_MS );
+		$floor_ms = (int) apply_filters( 'wpmphub_lookup_time_floor_ms', self::TIME_FLOOR_MS );
 		$floor_ns = max( 0, $floor_ms ) * 1000000;
 		$elapsed  = (int) ( hrtime( true ) - $started );
 
@@ -330,7 +330,7 @@ final class GuestLookupService {
 			$this->logger->warning(
 				'Guest lookup overran its timing floor; success and failure are no longer indistinguishable by duration.',
 				array(
-					'event'      => 'pph.lookup.floor_overrun',
+					'event'      => 'wpmphub.lookup.floor_overrun',
 					'elapsed_ms' => (int) round( $elapsed / 1000000 ),
 					'floor_ms'   => $floor_ms,
 				)
@@ -362,7 +362,7 @@ final class GuestLookupService {
 		$this->logger->warning(
 			'Guest lookup attempt refused.',
 			array(
-				'event'      => 'pph.lookup.' . $event,
+				'event'      => 'wpmphub.lookup.' . $event,
 				'stage'      => $stage,
 				'ip_hash'    => substr( hash( 'sha256', $ip ), 0, 16 ),
 				'email_hash' => substr( Sanitizer::hash_email( $email ), 0, 16 ),

@@ -61,7 +61,7 @@ final class ActionAvailabilityTest extends TestCase {
 	 * @return void
 	 */
 	private function disable( string $action_id ): void {
-		FakeWordPress::$options['pph_settings'] = array(
+		FakeWordPress::$options['wpmphub_settings'] = array(
 			ActionAvailability::SETTING => array( $action_id => false ),
 		);
 	}
@@ -171,7 +171,7 @@ final class ActionAvailabilityTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_filter_can_disable_an_action(): void {
-		FakeWordPress::$filters['pph_action_enabled'][] = static function ( $enabled, $action_id ) {
+		FakeWordPress::$filters['wpmphub_action_enabled'][] = static function ( $enabled, $action_id ) {
 			return Reorder::ID === $action_id ? false : $enabled;
 		};
 
@@ -186,7 +186,7 @@ final class ActionAvailabilityTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_corrupted_setting_leaves_actions_on(): void {
-		FakeWordPress::$options['pph_settings'] = array( ActionAvailability::SETTING => 'nonsense' );
+		FakeWordPress::$options['wpmphub_settings'] = array( ActionAvailability::SETTING => 'nonsense' );
 
 		$this->assertTrue( ActionAvailability::is_enabled( Cancel::ID ) );
 		$this->assertSame( ActionAvailability::DEFAULTS, ActionAvailability::all() );

@@ -105,7 +105,7 @@ final class RequestColumnsTest extends TestCase {
 	 */
 	public function test_a_filtered_type_becomes_writable(): void {
 		add_filter(
-			'pph_request_types',
+			'wpmphub_request_types',
 			static function ( array $types ): array {
 				$types[] = 'exchange';
 

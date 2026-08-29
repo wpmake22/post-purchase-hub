@@ -198,6 +198,6 @@ final class HelpRequestTest extends TestCase {
 	public function test_it_listens_to_the_handoff_action(): void {
 		new HelpRequest();
 
-		$this->assertArrayHasKey( 'pph_help_submitted', FakeWordPress::$actions );
+		$this->assertArrayHasKey( 'wpmphub_help_submitted', FakeWordPress::$actions );
 	}
 }

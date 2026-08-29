@@ -36,7 +36,7 @@ final class RequestReceived extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function __construct() {
-		$this->id             = 'pph_request_received';
+		$this->id             = 'wpmphub_request_received';
 		$this->customer_email = true;
 		$this->title          = __( 'Request received', 'wpmake-post-purchase-hub' );
 		$this->description    = __( 'Sent to the customer the moment they raise a cancellation request, confirming it was received and when to expect a reply.', 'wpmake-post-purchase-hub' );
@@ -48,7 +48,7 @@ final class RequestReceived extends AbstractEmail {
 			'{response_time}' => '',
 		);
 
-		add_action( 'pph_request_created', array( $this, 'trigger' ), 10, 2 );
+		add_action( 'wpmphub_request_created', array( $this, 'trigger' ), 10, 2 );
 
 		parent::__construct();
 	}
@@ -68,7 +68,7 @@ final class RequestReceived extends AbstractEmail {
 	}
 
 	/**
-	 * Trigger. Hooked to `pph_request_created`.
+	 * Trigger. Hooked to `wpmphub_request_created`.
 	 *
 	 * @since 0.10.0
 	 *

@@ -246,7 +246,7 @@ final class GuestContextTest extends TestCase {
 		$rejections = array_filter(
 			FakeWordPress::$logged,
 			static function ( array $line ): bool {
-				return 'pph.context.rejected' === ( $line['context']['event'] ?? '' );
+				return 'wpmphub.context.rejected' === ( $line['context']['event'] ?? '' );
 			}
 		);
 
@@ -379,6 +379,6 @@ final class GuestContextTest extends TestCase {
 		$this->context->register();
 
 		$this->assertArrayHasKey( 'template_redirect', FakeWordPress::$actions );
-		$this->assertArrayHasKey( 'pph_current_request_token', FakeWordPress::$filters );
+		$this->assertArrayHasKey( 'wpmphub_current_request_token', FakeWordPress::$filters );
 	}
 }

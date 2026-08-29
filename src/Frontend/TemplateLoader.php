@@ -118,7 +118,7 @@ final class TemplateLoader {
 		$path = locate_template( array( self::THEME_DIRECTORY . '/' . $name ) );
 
 		if ( '' === $path ) {
-			$path = PPH_PLUGIN_DIR . 'templates/' . $name;
+			$path = WPMPHUB_PLUGIN_DIR . 'templates/' . $name;
 		}
 
 		/**
@@ -133,11 +133,11 @@ final class TemplateLoader {
 		 * @param string $path Absolute path to the template.
 		 * @param string $name Template name relative to templates/.
 		 */
-		$filtered = (string) apply_filters( 'pph_locate_template', $path, $name );
+		$filtered = (string) apply_filters( 'wpmphub_locate_template', $path, $name );
 
 		if ( $filtered !== $path && ! is_readable( $filtered ) ) {
 			$this->logger->warning(
-				'Ignored a pph_locate_template path that is not readable.',
+				'Ignored a wpmphub_locate_template path that is not readable.',
 				array(
 					'template' => $name,
 					'path'     => $filtered,
@@ -212,14 +212,14 @@ final class TemplateLoader {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @param string               $pph_path Absolute path to the template.
-	 * @param array<string, mixed> $pph_vars Variables the template documents.
+	 * @param string               $wpmphub_path Absolute path to the template.
+	 * @param array<string, mixed> $wpmphub_vars Variables the template documents.
 	 * @return void
 	 */
-	private static function include_template( string $pph_path, array $pph_vars ): void {
+	private static function include_template( string $wpmphub_path, array $wpmphub_vars ): void {
 		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- Templates receive documented named variables, as WooCommerce's own wc_get_template() does. The array is built in this plugin, never from a request.
-		extract( $pph_vars, EXTR_SKIP );
+		extract( $wpmphub_vars, EXTR_SKIP );
 
-		include $pph_path;
+		include $wpmphub_path;
 	}
 }

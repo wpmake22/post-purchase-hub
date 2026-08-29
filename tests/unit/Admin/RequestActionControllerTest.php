@@ -234,7 +234,7 @@ final class RequestActionControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function test_approve_does_not_restock_when_the_setting_is_off(): void {
-		FakeWordPress::$options['pph_settings'] = array( Cancel::RESTOCK_SETTING => false );
+		FakeWordPress::$options['wpmphub_settings'] = array( Cancel::RESTOCK_SETTING => false );
 
 		$order                    = new \WC_Order( 5, 'processing' );
 		FakeWordPress::$orders[5] = $order;

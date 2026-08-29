@@ -22,20 +22,20 @@ if ( null === $timeline['current'] ) {
 }
 ?>
 <span
-	class="pph-timeline-summary"
-	data-pph-timeline-summary
-	data-pph-order-id="<?php echo esc_attr( (string) $timeline['order_id'] ); ?>"
-	data-pph-stage="<?php echo esc_attr( $timeline['current']['key'] ); ?>"
+	class="wpmphub-timeline-summary"
+	data-wpmphub-timeline-summary
+	data-wpmphub-order-id="<?php echo esc_attr( (string) $timeline['order_id'] ); ?>"
+	data-wpmphub-stage="<?php echo esc_attr( $timeline['current']['key'] ); ?>"
 >
-	<span class="pph-timeline-summary__label" data-pph-summary-label>
+	<span class="wpmphub-timeline-summary__label" data-wpmphub-summary-label>
 		<?php echo esc_html( $timeline['current']['label'] ); ?>
 	</span>
 
 	<?php if ( '' !== $timeline['current']['datetime'] ) : ?>
 		<time
-			class="pph-timeline-summary__time"
+			class="wpmphub-timeline-summary__time"
 			datetime="<?php echo esc_attr( $timeline['current']['datetime'] ); ?>"
-			data-pph-summary-time
+			data-wpmphub-summary-time
 		>
 			<?php echo esc_html( $timeline['current']['date_label'] ); ?>
 		</time>

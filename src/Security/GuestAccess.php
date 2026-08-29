@@ -55,7 +55,7 @@ final class GuestAccess {
 	 * @return bool
 	 */
 	public function is_enabled(): bool {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 		$settings = is_array( $settings ) ? $settings : array();
 
 		$enabled = ! empty( $settings[ self::ENABLED_SETTING ] ) && ! empty( $settings[ self::ACKNOWLEDGED_SETTING ] );
@@ -78,6 +78,6 @@ final class GuestAccess {
 		 *
 		 * @param bool $enabled Whether the surface is live per the stored settings.
 		 */
-		return (bool) apply_filters( 'pph_guest_lookup_enabled', $enabled );
+		return (bool) apply_filters( 'wpmphub_guest_lookup_enabled', $enabled );
 	}
 }

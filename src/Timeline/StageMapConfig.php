@@ -13,7 +13,7 @@ namespace PostPurchaseHub\Timeline;
  * Puts what the wizard's first step collected into effect.
  *
  * Deliberately not a change to `StageMap`. That class already publishes
- * `pph_status_stage_map` as the way to say which status lands on which stage,
+ * `wpmphub_status_stage_map` as the way to say which status lands on which stage,
  * and a merchant's saved answer is exactly that statement — so the settings
  * layer uses the documented extension point rather than growing a second,
  * privileged source of truth inside the timeline. The map stays one thing with
@@ -57,7 +57,7 @@ final class StageMapConfig {
 	 * @return void
 	 */
 	public function register(): void {
-		add_filter( 'pph_status_stage_map', array( $this, 'apply_stored_map' ), 10 );
+		add_filter( 'wpmphub_status_stage_map', array( $this, 'apply_stored_map' ), 10 );
 	}
 
 	/**
@@ -96,7 +96,7 @@ final class StageMapConfig {
 	 * @return array<string, string>
 	 */
 	public static function stored(): array {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 
 		if ( ! is_array( $settings ) || ! isset( $settings[ self::MAP_SETTING ] ) || ! is_array( $settings[ self::MAP_SETTING ] ) ) {
 			return array();

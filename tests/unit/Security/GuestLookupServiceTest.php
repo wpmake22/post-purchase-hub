@@ -49,7 +49,7 @@ final class GuestLookupServiceTest extends TestCase {
 		parent::setUp();
 
 		FakeWordPress::reset();
-		FakeWordPress::$options['pph_settings'] = array(
+		FakeWordPress::$options['wpmphub_settings'] = array(
 			GuestAccess::ENABLED_SETTING      => true,
 			GuestAccess::ACKNOWLEDGED_SETTING => true,
 		);
@@ -63,7 +63,7 @@ final class GuestLookupServiceTest extends TestCase {
 
 		// A floor short enough to run fifty times, long enough to measure.
 		add_filter(
-			'pph_lookup_time_floor_ms',
+			'wpmphub_lookup_time_floor_ms',
 			static function (): int {
 				return 5;
 			}
@@ -99,7 +99,7 @@ final class GuestLookupServiceTest extends TestCase {
 		$mailed = array();
 
 		add_action(
-			'pph_secure_link_requested',
+			'wpmphub_secure_link_requested',
 			static function ( $order ) use ( &$mailed ): void {
 				$mailed[] = $order;
 			}
@@ -259,7 +259,7 @@ final class GuestLookupServiceTest extends TestCase {
 			array_filter(
 				FakeWordPress::$logged,
 				static function ( array $line ): bool {
-					return 'pph.lookup.throttled' === ( $line['context']['event'] ?? '' );
+					return 'wpmphub.lookup.throttled' === ( $line['context']['event'] ?? '' );
 				}
 			)
 		);
@@ -287,7 +287,7 @@ final class GuestLookupServiceTest extends TestCase {
 		$this->order( 42 );
 
 		add_filter(
-			'pph_lookup_challenge',
+			'wpmphub_lookup_challenge',
 			static function () {
 				return new \WP_Error( 'captcha_failed', 'Please complete the challenge.' );
 			}
@@ -309,7 +309,7 @@ final class GuestLookupServiceTest extends TestCase {
 		$seen = array();
 
 		add_filter(
-			'pph_lookup_challenge',
+			'wpmphub_lookup_challenge',
 			static function ( $rejection, $attempt ) use ( &$seen ) {
 				$seen = $attempt;
 
@@ -331,7 +331,7 @@ final class GuestLookupServiceTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_disabled_store_processes_nothing(): void {
-		FakeWordPress::$options['pph_settings'] = array();
+		FakeWordPress::$options['wpmphub_settings'] = array();
 
 		$this->order( 42 );
 
@@ -369,7 +369,7 @@ final class GuestLookupServiceTest extends TestCase {
 		$this->order( 42 );
 
 		add_filter(
-			'pph_lookup_time_floor_ms',
+			'wpmphub_lookup_time_floor_ms',
 			static function (): int {
 				return 0;
 			},
@@ -381,7 +381,7 @@ final class GuestLookupServiceTest extends TestCase {
 		$overruns = array_filter(
 			FakeWordPress::$logged,
 			static function ( array $line ): bool {
-				return 'pph.lookup.floor_overrun' === ( $line['context']['event'] ?? '' );
+				return 'wpmphub.lookup.floor_overrun' === ( $line['context']['event'] ?? '' );
 			}
 		);
 

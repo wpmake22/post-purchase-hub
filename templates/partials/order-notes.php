@@ -18,20 +18,20 @@ if ( empty( $notes ) ) {
 	return;
 }
 ?>
-<section class="pph-order-notes" data-pph-order-notes>
-	<h2 class="pph-order-notes__heading"><?php esc_html_e( 'Updates from the store', 'wpmake-post-purchase-hub' ); ?></h2>
+<section class="wpmphub-order-notes" data-wpmphub-order-notes>
+	<h2 class="wpmphub-order-notes__heading"><?php esc_html_e( 'Updates from the store', 'wpmake-post-purchase-hub' ); ?></h2>
 
-	<ol class="pph-order-notes__list">
-		<?php foreach ( $notes as $pph_note ) : ?>
-			<li class="pph-order-notes__note" data-pph-order-note>
-				<?php if ( '' !== $pph_note['datetime'] ) : ?>
-					<time class="pph-order-notes__time" datetime="<?php echo esc_attr( $pph_note['datetime'] ); ?>">
-						<?php echo esc_html( $pph_note['date_label'] ); ?>
+	<ol class="wpmphub-order-notes__list">
+		<?php foreach ( $notes as $wpmphub_note ) : ?>
+			<li class="wpmphub-order-notes__note" data-wpmphub-order-note>
+				<?php if ( '' !== $wpmphub_note['datetime'] ) : ?>
+					<time class="wpmphub-order-notes__time" datetime="<?php echo esc_attr( $wpmphub_note['datetime'] ); ?>">
+						<?php echo esc_html( $wpmphub_note['date_label'] ); ?>
 					</time>
 				<?php endif; ?>
 
-				<div class="pph-order-notes__body">
-					<?php echo wp_kses_post( wpautop( wptexturize( $pph_note['content'] ) ) ); ?>
+				<div class="wpmphub-order-notes__body">
+					<?php echo wp_kses_post( wpautop( wptexturize( $wpmphub_note['content'] ) ) ); ?>
 				</div>
 			</li>
 		<?php endforeach; ?>

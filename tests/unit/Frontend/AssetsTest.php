@@ -136,7 +136,7 @@ final class AssetsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_it_loads_on_a_page_with_the_shortcode(): void {
-		FakeWordPress::$post = $this->post( 'Before [pph_orders limit="5"] after.' );
+		FakeWordPress::$post = $this->post( 'Before [wpmphub_orders limit="5"] after.' );
 
 		$this->assertTrue( $this->assets->is_required() );
 	}
@@ -147,7 +147,7 @@ final class AssetsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_it_loads_on_a_page_with_the_block(): void {
-		FakeWordPress::$post = $this->post( '<!-- wp:pph/orders /-->' );
+		FakeWordPress::$post = $this->post( '<!-- wp:wpmphub/orders /-->' );
 
 		$this->assertTrue( $this->assets->is_required() );
 	}
@@ -159,7 +159,7 @@ final class AssetsTest extends TestCase {
 	 */
 	public function test_the_filter_can_force_loading(): void {
 		add_filter(
-			'pph_enqueue_assets',
+			'wpmphub_enqueue_assets',
 			static function (): bool {
 				return true;
 			}
@@ -178,7 +178,7 @@ final class AssetsTest extends TestCase {
 		FakeWordPress::$endpoints       = array( 'orders' );
 
 		add_filter(
-			'pph_enqueue_assets',
+			'wpmphub_enqueue_assets',
 			static function (): bool {
 				return false;
 			}
@@ -213,9 +213,9 @@ final class AssetsTest extends TestCase {
 
 		$this->assets->enqueue();
 
-		$data = FakeWordPress::$localized_scripts[ Assets::SCRIPT_HANDLE ]['pphRequests'];
+		$data = FakeWordPress::$localized_scripts[ Assets::SCRIPT_HANDLE ]['wpmphubRequests'];
 
-		$this->assertStringContainsString( 'pph/v1/requests', $data['restUrl'] );
+		$this->assertStringContainsString( 'wpmphub/v1/requests', $data['restUrl'] );
 		$this->assertNotSame( '', $data['nonce'] );
 	}
 
@@ -248,9 +248,9 @@ final class AssetsTest extends TestCase {
 
 		$this->assertArrayHasKey( Assets::REORDER_HANDLE, FakeWordPress::$enqueued_scripts );
 
-		$data = FakeWordPress::$localized_scripts[ Assets::REORDER_HANDLE ]['pphReorder'];
+		$data = FakeWordPress::$localized_scripts[ Assets::REORDER_HANDLE ]['wpmphubReorder'];
 
-		$this->assertStringContainsString( 'pph/v1/reorder', $data['restUrl'] );
+		$this->assertStringContainsString( 'wpmphub/v1/reorder', $data['restUrl'] );
 		$this->assertNotSame( '', $data['nonce'] );
 
 		unset( $_GET[ Reorder::QUERY_ARG ] );

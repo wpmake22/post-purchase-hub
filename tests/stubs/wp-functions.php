@@ -1810,7 +1810,7 @@ if ( ! function_exists( 'wc_get_template_html' ) ) {
 	function wc_get_template_html( $template_name, $args = array(), $template_path = '', $default_path = '' ): string {
 		unset( $template_path );
 
-		$base = '' !== (string) $default_path ? (string) $default_path : PPH_PLUGIN_DIR . 'templates/';
+		$base = '' !== (string) $default_path ? (string) $default_path : WPMPHUB_PLUGIN_DIR . 'templates/';
 		$path = $base . (string) $template_name;
 
 		FakeWordPress::$rendered_templates[] = array(
@@ -2322,6 +2322,61 @@ if ( ! function_exists( 'get_bloginfo' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_kses_allowed_html' ) ) {
+	/**
+	 * A small stand-in for core's post allowlist.
+	 *
+	 * Deliberately not a copy of core's 124-element table. The unit suite uses
+	 * this to let Security\Kses build a list at all; whether that list keeps
+	 * everything the templates emit is a question only the real wp_kses() can
+	 * answer, and tests/integration/Security/KsesTest.php asks it there.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $context Context.
+	 * @return array<string, array<string, bool>>
+	 */
+	function wp_kses_allowed_html( $context = 'post' ): array {
+		unset( $context );
+
+		$tags = array( 'div', 'span', 'p', 'a', 'ul', 'ol', 'li', 'section', 'article', 'h2', 'h3', 'strong', 'em', 'time', 'mark', 'button', 'label', 'fieldset', 'legend', 'textarea', 'details', 'summary' );
+
+		return array_fill_keys(
+			$tags,
+			array(
+				'class' => true,
+				'id'    => true,
+			)
+		);
+	}
+}
+
+if ( ! function_exists( 'wp_kses' ) ) {
+	/**
+	 * Strips tags outside the allowlist, and nothing else.
+	 *
+	 * Enough for a unit test to assert that filtered output still contains the
+	 * markup it should. Attribute filtering, entity normalisation and protocol
+	 * checking are core's, and are exercised against core in the integration
+	 * suite rather than reimplemented here badly.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string                             $html    Markup.
+	 * @param array<string, array<string, bool>> $allowed Allowed elements.
+	 * @return string
+	 */
+	function wp_kses( $html, $allowed = array() ): string {
+		$permitted = '';
+
+		foreach ( array_keys( (array) $allowed ) as $tag ) {
+			$permitted .= '<' . $tag . '>';
+		}
+
+		return strip_tags( (string) $html, $permitted );
+	}
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- These deliberately mirror WordPress core constant names.
@@ -2334,16 +2389,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', dirname( __DIR__, 5 ) . '/' );
 }
 
-if ( ! defined( 'PPH_PLUGIN_DIR' ) ) {
-	define( 'PPH_PLUGIN_DIR', dirname( __DIR__, 2 ) . '/' );
+if ( ! defined( 'WPMPHUB_PLUGIN_DIR' ) ) {
+	define( 'WPMPHUB_PLUGIN_DIR', dirname( __DIR__, 2 ) . '/' );
 }
 
-if ( ! defined( 'PPH_PLUGIN_URL' ) ) {
-	define( 'PPH_PLUGIN_URL', 'https://example.test/wp-content/plugins/wpmake-post-purchase-hub/' );
+if ( ! defined( 'WPMPHUB_PLUGIN_URL' ) ) {
+	define( 'WPMPHUB_PLUGIN_URL', 'https://example.test/wp-content/plugins/wpmake-post-purchase-hub/' );
 }
 
-if ( ! defined( 'PPH_VERSION' ) ) {
-	define( 'PPH_VERSION', '0.0.0-test' );
+if ( ! defined( 'WPMPHUB_VERSION' ) ) {
+	define( 'WPMPHUB_VERSION', '0.0.0-test' );
 }
 
 if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {

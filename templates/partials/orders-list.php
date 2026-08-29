@@ -16,21 +16,21 @@ declare( strict_types = 1 );
 defined( 'ABSPATH' ) || exit;
 
 if ( empty( $orders ) ) : ?>
-	<p class="pph-orders__empty" data-pph-orders-empty><?php echo esc_html( $empty_text ); ?></p>
+	<p class="wpmphub-orders__empty" data-wpmphub-orders-empty><?php echo esc_html( $empty_text ); ?></p>
 	<?php
 	return;
 endif;
 ?>
-<div class="pph-orders" data-pph-orders>
-	<?php foreach ( $orders as $pph_order ) : ?>
-		<article class="pph-orders__order" data-pph-order-id="<?php echo esc_attr( (string) $pph_order['timeline']['order_id'] ); ?>">
-			<h2 class="pph-orders__number">
-				<a href="<?php echo esc_url( $pph_order['url'] ); ?>">
+<div class="wpmphub-orders" data-wpmphub-orders>
+	<?php foreach ( $orders as $wpmphub_order ) : ?>
+		<article class="wpmphub-orders__order" data-wpmphub-order-id="<?php echo esc_attr( (string) $wpmphub_order['timeline']['order_id'] ); ?>">
+			<h2 class="wpmphub-orders__number">
+				<a href="<?php echo esc_url( $wpmphub_order['url'] ); ?>">
 					<?php
 					printf(
 						/* translators: %s: order number, without a leading hash. */
 						esc_html__( 'Order %s', 'wpmake-post-purchase-hub' ),
-						esc_html( $pph_order['number'] )
+						esc_html( $wpmphub_order['number'] )
 					);
 					?>
 				</a>
@@ -44,7 +44,7 @@ endif;
 			 *
 			 * @param array<string, mixed> $timeline Prepared timeline view model.
 			 */
-			do_action( 'pph_render_timeline_partial', $pph_order['timeline'] );
+			do_action( 'wpmphub_render_timeline_partial', $wpmphub_order['timeline'] );
 			?>
 		</article>
 	<?php endforeach; ?>

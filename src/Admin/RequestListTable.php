@@ -64,8 +64,8 @@ final class RequestListTable extends \WP_List_Table {
 	public function __construct( private RequestRepository $requests ) {
 		parent::__construct(
 			array(
-				'singular' => 'pph_request',
-				'plural'   => 'pph_requests',
+				'singular' => 'wpmphub_request',
+				'plural'   => 'wpmphub_requests',
 				'ajax'     => false,
 			)
 		);
@@ -274,7 +274,7 @@ final class RequestListTable extends \WP_List_Table {
 	private function render_filters(): void {
 		$filters = self::filters_from_request();
 
-		echo '<form method="get" class="pph-request-filters">';
+		echo '<form method="get" class="wpmphub-request-filters">';
 		printf( '<input type="hidden" name="page" value="%s">', esc_attr( Menu::REQUESTS_PAGE ) );
 
 		self::render_select(

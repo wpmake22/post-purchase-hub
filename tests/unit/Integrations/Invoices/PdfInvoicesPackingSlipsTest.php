@@ -46,8 +46,8 @@ final class PdfInvoicesPackingSlipsTest extends TestCase {
 		parent::setUp();
 
 		FakeWordPress::reset();
-		\PPH_Fixture_Wpo_Wcpdf::reset();
-		pph_fixture_register_wcpdf_shortcode();
+		\WPMPHUB_Fixture_Wpo_Wcpdf::reset();
+		wpmphub_fixture_register_wcpdf_shortcode();
 
 		$this->adapter = new PdfInvoicesPackingSlips();
 	}
@@ -80,9 +80,9 @@ final class PdfInvoicesPackingSlipsTest extends TestCase {
 	public function test_returns_the_url_for_a_generated_invoice(): void {
 		$url = $this->adapter->url_for( $this->order() );
 
-		$this->assertSame( \PPH_Fixture_Wpo_Wcpdf::$link_output, $url );
-		$this->assertSame( '4001', \PPH_Fixture_Wpo_Wcpdf::$last_atts['order_id'] ?? '' );
-		$this->assertSame( 'invoice', \PPH_Fixture_Wpo_Wcpdf::$last_atts['document_type'] ?? '' );
+		$this->assertSame( \WPMPHUB_Fixture_Wpo_Wcpdf::$link_output, $url );
+		$this->assertSame( '4001', \WPMPHUB_Fixture_Wpo_Wcpdf::$last_atts['order_id'] ?? '' );
+		$this->assertSame( 'invoice', \WPMPHUB_Fixture_Wpo_Wcpdf::$last_atts['document_type'] ?? '' );
 	}
 
 	/**
@@ -92,10 +92,10 @@ final class PdfInvoicesPackingSlipsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_returns_nothing_when_no_document_exists(): void {
-		\PPH_Fixture_Wpo_Wcpdf::$document_exists = false;
+		\WPMPHUB_Fixture_Wpo_Wcpdf::$document_exists = false;
 
 		$this->assertNull( $this->adapter->url_for( $this->order() ) );
-		$this->assertSame( array(), \PPH_Fixture_Wpo_Wcpdf::$last_atts );
+		$this->assertSame( array(), \WPMPHUB_Fixture_Wpo_Wcpdf::$last_atts );
 	}
 
 	/**
@@ -106,7 +106,7 @@ final class PdfInvoicesPackingSlipsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_reads_the_url_out_of_a_returned_link(): void {
-		\PPH_Fixture_Wpo_Wcpdf::$link_output = '<a href="https://shop.test/invoice.pdf?id=1&amp;key=abc" class="button">Download invoice</a>';
+		\WPMPHUB_Fixture_Wpo_Wcpdf::$link_output = '<a href="https://shop.test/invoice.pdf?id=1&amp;key=abc" class="button">Download invoice</a>';
 
 		$this->assertSame( 'https://shop.test/invoice.pdf?id=1&key=abc', $this->adapter->url_for( $this->order() ) );
 	}
@@ -117,7 +117,7 @@ final class PdfInvoicesPackingSlipsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_returns_nothing_when_the_shortcode_output_is_not_a_url(): void {
-		\PPH_Fixture_Wpo_Wcpdf::$link_output = 'Invoice not available yet';
+		\WPMPHUB_Fixture_Wpo_Wcpdf::$link_output = 'Invoice not available yet';
 
 		$this->assertNull( $this->adapter->url_for( $this->order() ) );
 	}
@@ -141,7 +141,7 @@ final class PdfInvoicesPackingSlipsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_throwing_invoice_plugin_produces_nothing(): void {
-		\PPH_Fixture_Wpo_Wcpdf::$throws = true;
+		\WPMPHUB_Fixture_Wpo_Wcpdf::$throws = true;
 
 		$this->assertNull( $this->adapter->url_for( $this->order() ) );
 	}

@@ -134,7 +134,7 @@ final class RequestTest extends TestCase {
 	 */
 	public function test_a_filter_can_add_a_type(): void {
 		add_filter(
-			'pph_request_types',
+			'wpmphub_request_types',
 			static function ( array $types ): array {
 				$types[] = 'exchange';
 
@@ -155,7 +155,7 @@ final class RequestTest extends TestCase {
 	 */
 	public function test_a_junk_filter_falls_back( $junk ): void {
 		add_filter(
-			'pph_request_types',
+			'wpmphub_request_types',
 			static function () use ( $junk ) {
 				return $junk;
 			}
@@ -196,7 +196,7 @@ final class RequestTest extends TestCase {
 	 */
 	public function test_duplicates_collapse(): void {
 		add_filter(
-			'pph_request_statuses',
+			'wpmphub_request_statuses',
 			static function ( array $statuses ): array {
 				$statuses[] = Request::STATUS_PENDING;
 

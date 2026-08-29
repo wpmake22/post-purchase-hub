@@ -74,13 +74,13 @@ final class HealthPanel {
 	 * @param string $anchor Element id, so the settings sidebar can link to it.
 	 * @return void
 	 */
-	public function render( string $anchor = 'pph-general-status' ): void {
+	public function render( string $anchor = 'wpmphub-general-status' ): void {
 		printf(
-			'<section class="pph-settings__card pph-health" id="%s" data-pph-health data-pph-settings-section="status">',
+			'<section class="wpmphub-settings__card wpmphub-health" id="%s" data-wpmphub-health data-wpmphub-settings-section="status">',
 			esc_attr( $anchor )
 		);
 
-		echo '<div class="pph-settings__card-header">';
+		echo '<div class="wpmphub-settings__card-header">';
 		printf( '<h3>%s</h3>', esc_html__( 'Status', 'wpmake-post-purchase-hub' ) );
 		printf(
 			'<p>%s</p>',
@@ -88,11 +88,11 @@ final class HealthPanel {
 		);
 		echo '</div>';
 
-		echo '<div class="pph-settings__card-body pph-health__rows">';
+		echo '<div class="wpmphub-settings__card-body wpmphub-health__rows">';
 
 		foreach ( $this->rows() as $row ) {
 			printf(
-				'<div class="pph-health__row" data-pph-health-row="%1$s" data-pph-health-state="%2$s"><span class="pph-health__dot" aria-hidden="true"></span><span class="pph-health__label">%3$s</span><span class="pph-health__value">%4$s</span></div>',
+				'<div class="wpmphub-health__row" data-wpmphub-health-row="%1$s" data-wpmphub-health-state="%2$s"><span class="wpmphub-health__dot" aria-hidden="true"></span><span class="wpmphub-health__label">%3$s</span><span class="wpmphub-health__value">%4$s</span></div>',
 				esc_attr( $row['id'] ),
 				esc_attr( $row['state'] ),
 				esc_html( $row['label'] ),
@@ -324,6 +324,6 @@ final class HealthPanel {
 		 *
 		 * @param string $name Detected plugin name, empty when none was found.
 		 */
-		return (string) apply_filters( 'pph_detected_tracking_plugin', '' );
+		return (string) apply_filters( 'wpmphub_detected_tracking_plugin', '' );
 	}
 }

@@ -118,7 +118,7 @@ final class OwnershipResolverTest extends TestCase {
 		$token  = $tokens->issue( 10, 'wc_order_secret' );
 
 		add_filter(
-			'pph_current_request_token',
+			'wpmphub_current_request_token',
 			static function () use ( $token ): string {
 				return $token;
 			}
@@ -140,7 +140,7 @@ final class OwnershipResolverTest extends TestCase {
 		$token  = $tokens->issue( 11, 'wc_order_other' );
 
 		add_filter(
-			'pph_current_request_token',
+			'wpmphub_current_request_token',
 			static function () use ( $token ): string {
 				return $token;
 			}
@@ -163,7 +163,7 @@ final class OwnershipResolverTest extends TestCase {
 		$token  = $tokens->issue( 10, 'wc_order_original' );
 
 		add_filter(
-			'pph_current_request_token',
+			'wpmphub_current_request_token',
 			static function () use ( $token ): string {
 				return $token;
 			}

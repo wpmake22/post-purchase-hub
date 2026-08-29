@@ -125,8 +125,8 @@ jobs:
 
       - name: Assert no fatals and free edition reported
         run: |
-          npx wp-env run cli wp eval 'echo defined("PPH_EDITION") ? PPH_EDITION : "UNDEFINED";' | tee edition.txt
-          grep -q '^free$' edition.txt || { echo "::error::PPH_EDITION was not 'free' in the built zip"; exit 1; }
+          npx wp-env run cli wp eval 'echo defined("WPMPHUB_EDITION") ? WPMPHUB_EDITION : "UNDEFINED";' | tee edition.txt
+          grep -q '^free$' edition.txt || { echo "::error::WPMPHUB_EDITION was not 'free' in the built zip"; exit 1; }
           npx wp-env run cli wp plugin list --status=active --field=name | grep -qx wpmake-post-purchase-hub
 
   publish:

@@ -4,7 +4,7 @@
  * Three settings can surprise a merchant after the fact — full replacement
  * changing every order page, guest access opening a public endpoint, and
  * delete-on-uninstall throwing away request history. Each declares its own
- * sentence in `SettingsFields`, arrives in the markup as `data-pph-confirm`,
+ * sentence in `SettingsFields`, arrives in the markup as `data-wpmphub-confirm`,
  * and is confirmed here on submit.
  *
  * The rest is the settings screen being navigable: filtering the visible
@@ -28,7 +28,7 @@ import './../styles/admin.scss';
 	 * @return {boolean} True when the confirmation applies right now.
 	 */
 	function needsConfirmation( control ) {
-		const trigger = control.getAttribute( 'data-pph-confirm-value' );
+		const trigger = control.getAttribute( 'data-wpmphub-confirm-value' );
 
 		if (
 			control instanceof HTMLInputElement &&
@@ -60,7 +60,7 @@ import './../styles/admin.scss';
 			return;
 		}
 
-		const controls = form.querySelectorAll( '[data-pph-confirm]' );
+		const controls = form.querySelectorAll( '[data-wpmphub-confirm]' );
 
 		for ( const control of controls ) {
 			if ( ! ( control instanceof HTMLElement ) ) {
@@ -71,7 +71,7 @@ import './../styles/admin.scss';
 				continue;
 			}
 
-			const message = control.getAttribute( 'data-pph-confirm' ) || '';
+			const message = control.getAttribute( 'data-wpmphub-confirm' ) || '';
 
 			// eslint-disable-next-line no-alert
 			if ( message && ! window.confirm( message ) ) {
@@ -111,15 +111,15 @@ import './../styles/admin.scss';
 			return;
 		}
 
-		const label = input.closest( '.pph-switch' );
-		const text = label ? label.querySelector( '.pph-switch__label' ) : null;
+		const label = input.closest( '.wpmphub-switch' );
+		const text = label ? label.querySelector( '.wpmphub-switch__label' ) : null;
 
-		if ( ! text || ! text.hasAttribute( 'data-pph-switch-states' ) ) {
+		if ( ! text || ! text.hasAttribute( 'data-wpmphub-switch-states' ) ) {
 			return;
 		}
 
 		const states = (
-			text.getAttribute( 'data-pph-switch-states' ) || ''
+			text.getAttribute( 'data-wpmphub-switch-states' ) || ''
 		).split( '|' );
 
 		if ( 2 === states.length ) {
@@ -131,7 +131,7 @@ import './../styles/admin.scss';
 	 * Filters the settings on the open tab down to those matching a query.
 	 *
 	 * Matching is against the label and the help text a field declared, carried
-	 * in `data-pph-settings-terms` — not against the rendered markup, because
+	 * in `data-wpmphub-settings-terms` — not against the rendered markup, because
 	 * that would also match the words inside a select's options and hand back
 	 * rows a merchant did not ask for. A card with nothing left visible hides
 	 * itself, so the result reads as a shorter page rather than a page of empty
@@ -142,18 +142,18 @@ import './../styles/admin.scss';
 	 */
 	function filterSettings( query ) {
 		const cards = document.querySelectorAll(
-			'[data-pph-settings-section]'
+			'[data-wpmphub-settings-section]'
 		);
 		const needle = query.trim().toLowerCase();
 		let matches = 0;
 
 		for ( const card of cards ) {
-			const rows = card.querySelectorAll( '[data-pph-settings-terms]' );
+			const rows = card.querySelectorAll( '[data-wpmphub-settings-terms]' );
 			let visible = 0;
 
 			for ( const row of rows ) {
 				const terms =
-					row.getAttribute( 'data-pph-settings-terms' ) || '';
+					row.getAttribute( 'data-wpmphub-settings-terms' ) || '';
 				const hit = '' === needle || terms.includes( needle );
 
 				row.hidden = ! hit;
@@ -177,7 +177,7 @@ import './../styles/admin.scss';
 			matches += visible;
 		}
 
-		const empty = document.querySelector( '[data-pph-settings-empty]' );
+		const empty = document.querySelector( '[data-wpmphub-settings-empty]' );
 
 		if ( empty ) {
 			empty.hidden = 0 !== matches;
@@ -190,13 +190,13 @@ import './../styles/admin.scss';
 	 * @return {void}
 	 */
 	function bindSettings() {
-		const screen = document.querySelector( '[data-pph-settings]' );
+		const screen = document.querySelector( '[data-wpmphub-settings]' );
 
 		if ( ! screen ) {
 			return;
 		}
 
-		const search = screen.querySelector( '[data-pph-settings-search]' );
+		const search = screen.querySelector( '[data-wpmphub-settings-search]' );
 
 		if ( search instanceof HTMLInputElement ) {
 			search.addEventListener( 'input', () =>
@@ -204,8 +204,8 @@ import './../styles/admin.scss';
 			);
 		}
 
-		const burger = screen.querySelector( '[data-pph-settings-burger]' );
-		const sidebar = screen.querySelector( '[data-pph-settings-sidebar]' );
+		const burger = screen.querySelector( '[data-wpmphub-settings-burger]' );
+		const sidebar = screen.querySelector( '[data-wpmphub-settings-sidebar]' );
 
 		if ( burger && sidebar ) {
 			burger.addEventListener( 'click', () => {

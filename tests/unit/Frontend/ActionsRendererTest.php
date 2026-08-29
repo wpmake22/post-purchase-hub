@@ -130,14 +130,14 @@ final class ActionsRendererTest extends TestCase {
 			array( 'list' ),
 			static fn (): ?array => array(
 				'name' => 'Request cancellation',
-				'url'  => '/pph-cancel',
+				'url'  => '/wpmphub-cancel',
 			)
 		);
 
 		$actions = $this->renderer->filter_list_actions( $this->core_actions(), new \WC_Order( 1, 'pending' ) );
 
 		$this->assertSame( 'Request cancellation', $actions['cancel']['name'] );
-		$this->assertSame( '/pph-cancel', $actions['cancel']['url'] );
+		$this->assertSame( '/wpmphub-cancel', $actions['cancel']['url'] );
 	}
 
 	/**
@@ -210,7 +210,7 @@ final class ActionsRendererTest extends TestCase {
 			array( 'detail' ),
 			static fn (): ?array => array(
 				'name' => 'Request cancellation',
-				'url'  => '/pph-cancel',
+				'url'  => '/wpmphub-cancel',
 			)
 		);
 
@@ -220,7 +220,7 @@ final class ActionsRendererTest extends TestCase {
 		$this->renderer->render_detail( 1 );
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'data-pph-action="cancel"', $html );
+		$this->assertStringContainsString( 'data-wpmphub-action="cancel"', $html );
 		$this->assertStringContainsString( 'Request cancellation', $html );
 	}
 
@@ -271,7 +271,7 @@ final class ActionsRendererTest extends TestCase {
 
 				return array(
 					'name' => 'Request cancellation',
-					'url'  => '/pph-cancel',
+					'url'  => '/wpmphub-cancel',
 				);
 			}
 		);

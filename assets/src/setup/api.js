@@ -15,9 +15,9 @@
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 
-const settings = window.pphSetup || {};
+const settings = window.wpmphubSetup || {};
 
-const ROUTE = '/pph/v1/setup';
+const ROUTE = '/wpmphub/v1/setup';
 
 /**
  * The route each step saves to.

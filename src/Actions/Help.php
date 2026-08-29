@@ -20,7 +20,7 @@ use PostPurchaseHub\Security\Sanitizer;
  * ticketing outright — "'Get Help' is a form that hands off with context. It is
  * not a helpdesk." Nothing here is stored, nothing has a lifecycle, and no row
  * is created that would then need a queue, a retention rule and an admin
- * screen. A submission becomes an email to the store and a `pph_help_submitted`
+ * screen. A submission becomes an email to the store and a `wpmphub_help_submitted`
  * action, and then this plugin is done with it.
  *
  * That "nothing is stored" is also why the abuse controls sit where they do:
@@ -96,7 +96,7 @@ final class Help {
 	 *
 	 * @since 0.13.0
 	 *
-	 * @param EligibilityResolver $eligibility Eligibility engine, for the `pph_action_eligibility` filter.
+	 * @param EligibilityResolver $eligibility Eligibility engine, for the `wpmphub_action_eligibility` filter.
 	 * @param HelpContextBuilder  $contexts    Assembles the order context a submission carries.
 	 */
 	public function __construct( private EligibilityResolver $eligibility, private HelpContextBuilder $contexts ) {}
@@ -162,7 +162,7 @@ final class Help {
 		// No status, age or product-type constraint: any order a customer can
 		// see is one they can ask about. The rule is still evaluated through
 		// the resolver so a merchant can hang a restriction off
-		// `pph_action_eligibility` here exactly as on cancel and reorder.
+		// `wpmphub_action_eligibility` here exactly as on cancel and reorder.
 		return $this->eligibility->resolve( self::ID, $order, new EligibilityRule() );
 	}
 
@@ -173,7 +173,7 @@ final class Help {
 	 * (CLAUDE.md hard rule 19), and a merchant can switch this plugin's help
 	 * email off in WooCommerce → Settings → Emails like any other. So that
 	 * email's own enabled flag is the switch, and the filter is how a helpdesk
-	 * integration consuming `pph_help_submitted` says "send it to me instead"
+	 * integration consuming `wpmphub_help_submitted` says "send it to me instead"
 	 * without the email being on.
 	 *
 	 * Read through `Emails\EmailSettings` rather than from the email class:
@@ -198,7 +198,7 @@ final class Help {
 		 *
 		 * @param bool $exists Whether a destination exists. Default false.
 		 */
-		return (bool) apply_filters( 'pph_help_destination_exists', false );
+		return (bool) apply_filters( 'wpmphub_help_destination_exists', false );
 	}
 
 	/**
@@ -260,7 +260,7 @@ final class Help {
 		 * @param HelpContext $context Submission, and the order context it carries.
 		 * @param \WC_Order   $order   Order the question is about.
 		 */
-		do_action( 'pph_help_submitted', $context, $order );
+		do_action( 'wpmphub_help_submitted', $context, $order );
 
 		return $context;
 	}
@@ -323,7 +323,7 @@ final class Help {
 	 * @return string
 	 */
 	public static function element_id( \WC_Order $order ): string {
-		return 'pph-help-' . $order->get_id();
+		return 'wpmphub-help-' . $order->get_id();
 	}
 
 	/**

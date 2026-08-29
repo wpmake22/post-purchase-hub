@@ -18,7 +18,7 @@ use PostPurchaseHub\Security\TokenService;
  * drift into building the URL differently.
  *
  * The URL points at the account's `view-order` endpoint with the token as a
- * `pph_token` query argument. Nothing in this milestone reads that argument
+ * `wpmphub_token` query argument. Nothing in this milestone reads that argument
  * back: `Frontend\GuestContext` (docs/SPEC.md Milestone 11) is what will
  * exchange it for a short-lived cookie-bound context and strip it from the
  * URL. Until that lands, this class only has to produce a link that decodes
@@ -34,7 +34,7 @@ final class SecureLink {
 	 *
 	 * @var string
 	 */
-	public const TOKEN_PARAM = 'pph_token';
+	public const TOKEN_PARAM = 'wpmphub_token';
 
 	/**
 	 * Builds a signed link to one order's account page.

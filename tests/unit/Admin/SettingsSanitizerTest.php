@@ -357,15 +357,15 @@ final class SettingsSanitizerTest extends TestCase {
 	public function test_undeclared_keys_are_never_stored(): void {
 		$clean = SettingsSanitizer::sanitize_tab(
 			array(
-				'pph_token_secret'   => 'stolen',
-				'active_plugins'     => array( 'evil/evil.php' ),
-				Uninstaller::SETTING => '1',
+				'wpmphub_token_secret' => 'stolen',
+				'active_plugins'       => array( 'evil/evil.php' ),
+				Uninstaller::SETTING   => '1',
 			),
 			'advanced',
 			array()
 		);
 
-		$this->assertArrayNotHasKey( 'pph_token_secret', $clean );
+		$this->assertArrayNotHasKey( 'wpmphub_token_secret', $clean );
 		$this->assertArrayNotHasKey( 'active_plugins', $clean );
 		$this->assertTrue( $clean[ Uninstaller::SETTING ], 'The declared field on that tab still saves.' );
 	}

@@ -134,7 +134,7 @@ final class RetentionSweeper {
 	 * @return int
 	 */
 	public function retention_days(): int {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 		$days     = is_array( $settings ) ? ( $settings[ self::RETENTION_SETTING ] ?? self::DEFAULT_RETENTION_DAYS ) : self::DEFAULT_RETENTION_DAYS;
 
 		/**
@@ -146,7 +146,7 @@ final class RetentionSweeper {
 		 *
 		 * @param int $days Retention window in days.
 		 */
-		$days = (int) apply_filters( 'pph_request_retention_days', (int) $days );
+		$days = (int) apply_filters( 'wpmphub_request_retention_days', (int) $days );
 
 		return min( max( 0, $days ), self::MAX_RETENTION_DAYS );
 	}
@@ -257,7 +257,7 @@ final class RetentionSweeper {
 		$names = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s AND option_value < %d LIMIT %d",
-				$wpdb->esc_like( '_transient_timeout_pph_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_wpmphub_' ) . '%',
 				time(),
 				self::BATCH_SIZE
 			)

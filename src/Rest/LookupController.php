@@ -16,7 +16,7 @@ use PostPurchaseHub\Security\OrderLookup;
 use PostPurchaseHub\Security\Sanitizer;
 
 /**
- * `POST /pph/v1/lookup`.
+ * `POST /wpmphub/v1/lookup`.
  *
  * A thin adapter: it validates the two fields, hands them to
  * `Security\GuestLookupService` and turns the one result into the one response.
@@ -53,7 +53,7 @@ final class LookupController {
 	 *
 	 * @var string
 	 */
-	public const NAMESPACE = 'pph/v1';
+	public const NAMESPACE = 'wpmphub/v1';
 
 	/**
 	 * Route base.
@@ -164,7 +164,7 @@ final class LookupController {
 
 		if ( ! $this->access->is_enabled() ) {
 			return new \WP_Error(
-				'pph_lookup_unavailable',
+				'wpmphub_lookup_unavailable',
 				GuestLookupService::unavailable_message(),
 				array( 'status' => 404 )
 			);

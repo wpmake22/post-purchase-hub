@@ -65,7 +65,7 @@ final class HardExclusionsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_order_types_can_be_filtered_to_empty(): void {
-		add_filter( 'pph_compat_excluded_order_types', static fn (): array => array() );
+		add_filter( 'wpmphub_compat_excluded_order_types', static fn (): array => array() );
 
 		$this->assertSame( array(), HardExclusions::order_types() );
 	}
@@ -76,7 +76,7 @@ final class HardExclusionsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_product_types_can_be_filtered_to_empty(): void {
-		add_filter( 'pph_compat_excluded_product_types', static fn (): array => array() );
+		add_filter( 'wpmphub_compat_excluded_product_types', static fn (): array => array() );
 
 		$this->assertSame( array(), HardExclusions::product_types() );
 	}

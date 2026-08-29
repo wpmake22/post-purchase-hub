@@ -48,11 +48,11 @@ final class WizardPreview {
 	public function render(): void {
 		$order = $this->sample_order();
 
-		echo '<div class="pph-wizard__preview" data-pph-wizard-preview>';
+		echo '<div class="wpmphub-wizard__preview" data-wpmphub-wizard-preview>';
 
 		if ( ! $order instanceof \WC_Order ) {
 			printf(
-				'<p class="description" data-pph-wizard-preview-empty>%s</p>',
+				'<p class="description" data-wpmphub-wizard-preview-empty>%s</p>',
 				esc_html__( 'Once you have an order, this is where you will see exactly what your customers see. There are no orders on this store yet.', 'wpmake-post-purchase-hub' )
 			);
 

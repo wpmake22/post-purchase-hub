@@ -142,7 +142,7 @@ final class RequestsControllerTest extends TestCase {
 
 		$this->assertTrue( $result, 'Expected authorise_create() to succeed.' );
 
-		$order = $request->get_param( 'pph_order' );
+		$order = $request->get_param( 'wpmphub_order' );
 		$this->assertInstanceOf( \WC_Order::class, $order );
 
 		return $order;
@@ -240,7 +240,7 @@ final class RequestsControllerTest extends TestCase {
 
 		$this->assertInstanceOf( \WP_Error::class, $result );
 		$this->assertSame( 403, $result->get_error_data()['status'] );
-		$this->assertSame( 'pph_forbidden', $result->get_error_code() );
+		$this->assertSame( 'wpmphub_forbidden', $result->get_error_code() );
 	}
 
 	/**
@@ -334,7 +334,7 @@ final class RequestsControllerTest extends TestCase {
 
 		$this->assertInstanceOf( \WP_Error::class, $result );
 		$this->assertSame( 429, $result->get_error_data()['status'] );
-		$this->assertSame( 'pph_rate_limited', $result->get_error_code() );
+		$this->assertSame( 'wpmphub_rate_limited', $result->get_error_code() );
 	}
 
 	/**
@@ -420,7 +420,7 @@ final class RequestsControllerTest extends TestCase {
 
 		$this->assertInstanceOf( \WP_Error::class, $response );
 		$this->assertSame( 403, $response->get_error_data()['status'] );
-		$this->assertSame( 'pph_ineligible', $response->get_error_code() );
+		$this->assertSame( 'wpmphub_ineligible', $response->get_error_code() );
 		$this->assertSame( array(), $this->service->created );
 	}
 
@@ -443,7 +443,7 @@ final class RequestsControllerTest extends TestCase {
 
 		$this->assertInstanceOf( \WP_Error::class, $response );
 		$this->assertSame( 429, $response->get_error_data()['status'] );
-		$this->assertSame( 'pph_cooldown', $response->get_error_code() );
+		$this->assertSame( 'wpmphub_cooldown', $response->get_error_code() );
 		$this->assertSame( array(), $this->service->created );
 	}
 

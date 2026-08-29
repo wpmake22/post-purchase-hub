@@ -41,7 +41,7 @@ final class EmailSettings {
 	 *
 	 * @var string
 	 */
-	public const HELP_REQUEST = 'pph_help_request';
+	public const HELP_REQUEST = 'wpmphub_help_request';
 
 	/**
 	 * Whether one of this plugin's emails will send.

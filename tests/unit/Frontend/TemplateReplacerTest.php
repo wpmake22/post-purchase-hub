@@ -49,7 +49,7 @@ final class TemplateReplacerTest extends TestCase {
 	 */
 	private function replacer( bool $replacement ): TemplateReplacer {
 		if ( $replacement ) {
-			FakeWordPress::$options['pph_settings'] = array(
+			FakeWordPress::$options['wpmphub_settings'] = array(
 				TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT,
 			);
 		}
@@ -91,7 +91,7 @@ final class TemplateReplacerTest extends TestCase {
 
 		$this->assertTrue( $replacer->is_enabled() );
 		$this->assertSame(
-			PPH_PLUGIN_DIR . 'templates/myaccount/orders.php',
+			WPMPHUB_PLUGIN_DIR . 'templates/myaccount/orders.php',
 			$replacer->replace( '/core/orders.php', 'myaccount/orders.php' )
 		);
 	}
@@ -162,7 +162,7 @@ final class TemplateReplacerTest extends TestCase {
 	 * @return void
 	 */
 	public function test_an_unknown_mode_falls_back_to_additive(): void {
-		FakeWordPress::$options['pph_settings'] = array( TemplateReplacer::SETTING => 'something-else' );
+		FakeWordPress::$options['wpmphub_settings'] = array( TemplateReplacer::SETTING => 'something-else' );
 
 		$replacer = new TemplateReplacer(
 			new TemplateLoader( new Logger() ),
@@ -194,7 +194,7 @@ final class TemplateReplacerTest extends TestCase {
 
 		$this->assertArrayHasKey( TemplateConflictScanner::BUILDER_PREFIX . $builder, $scanner->conflicts( true ) );
 
-		FakeWordPress::$options['pph_settings'] = array(
+		FakeWordPress::$options['wpmphub_settings'] = array(
 			TemplateReplacer::SETTING => TemplateReplacer::MODE_REPLACEMENT,
 		);
 
@@ -237,7 +237,7 @@ final class TemplateReplacerTest extends TestCase {
 	 */
 	public function test_the_mode_is_filterable(): void {
 		add_filter(
-			'pph_template_mode',
+			'wpmphub_template_mode',
 			static function (): string {
 				return TemplateReplacer::MODE_REPLACEMENT;
 			}

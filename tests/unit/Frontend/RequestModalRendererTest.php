@@ -77,8 +77,8 @@ final class RequestModalRendererTest extends TestCase {
 		$this->renderer->render();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'data-pph-request-modal', $html );
-		$this->assertStringContainsString( 'data-pph-request-reason', $html );
+		$this->assertStringContainsString( 'data-wpmphub-request-modal', $html );
+		$this->assertStringContainsString( 'data-wpmphub-request-reason', $html );
 
 		foreach ( Cancel::reason_code_labels() as $label ) {
 			$this->assertStringContainsString( esc_html( $label ), $html );

@@ -37,7 +37,7 @@ abstract class AbstractEmail extends \WC_Email {
 	 *
 	 * @var bool
 	 */
-	private bool $pph_locale_switched = false;
+	private bool $wpmphub_locale_switched = false;
 
 	/**
 	 * {@inheritDoc}
@@ -45,7 +45,7 @@ abstract class AbstractEmail extends \WC_Email {
 	 * @since 0.10.0
 	 */
 	public function __construct() {
-		$this->template_base = PPH_PLUGIN_DIR . 'templates/';
+		$this->template_base = WPMPHUB_PLUGIN_DIR . 'templates/';
 
 		parent::__construct();
 	}
@@ -84,7 +84,7 @@ abstract class AbstractEmail extends \WC_Email {
 			return;
 		}
 
-		$this->pph_locale_switched = switch_to_locale( LocaleResolver::for_order( $this->object ) );
+		$this->wpmphub_locale_switched = switch_to_locale( LocaleResolver::for_order( $this->object ) );
 	}
 
 	/**
@@ -94,7 +94,7 @@ abstract class AbstractEmail extends \WC_Email {
 	 * @return void
 	 */
 	public function restore_locale(): void {
-		if ( ! $this->pph_locale_switched ) {
+		if ( ! $this->wpmphub_locale_switched ) {
 			parent::restore_locale();
 
 			return;
@@ -102,7 +102,7 @@ abstract class AbstractEmail extends \WC_Email {
 
 		restore_current_locale();
 
-		$this->pph_locale_switched = false;
+		$this->wpmphub_locale_switched = false;
 	}
 
 	/**

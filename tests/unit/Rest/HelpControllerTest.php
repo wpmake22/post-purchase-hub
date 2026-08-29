@@ -92,7 +92,7 @@ final class HelpControllerTest extends TestCase {
 			$this->submitted[] = $context;
 		};
 
-		FakeWordPress::$actions['pph_help_submitted'][] = array(
+		FakeWordPress::$actions['wpmphub_help_submitted'][] = array(
 			'callback' => $recorder,
 			'priority' => 10,
 		);
@@ -206,7 +206,7 @@ final class HelpControllerTest extends TestCase {
 		$request = $this->request( 30 );
 
 		$this->assertTrue( $this->controller->authorise( $request ) );
-		$this->assertInstanceOf( \WC_Order::class, $request->get_param( 'pph_order' ) );
+		$this->assertInstanceOf( \WC_Order::class, $request->get_param( 'wpmphub_order' ) );
 	}
 
 	/**
@@ -224,7 +224,7 @@ final class HelpControllerTest extends TestCase {
 
 		$this->assertInstanceOf( \WP_Error::class, $denied );
 		$this->assertInstanceOf( \WP_Error::class, $missing );
-		$this->assertSame( 'pph_forbidden', $denied->get_error_code() );
+		$this->assertSame( 'wpmphub_forbidden', $denied->get_error_code() );
 		$this->assertSame( $missing->get_error_message(), $denied->get_error_message() );
 		$this->assertSame( 403, $denied->get_error_data()['status'] );
 		$this->assertSame( array(), $this->submitted );
@@ -298,7 +298,7 @@ final class HelpControllerTest extends TestCase {
 		unset( $_SERVER['REMOTE_ADDR'] );
 
 		$this->assertInstanceOf( \WP_Error::class, $result );
-		$this->assertSame( 'pph_rate_limited', $result->get_error_code() );
+		$this->assertSame( 'wpmphub_rate_limited', $result->get_error_code() );
 		$this->assertSame( 429, $result->get_error_data()['status'] );
 	}
 
@@ -342,7 +342,7 @@ final class HelpControllerTest extends TestCase {
 			}
 
 			$this->assertInstanceOf( \WP_Error::class, $result );
-			$this->assertSame( 'pph_rate_limited', $result->get_error_code() );
+			$this->assertSame( 'wpmphub_rate_limited', $result->get_error_code() );
 			$this->assertSame( 429, $result->get_error_data()['status'] );
 
 			break;

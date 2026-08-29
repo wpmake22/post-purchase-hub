@@ -6,7 +6,7 @@
  * has the strongest copy requirement on — a customer must never be told an
  * order is cancelled when what happened is that they asked.
  *
- * Every selector is a plugin-owned `data-pph-*` attribute, never a theme's.
+ * Every selector is a plugin-owned `data-wpmphub-*` attribute, never a theme's.
  */
 
 const { test, expect } = require("@wordpress/e2e-test-utils-playwright");
@@ -17,12 +17,12 @@ const {
 	orderStatus,
 } = require("./utils/orders");
 
-const ACTION = '[data-pph-action="cancel"]';
-const MODAL = "[data-pph-request-modal]";
-const REASON = "[data-pph-request-reason]";
-const NOTE = "[data-pph-request-note]";
-const SUBMIT = "[data-pph-request-submit]";
-const BRANCH = '[data-pph-branch="cancellation_requested"]';
+const ACTION = '[data-wpmphub-action="cancel"]';
+const MODAL = "[data-wpmphub-request-modal]";
+const REASON = "[data-wpmphub-request-reason]";
+const NOTE = "[data-wpmphub-request-note]";
+const SUBMIT = "[data-wpmphub-request-submit]";
+const BRANCH = '[data-wpmphub-branch="cancellation_requested"]';
 
 test.describe("Cancellation requests", () => {
 	test.beforeEach(async ({ requestUtils }) => {
@@ -93,13 +93,13 @@ test.describe("Cancellation requests", () => {
 		await page.goto(`/my-account/view-order/${order.id}/`);
 		await page.locator(`${ACTION} a, ${ACTION} button`).click();
 		await page.locator(REASON).selectOption("other");
-		await page.locator(NOTE).fill("<script>window.pphXss = true;</script>");
+		await page.locator(NOTE).fill("<script>window.wpmphubXss = true;</script>");
 		await page.locator(SUBMIT).click();
 
 		await page.reload();
 
-		expect(await page.evaluate(() => window.pphXss)).toBeUndefined();
-		expect(await page.content()).not.toContain("<script>window.pphXss");
+		expect(await page.evaluate(() => window.wpmphubXss)).toBeUndefined();
+		expect(await page.content()).not.toContain("<script>window.wpmphubXss");
 	});
 
 	test("an order in an ineligible status offers no cancellation at all", async ({
@@ -110,7 +110,7 @@ test.describe("Cancellation requests", () => {
 
 		await page.goto(`/my-account/view-order/${order.id}/`);
 
-		await expect(page.locator("[data-pph-timeline]")).toBeVisible();
+		await expect(page.locator("[data-wpmphub-timeline]")).toBeVisible();
 		await expect(page.locator(ACTION)).toHaveCount(0);
 	});
 

@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @param \WC_Order $order Order to describe.
  */
-do_action( 'pph_render_order_detail', $order ?? null );
+do_action( 'wpmphub_render_order_detail', $order ?? null );
 
 /**
  * Renders the merchant's notes to this customer.
@@ -38,7 +38,7 @@ do_action( 'pph_render_order_detail', $order ?? null );
  *
  * @param \WC_Order $order Order whose notes to show.
  */
-do_action( 'pph_render_order_notes', $order ?? null );
+do_action( 'wpmphub_render_order_notes', $order ?? null );
 
 /**
  * Fires after this plugin's order detail heading.

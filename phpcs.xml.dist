@@ -69,7 +69,7 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="pph_"/>
+				<element value="wpmphub_"/>
 				<element value="PostPurchaseHub"/>
 			</property>
 		</properties>

@@ -56,13 +56,13 @@ final class LinkInjectorTest extends TestCase {
 	}
 
 	/**
-	 * The pph_email_link_injection_targets filter can narrow or widen the list.
+	 * The wpmphub_email_link_injection_targets filter can narrow or widen the list.
 	 *
 	 * @return void
 	 */
 	public function test_filter_can_replace_the_target_list(): void {
 		add_filter(
-			'pph_email_link_injection_targets',
+			'wpmphub_email_link_injection_targets',
 			static function () {
 				return array( 'customer_invoice' );
 			}
@@ -79,7 +79,7 @@ final class LinkInjectorTest extends TestCase {
 	 */
 	public function test_a_non_array_filter_result_yields_no_targets(): void {
 		add_filter(
-			'pph_email_link_injection_targets',
+			'wpmphub_email_link_injection_targets',
 			static function () {
 				return false;
 			}
@@ -186,7 +186,7 @@ final class LinkInjectorTest extends TestCase {
 	 * @return void
 	 */
 	public function test_injects_into_an_opted_in_target(): void {
-		FakeWordPress::$options['pph_token_secret'] = base64_encode( random_bytes( 64 ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Test fixture, not obfuscation.
+		FakeWordPress::$options['wpmphub_token_secret'] = base64_encode( random_bytes( 64 ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Test fixture, not obfuscation.
 
 		$order = new \WC_Order( 1 );
 		$order->set_order_key( 'wc_order_abc' );
@@ -210,7 +210,7 @@ final class LinkInjectorTest extends TestCase {
 	 * @return void
 	 */
 	public function test_an_install_without_a_token_secret_injects_nothing(): void {
-		unset( FakeWordPress::$options['pph_token_secret'] );
+		unset( FakeWordPress::$options['wpmphub_token_secret'] );
 
 		$order = new \WC_Order( 1 );
 		$order->set_order_key( 'wc_order_abc' );

@@ -77,7 +77,7 @@ final class PendingCancellationBranch {
 	 * @return string
 	 */
 	private static function expected_response_note(): string {
-		$settings = get_option( 'pph_settings', array() );
+		$settings = get_option( 'wpmphub_settings', array() );
 		$settings = is_array( $settings ) ? $settings : array();
 
 		$hours = isset( $settings[ Cancel::RESPONSE_TIME_SETTING ] )

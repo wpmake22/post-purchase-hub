@@ -32,10 +32,10 @@ export default function Tracking( { tracking } ) {
 			) }
 		>
 			<p
-				className={ `pph-setup__detected ${
+				className={ `wpmphub-setup__detected ${
 					found ? 'is-found' : 'is-missing'
 				}` }
-				data-pph-wizard-tracking={ found ? 'found' : 'none' }
+				data-wpmphub-wizard-tracking={ found ? 'found' : 'none' }
 			>
 				{ tracking.message }
 			</p>
@@ -43,7 +43,7 @@ export default function Tracking( { tracking } ) {
 			{ ! found && (
 				<p>
 					<a
-						className="pph-setup__link-button"
+						className="wpmphub-setup__link-button"
 						href={ tracking.search_url }
 						target="_blank"
 						rel="noopener noreferrer"

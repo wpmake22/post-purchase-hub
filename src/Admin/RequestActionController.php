@@ -15,7 +15,7 @@ use PostPurchaseHub\Requests\RequestService;
 use PostPurchaseHub\Support\Logger;
 
 /**
- * `admin-post.php?action=pph_approve_request` and `pph_decline_request`.
+ * `admin-post.php?action=wpmphub_approve_request` and `wpmphub_decline_request`.
  *
  * Every handler runs capability check, then nonce, then action — in that
  * order, per docs/SPEC.md Phase 8: a stale nonce on a request from a user who
@@ -44,21 +44,21 @@ final class RequestActionController {
 	 *
 	 * @var string
 	 */
-	public const NONCE_ACTION = 'pph_request_action';
+	public const NONCE_ACTION = 'wpmphub_request_action';
 
 	/**
 	 * The admin-post.php action name for approval.
 	 *
 	 * @var string
 	 */
-	public const APPROVE_ACTION = 'pph_approve_request';
+	public const APPROVE_ACTION = 'wpmphub_approve_request';
 
 	/**
 	 * The admin-post.php action name for decline.
 	 *
 	 * @var string
 	 */
-	public const DECLINE_ACTION = 'pph_decline_request';
+	public const DECLINE_ACTION = 'wpmphub_decline_request';
 
 	/**
 	 * Constructor.

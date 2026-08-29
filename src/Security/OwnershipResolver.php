@@ -141,6 +141,6 @@ final class OwnershipResolver {
 		 *
 		 * @param string $token Empty string when the current request carries none.
 		 */
-		return (string) apply_filters( 'pph_current_request_token', '' );
+		return (string) apply_filters( 'wpmphub_current_request_token', '' );
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Editor registration for the pph/orders block.
+ * Editor registration for the wpmphub/orders block.
  *
  * The block renders server-side, so the editor shows a static placeholder
  * rather than a preview: rendering it here would mean duplicating the view

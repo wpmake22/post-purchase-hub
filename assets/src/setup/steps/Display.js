@@ -40,36 +40,36 @@ export default function Display( {
 		>
 			{ conflict && (
 				<p
-					className="pph-setup__warning"
-					data-pph-wizard-conflict
+					className="wpmphub-setup__warning"
+					data-wpmphub-wizard-conflict
 					role="status"
 				>
 					{ conflict }
 				</p>
 			) }
 
-			<div className="pph-setup__choices" role="radiogroup">
+			<div className="wpmphub-setup__choices" role="radiogroup">
 				{ modes.map( ( mode ) => (
 					<div
 						key={ mode.value }
-						className={ `pph-setup__choice ${
+						className={ `wpmphub-setup__choice ${
 							value === mode.value ? 'is-selected' : ''
 						}` }
-						data-pph-wizard-mode={ mode.value }
+						data-wpmphub-wizard-mode={ mode.value }
 					>
 						<input
-							id={ `pph-mode-${ mode.value }` }
+							id={ `wpmphub-mode-${ mode.value }` }
 							type="radio"
-							name="pph-setup-mode"
+							name="wpmphub-setup-mode"
 							value={ mode.value }
 							checked={ value === mode.value }
 							onChange={ () => onChange( mode.value ) }
 						/>
 						<label
-							className="pph-setup__choice-body"
-							htmlFor={ `pph-mode-${ mode.value }` }
+							className="wpmphub-setup__choice-body"
+							htmlFor={ `wpmphub-mode-${ mode.value }` }
 						>
-							<span className="pph-setup__choice-label">
+							<span className="wpmphub-setup__choice-label">
 								{ mode.label }
 							</span>
 						</label>
@@ -77,13 +77,13 @@ export default function Display( {
 				) ) }
 			</div>
 
-			<h2 className="pph-setup__subheading">
+			<h2 className="wpmphub-setup__subheading">
 				{ __( 'What your customers will see', 'wpmake-post-purchase-hub' ) }
 			</h2>
 
 			<div
-				className="pph-setup__preview"
-				data-pph-wizard-preview
+				className="wpmphub-setup__preview"
+				data-wpmphub-wizard-preview
 				// The renderer escapes at output and the REST layer runs the
 				// result through wp_kses_post() on the way here, because this
 				// string leaves the one place escaping is normally proved.

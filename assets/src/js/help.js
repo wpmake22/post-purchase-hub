@@ -7,7 +7,7 @@
  * opening the disclosure when a link from the orders list arrives with its
  * fragment.
  *
- * Reads its configuration from `window.pphHelp`, localised by
+ * Reads its configuration from `window.wpmphubHelp`, localised by
  * Frontend\Assets: `restUrl` and `nonce`.
  */
 
@@ -17,7 +17,7 @@ import { __ } from '@wordpress/i18n';
 	'use strict';
 
 	/** @type {{restUrl: string, nonce: string}} */
-	const config = window.pphHelp || { restUrl: '', nonce: '' };
+	const config = window.wpmphubHelp || { restUrl: '', nonce: '' };
 
 	/**
 	 * Shows the inline error, with the support reference when there is one.
@@ -63,8 +63,8 @@ import { __ } from '@wordpress/i18n';
 
 		const success = document.createElement( 'p' );
 
-		success.className = 'pph-help__success';
-		success.setAttribute( 'data-pph-help-success', '' );
+		success.className = 'wpmphub-help__success';
+		success.setAttribute( 'data-wpmphub-help-success', '' );
 		success.setAttribute( 'role', 'status' );
 		success.textContent = message;
 
@@ -109,8 +109,8 @@ import { __ } from '@wordpress/i18n';
 
 		event.preventDefault();
 
-		const error = form.querySelector( '[data-pph-help-error]' );
-		const message = form.querySelector( '[data-pph-help-message]' );
+		const error = form.querySelector( '[data-wpmphub-help-error]' );
+		const message = form.querySelector( '[data-wpmphub-help-message]' );
 
 		hideError( error );
 
@@ -134,9 +134,9 @@ import { __ } from '@wordpress/i18n';
 		}
 
 		const panel = form.parentElement;
-		const submit = form.querySelector( '[data-pph-help-submit]' );
-		const orderId = form.querySelector( '[data-pph-help-order-id]' );
-		const topic = form.querySelector( '[data-pph-help-topic]' );
+		const submit = form.querySelector( '[data-wpmphub-help-submit]' );
+		const orderId = form.querySelector( '[data-wpmphub-help-order-id]' );
+		const topic = form.querySelector( '[data-wpmphub-help-topic]' );
 
 		if ( submit instanceof HTMLButtonElement ) {
 			submit.disabled = true;
@@ -213,7 +213,7 @@ import { __ } from '@wordpress/i18n';
 		}
 
 		const target = document.querySelector(
-			'[data-pph-help]' + hash.replace( /[^\w#-]/g, '' )
+			'[data-wpmphub-help]' + hash.replace( /[^\w#-]/g, '' )
 		);
 
 		if ( target instanceof HTMLDetailsElement ) {
@@ -224,7 +224,7 @@ import { __ } from '@wordpress/i18n';
 	document.addEventListener( 'submit', function ( event ) {
 		if (
 			event.target instanceof HTMLFormElement &&
-			event.target.matches( '[data-pph-help-form]' )
+			event.target.matches( '[data-wpmphub-help-form]' )
 		) {
 			onSubmit( event );
 		}

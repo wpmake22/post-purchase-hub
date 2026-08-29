@@ -23,7 +23,7 @@ use PostPurchaseHub\Security\TokenService;
  * the toggle is added to each target email's own settings via
  * `woocommerce_settings_api_form_fields_{id}`, so it is stored, rendered and
  * persisted entirely by WooCommerce's existing Settings API — the same
- * mechanism `pph_registered_emails` lets our own emails reuse.
+ * mechanism `wpmphub_registered_emails` lets our own emails reuse.
  *
  * @since 0.10.0
  */
@@ -34,14 +34,14 @@ final class LinkInjector {
 	 *
 	 * @var string
 	 */
-	public const TARGETS_FILTER = 'pph_email_link_injection_targets';
+	public const TARGETS_FILTER = 'wpmphub_email_link_injection_targets';
 
 	/**
 	 * The checkbox's own settings key, stored on the target email itself.
 	 *
 	 * @var string
 	 */
-	public const SETTINGS_FIELD = 'pph_include_secure_link';
+	public const SETTINGS_FIELD = 'wpmphub_include_secure_link';
 
 	/**
 	 * Constructor.
@@ -137,7 +137,7 @@ final class LinkInjector {
 				'plain_text' => $plain_text,
 			),
 			TemplateLoader::THEME_DIRECTORY,
-			PPH_PLUGIN_DIR . 'templates/'
+			WPMPHUB_PLUGIN_DIR . 'templates/'
 		);
 	}
 
@@ -163,7 +163,7 @@ final class LinkInjector {
 		 *
 		 * @param string[] $targets Core email ids eligible for the opt-in checkbox.
 		 */
-		$targets = apply_filters( 'pph_email_link_injection_targets', $defaults );
+		$targets = apply_filters( 'wpmphub_email_link_injection_targets', $defaults );
 
 		if ( ! is_array( $targets ) ) {
 			return array();

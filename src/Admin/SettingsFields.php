@@ -24,7 +24,7 @@ use PostPurchaseHub\Timeline\StageMapConfig;
  *
  * One field per behaviour that already exists in this plugin, and not one more:
  * "no setting without a user story" (docs/MILESTONE-PROMPTS.md M14). Every key
- * here is a key some service was already reading from `pph_settings` before
+ * here is a key some service was already reading from `wpmphub_settings` before
  * this milestone — `Actions\Cancel`, `Timeline\EstimatedDelivery`,
  * `Security\GuestAccess`, `Security\TokenService`,
  * `Frontend\TemplateReplacer`, `Requests\RetentionSweeper`,
@@ -46,7 +46,7 @@ final class SettingsFields {
 	 *
 	 * @var string
 	 */
-	public const OPTION = 'pph_settings';
+	public const OPTION = 'wpmphub_settings';
 
 	/**
 	 * Tab slugs, in the order docs/MILESTONE-PROMPTS.md M14 fixes them.

@@ -16,7 +16,7 @@ use PostPurchaseHub\Security\TokenService;
  * status change — hence `$manual = true`, the same flag core's own
  * `WC_Email_Customer_Invoice` carries for exactly the same reason.
  *
- * Nothing in this milestone calls `pph_secure_link_requested` yet: this class is
+ * Nothing in this milestone calls `wpmphub_secure_link_requested` yet: this class is
  * the receiving end of an extension point docs/SPEC.md's own Milestone 11
  * ("Guest Lookup & Signed Links") triggers from its send-link-on-failure
  * behaviour. Building the trigger here now, ahead of its first caller, means
@@ -35,7 +35,7 @@ final class SecureOrderLink extends AbstractEmail {
 	 * @param TokenService $tokens Issues the token the link carries.
 	 */
 	public function __construct( private TokenService $tokens ) {
-		$this->id             = 'pph_secure_link';
+		$this->id             = 'wpmphub_secure_link';
 		$this->customer_email = true;
 		$this->manual         = true;
 		$this->title          = __( 'Secure order link', 'wpmake-post-purchase-hub' );
@@ -47,7 +47,7 @@ final class SecureOrderLink extends AbstractEmail {
 			'{order_number}' => '',
 		);
 
-		add_action( 'pph_secure_link_requested', array( $this, 'trigger' ) );
+		add_action( 'wpmphub_secure_link_requested', array( $this, 'trigger' ) );
 
 		parent::__construct();
 	}
@@ -67,7 +67,7 @@ final class SecureOrderLink extends AbstractEmail {
 	}
 
 	/**
-	 * Trigger. Hooked to `pph_secure_link_requested`.
+	 * Trigger. Hooked to `wpmphub_secure_link_requested`.
 	 *
 	 * Deliberately `send_if_recipient()` rather than `send_notification()`: a
 	 * manually-triggered email (`$this->manual`) is a merchant- or
@@ -105,7 +105,7 @@ final class SecureOrderLink extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_content_html(): string {
-		$order = $this->pph_order();
+		$order = $this->wpmphub_order();
 
 		if ( ! $order instanceof \WC_Order || ! $this->tokens->has_secret() ) {
 			return '';
@@ -131,7 +131,7 @@ final class SecureOrderLink extends AbstractEmail {
 	 * {@inheritDoc}
 	 */
 	public function get_content_plain(): string {
-		$order = $this->pph_order();
+		$order = $this->wpmphub_order();
 
 		if ( ! $order instanceof \WC_Order || ! $this->tokens->has_secret() ) {
 			return '';
@@ -184,7 +184,7 @@ final class SecureOrderLink extends AbstractEmail {
 	 *
 	 * @return \WC_Order|null
 	 */
-	private function pph_order(): ?\WC_Order {
+	private function wpmphub_order(): ?\WC_Order {
 		return $this->object instanceof \WC_Order ? $this->object : null;
 	}
 }

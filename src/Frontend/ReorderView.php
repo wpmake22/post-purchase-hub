@@ -148,7 +148,7 @@ final class ReorderView {
 		 * @param bool      $supersede Whether to remove core's button.
 		 * @param \WC_Order $order     Order being viewed.
 		 */
-		if ( ! (bool) apply_filters( 'pph_reorder_supersedes_core_button', true, $order ) ) {
+		if ( ! (bool) apply_filters( 'wpmphub_reorder_supersedes_core_button', true, $order ) ) {
 			return;
 		}
 

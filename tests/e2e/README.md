@@ -21,6 +21,6 @@ npx wp-env run tests-cli wp theme install astra --activate
 npm run test:e2e -- --update-snapshots
 ```
 
-Selectors are plugin-owned `data-pph-*` attributes only. A spec that reaches for
+Selectors are plugin-owned `data-wpmphub-*` attributes only. A spec that reaches for
 a theme's class names will pass on the theme it was written against and fail on
 every other one, which is the opposite of what these tests are for.

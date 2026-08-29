@@ -13,25 +13,25 @@
  * app with its own stylesheet (`setup.scss`).
  */
 
-$pph-accent: #2271b1;
-$pph-accent-wash: #f0f6fc;
-$pph-ink: #1d2327;
-$pph-muted: #50575e;
-$pph-faint: #787c82;
-$pph-line: #dcdcde;
-$pph-hairline: #f0f0f1;
-$pph-canvas: #f6f7f7;
-$pph-on: #00a32a;
-$pph-warn: #dba617;
-$pph-bad: #d63638;
-$pph-sidebar: 260px;
+$wpmphub-accent: #2271b1;
+$wpmphub-accent-wash: #f0f6fc;
+$wpmphub-ink: #1d2327;
+$wpmphub-muted: #50575e;
+$wpmphub-faint: #787c82;
+$wpmphub-line: #dcdcde;
+$wpmphub-hairline: #f0f0f1;
+$wpmphub-canvas: #f6f7f7;
+$wpmphub-on: #00a32a;
+$wpmphub-warn: #dba617;
+$wpmphub-bad: #d63638;
+$wpmphub-sidebar: 260px;
 
-.pph-settings {
+.wpmphub-settings {
 	margin-right: 20px;
 
 	&__shell {
 		background: #fff;
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 6px;
 		display: flex;
 		margin-top: 16px;
@@ -46,13 +46,13 @@ $pph-sidebar: 260px;
 	/* Left rail. */
 	&__sidebar {
 		background: #fff;
-		border-right: 1px solid $pph-line;
-		flex: 0 0 $pph-sidebar;
-		max-width: $pph-sidebar;
+		border-right: 1px solid $wpmphub-line;
+		flex: 0 0 $wpmphub-sidebar;
+		max-width: $wpmphub-sidebar;
 		padding: 16px 0 0;
 
 		@media screen and (max-width: 960px) {
-			border-bottom: 1px solid $pph-line;
+			border-bottom: 1px solid $wpmphub-line;
 			border-right: 0;
 			display: none;
 			max-width: none;
@@ -68,21 +68,21 @@ $pph-sidebar: 260px;
 		position: relative;
 
 		input[type="search"] {
-			border: 1px solid $pph-line;
+			border: 1px solid $wpmphub-line;
 			border-radius: 4px;
 			padding: 6px 10px 6px 32px;
 			width: 100%;
 
 			&:focus {
-				border-color: $pph-accent;
-				box-shadow: 0 0 0 1px $pph-accent;
+				border-color: $wpmphub-accent;
+				box-shadow: 0 0 0 1px $wpmphub-accent;
 				outline: 0;
 			}
 		}
 	}
 
 	&__search-icon {
-		color: $pph-faint;
+		color: $wpmphub-faint;
 		left: 25px;
 		pointer-events: none;
 		position: absolute;
@@ -104,7 +104,7 @@ $pph-sidebar: 260px;
 	}
 
 	&__chevron {
-		color: $pph-faint;
+		color: $wpmphub-faint;
 		flex-shrink: 0;
 	}
 
@@ -116,9 +116,9 @@ $pph-sidebar: 260px;
 		align-items: center;
 		background: transparent;
 		border: 0;
-		border-top: 1px solid $pph-hairline;
+		border-top: 1px solid $wpmphub-hairline;
 		box-shadow: none;
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		display: flex;
 		float: none;
 		font-size: 14px;
@@ -131,7 +131,7 @@ $pph-sidebar: 260px;
 		text-decoration: none;
 
 		&::before {
-			background: $pph-accent;
+			background: $wpmphub-accent;
 			bottom: 0;
 			content: "";
 			left: 0;
@@ -144,19 +144,19 @@ $pph-sidebar: 260px;
 
 		&:focus {
 			box-shadow: none;
-			color: $pph-accent;
-			outline: 1px solid $pph-accent;
+			color: $wpmphub-accent;
+			outline: 1px solid $wpmphub-accent;
 			outline-offset: -1px;
 		}
 
 		&:hover {
-			background: $pph-canvas;
-			color: $pph-ink;
+			background: $wpmphub-canvas;
+			color: $wpmphub-ink;
 		}
 
 		&.nav-tab-active {
-			background: $pph-accent-wash;
-			color: $pph-accent;
+			background: $wpmphub-accent-wash;
+			color: $wpmphub-accent;
 
 			&::before {
 				opacity: 1;
@@ -166,7 +166,7 @@ $pph-sidebar: 260px;
 
 	/* Right pane. */
 	&__main {
-		background: $pph-canvas;
+		background: $wpmphub-canvas;
 		flex: 1;
 		min-width: 0;
 		padding: 24px;
@@ -178,7 +178,7 @@ $pph-sidebar: 260px;
 
 	&__header {
 		align-items: flex-start;
-		border-bottom: 1px solid $pph-line;
+		border-bottom: 1px solid $wpmphub-line;
 		display: flex;
 		gap: 12px;
 		margin-bottom: 24px;
@@ -190,7 +190,7 @@ $pph-sidebar: 260px;
 
 		h2 {
 			align-items: center;
-			color: $pph-ink;
+			color: $wpmphub-ink;
 			display: flex;
 			font-size: 22px;
 			font-weight: 600;
@@ -201,7 +201,7 @@ $pph-sidebar: 260px;
 		}
 
 		p {
-			color: $pph-muted;
+			color: $wpmphub-muted;
 			margin: 6px 0 0;
 			max-width: 60em;
 		}
@@ -209,9 +209,9 @@ $pph-sidebar: 260px;
 
 	&__burger {
 		background: #fff;
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 4px;
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		cursor: pointer;
 		display: none;
 		line-height: 0;
@@ -231,22 +231,22 @@ $pph-sidebar: 260px;
 
 	&__card {
 		background: #fff;
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 5px;
 		scroll-margin-top: 40px;
 
 		&.is-highlighted {
-			border-color: $pph-accent;
-			box-shadow: 0 0 0 1px $pph-accent;
+			border-color: $wpmphub-accent;
+			box-shadow: 0 0 0 1px $wpmphub-accent;
 		}
 	}
 
 	&__card-header {
-		border-bottom: 1px solid $pph-hairline;
+		border-bottom: 1px solid $wpmphub-hairline;
 		padding: 14px 20px;
 
 		h3 {
-			color: $pph-ink;
+			color: $wpmphub-ink;
 			font-size: 15px;
 			font-weight: 600;
 			line-height: 1.4;
@@ -254,7 +254,7 @@ $pph-sidebar: 260px;
 		}
 
 		p {
-			color: $pph-muted;
+			color: $wpmphub-muted;
 			font-size: 13px;
 			margin: 4px 0 0;
 			max-width: 70em;
@@ -268,7 +268,7 @@ $pph-sidebar: 260px;
 	/* Field rows. */
 	&__row {
 		align-items: flex-start;
-		border-bottom: 1px solid $pph-hairline;
+		border-bottom: 1px solid $wpmphub-hairline;
 		display: flex;
 		gap: 24px;
 		padding: 16px 0;
@@ -293,7 +293,7 @@ $pph-sidebar: 260px;
 		padding-top: 4px;
 
 		label {
-			color: $pph-ink;
+			color: $wpmphub-ink;
 			display: block;
 			font-size: 14px;
 			font-weight: 500;
@@ -312,7 +312,7 @@ $pph-sidebar: 260px;
 	}
 
 	&__help {
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		font-size: 13px;
 		line-height: 1.5;
 		margin: 6px 0 0;
@@ -320,21 +320,21 @@ $pph-sidebar: 260px;
 	}
 
 	&__number {
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 4px;
 		padding: 5px 8px;
 		width: 6em;
 	}
 
 	&__textarea {
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 4px;
 		max-width: 24em;
 		width: 100%;
 	}
 
 	select {
-		border-color: $pph-line;
+		border-color: $wpmphub-line;
 		border-radius: 4px;
 		max-width: 100%;
 	}
@@ -356,7 +356,7 @@ $pph-sidebar: 260px;
 		flex-wrap: wrap;
 		gap: 4px 20px;
 
-		.pph-settings__option {
+		.wpmphub-settings__option {
 			margin: 0;
 		}
 	}
@@ -369,14 +369,14 @@ $pph-sidebar: 260px;
 
 	&__action {
 
-		.pph-settings__help {
+		.wpmphub-settings__help {
 			margin-left: 46px;
 			margin-top: 2px;
 		}
 	}
 
 	&__map {
-		border: 1px solid $pph-hairline;
+		border: 1px solid $wpmphub-hairline;
 		border-radius: 4px;
 		max-width: 42em;
 		overflow: hidden;
@@ -384,7 +384,7 @@ $pph-sidebar: 260px;
 
 	&__map-row {
 		align-items: center;
-		border-bottom: 1px solid $pph-hairline;
+		border-bottom: 1px solid $wpmphub-hairline;
 		display: flex;
 		gap: 16px;
 		justify-content: space-between;
@@ -400,7 +400,7 @@ $pph-sidebar: 260px;
 	}
 
 	&__map-label {
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		font-size: 13px;
 	}
 
@@ -409,7 +409,7 @@ $pph-sidebar: 260px;
 		display: flex;
 		gap: 6px;
 
-		.pph-settings__number {
+		.wpmphub-settings__number {
 			width: 4.5em;
 		}
 	}
@@ -418,7 +418,7 @@ $pph-sidebar: 260px;
 	&__save {
 		background: #fff;
 		bottom: 0;
-		border: 1px solid $pph-line;
+		border: 1px solid $wpmphub-line;
 		border-radius: 5px;
 		margin-top: 20px;
 		padding: 14px 20px;
@@ -428,9 +428,9 @@ $pph-sidebar: 260px;
 
 	&__empty {
 		background: #fff;
-		border: 1px dashed $pph-line;
+		border: 1px dashed $wpmphub-line;
 		border-radius: 5px;
-		color: $pph-muted;
+		color: $wpmphub-muted;
 		margin: 0;
 		padding: 24px;
 		text-align: center;
@@ -449,7 +449,7 @@ $pph-sidebar: 260px;
 }
 
 /* The on/off switch, used wherever a setting is a boolean. */
-.pph-switch {
+.wpmphub-switch {
 	align-items: center;
 	cursor: pointer;
 	display: inline-flex;
@@ -486,28 +486,28 @@ $pph-sidebar: 260px;
 	}
 
 	&__label {
-		color: $pph-ink;
+		color: $wpmphub-ink;
 		font-size: 14px;
 	}
 
-	input:checked + .pph-switch__track {
-		background: $pph-on;
+	input:checked + .wpmphub-switch__track {
+		background: $wpmphub-on;
 
 		&::before {
 			transform: translateX(16px);
 		}
 	}
 
-	input:focus + .pph-switch__track {
-		box-shadow: 0 0 0 2px #fff, 0 0 0 4px $pph-accent;
+	input:focus + .wpmphub-switch__track {
+		box-shadow: 0 0 0 2px #fff, 0 0 0 4px $wpmphub-accent;
 	}
 
-	input:disabled + .pph-switch__track {
+	input:disabled + .wpmphub-switch__track {
 		opacity: 0.5;
 	}
 }
 
-.pph-health {
+.wpmphub-health {
 
 	&__rows {
 		display: flex;
@@ -527,7 +527,7 @@ $pph-sidebar: 260px;
 	}
 
 	&__dot {
-		background: $pph-faint;
+		background: $wpmphub-faint;
 		border-radius: 50%;
 		flex-shrink: 0;
 		height: 8px;
@@ -537,29 +537,29 @@ $pph-sidebar: 260px;
 	}
 
 	&__label {
-		color: $pph-ink;
+		color: $wpmphub-ink;
 		flex: 0 0 140px;
 		font-weight: 500;
 	}
 
 	&__value {
-		color: $pph-muted;
+		color: $wpmphub-muted;
 	}
 
-	[data-pph-health-state="ok"] .pph-health__dot {
-		background: $pph-on;
+	[data-wpmphub-health-state="ok"] .wpmphub-health__dot {
+		background: $wpmphub-on;
 	}
 
-	[data-pph-health-state="notice"] .pph-health__dot {
-		background: $pph-warn;
+	[data-wpmphub-health-state="notice"] .wpmphub-health__dot {
+		background: $wpmphub-warn;
 	}
 
-	[data-pph-health-state="problem"] .pph-health__dot {
-		background: $pph-bad;
+	[data-wpmphub-health-state="problem"] .wpmphub-health__dot {
+		background: $wpmphub-bad;
 	}
 }
 
-.pph-notice {
+.wpmphub-notice {
 
 	&__dismiss {
 		display: inline;

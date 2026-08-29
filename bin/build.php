@@ -197,15 +197,15 @@ function rewrite_main_file( string $file, string $edition, string $version ): vo
 	$src = preg_replace( '/^(\s*\*\s*Version:\s*).+$/m', '${1}' . $version, $src, 1 );
 
 	$src = preg_replace(
-		"/define\(\s*'PPH_EDITION'\s*,\s*'[^']*'\s*\)/",
-		"define( 'PPH_EDITION', '{$edition}' )",
+		"/define\(\s*'WPMPHUB_EDITION'\s*,\s*'[^']*'\s*\)/",
+		"define( 'WPMPHUB_EDITION', '{$edition}' )",
 		$src,
 		1,
 		$count
 	);
 
 	if ( ! $count ) {
-		fail( "PPH_EDITION constant not found in " . MAIN_FILE . '. The build cannot mark the edition.' );
+		fail( "WPMPHUB_EDITION constant not found in " . MAIN_FILE . '. The build cannot mark the edition.' );
 	}
 
 	if ( 'pro' === $edition ) {
@@ -321,6 +321,11 @@ function dev_excludes(): array {
 		// `assets/build` as minified files with no matching source. Shipping the
 		// ~150KB of sources inside the artifact answers that without depending
 		// on the repository being public.
+		// WP.org rejects file types not normally found in a plugin, and flagged
+		// `.cjs` in the first manual review. ESLint is a linter, not one of the
+		// build tools guideline 4 asks for, so it leaves rather than being
+		// renamed to keep the artifact to php/js/json/css/txt/media.
+		'eslint.config.cjs',
 		'phpcs.xml.dist',
 		'phpstan.neon.dist',
 		'phpunit.xml',

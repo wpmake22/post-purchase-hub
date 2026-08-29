@@ -22,7 +22,7 @@ namespace PostPurchaseHub\Install;
  * State lives in one non-autoloaded option so an abandoned wizard is
  * resumable: the step the merchant reached, and the answers they had given by
  * then, survive them closing the tab. Nothing here is authoritative *settings*
- * data — `pph_settings` is — this is only the progress marker and the drafts
+ * data — `wpmphub_settings` is — this is only the progress marker and the drafts
  * behind it.
  *
  * @since 0.14.0
@@ -34,7 +34,7 @@ final class SetupState {
 	 *
 	 * @var string
 	 */
-	public const OPTION = 'pph_setup_state';
+	public const OPTION = 'wpmphub_setup_state';
 
 	/**
 	 * The step a wizard that has never been opened starts on.
@@ -74,7 +74,7 @@ final class SetupState {
 		 * @param bool                 $complete Whether setup has been completed.
 		 * @param array<string, mixed> $state    The raw stored state.
 		 */
-		return (bool) apply_filters( 'pph_setup_complete', $complete, $state );
+		return (bool) apply_filters( 'wpmphub_setup_complete', $complete, $state );
 	}
 
 	/**
@@ -144,7 +144,7 @@ final class SetupState {
 	 * Stores the answers a step collected, so a resumed wizard shows them again.
 	 *
 	 * Drafts are what the merchant typed, not what the store runs on: they are
-	 * written to `pph_settings` when the wizard completes. Keys not given are
+	 * written to `wpmphub_settings` when the wizard completes. Keys not given are
 	 * left alone, so one step's draft never erases another's.
 	 *
 	 * @since 0.14.0
@@ -198,7 +198,7 @@ final class SetupState {
 		 *
 		 * @since 0.14.0
 		 */
-		do_action( 'pph_setup_completed' );
+		do_action( 'wpmphub_setup_completed' );
 	}
 
 	/**

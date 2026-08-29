@@ -148,13 +148,13 @@ final class ActivationTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_deactivation_clears_scheduled_events(): void {
-		wp_schedule_single_event( time() + HOUR_IN_SECONDS, 'pph_daily_cleanup' );
+		wp_schedule_single_event( time() + HOUR_IN_SECONDS, 'wpmphub_daily_cleanup' );
 
-		$this->assertNotFalse( wp_next_scheduled( 'pph_daily_cleanup' ) );
+		$this->assertNotFalse( wp_next_scheduled( 'wpmphub_daily_cleanup' ) );
 
 		Deactivator::deactivate();
 
-		$this->assertFalse( wp_next_scheduled( 'pph_daily_cleanup' ) );
+		$this->assertFalse( wp_next_scheduled( 'wpmphub_daily_cleanup' ) );
 	}
 
 	/**
@@ -178,7 +178,7 @@ final class ActivationTest extends \WP_UnitTestCase {
 			$rows = (int) $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE %s",
-					$wpdb->esc_like( '_transient_pph_' ) . '%'
+					$wpdb->esc_like( '_transient_wpmphub_' ) . '%'
 				)
 			);
 

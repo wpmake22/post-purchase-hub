@@ -37,31 +37,31 @@ export default function Welcome( { choices, value, onChange, store } ) {
 				'wpmake-post-purchase-hub'
 			) }
 		>
-			<div className="pph-setup__choices" role="radiogroup">
+			<div className="wpmphub-setup__choices" role="radiogroup">
 				{ choices.map( ( choice ) => (
 					<div
 						key={ choice.id }
-						className={ `pph-setup__choice ${
+						className={ `wpmphub-setup__choice ${
 							value === choice.id ? 'is-selected' : ''
 						}` }
-						data-pph-wizard-path={ choice.id }
+						data-wpmphub-wizard-path={ choice.id }
 					>
 						<input
-							id={ `pph-path-${ choice.id }` }
+							id={ `wpmphub-path-${ choice.id }` }
 							type="radio"
-							name="pph-setup-path"
+							name="wpmphub-setup-path"
 							value={ choice.id }
 							checked={ value === choice.id }
 							onChange={ () => onChange( choice.id ) }
 						/>
 						<label
-							className="pph-setup__choice-body"
-							htmlFor={ `pph-path-${ choice.id }` }
+							className="wpmphub-setup__choice-body"
+							htmlFor={ `wpmphub-path-${ choice.id }` }
 						>
-							<span className="pph-setup__choice-label">
+							<span className="wpmphub-setup__choice-label">
 								{ choice.label }
 							</span>
-							<span className="pph-setup__choice-help">
+							<span className="wpmphub-setup__choice-help">
 								{ choice.description }
 							</span>
 						</label>

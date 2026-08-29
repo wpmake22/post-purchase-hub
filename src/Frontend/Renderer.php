@@ -44,7 +44,7 @@ final class Renderer {
 	 *
 	 * @var string
 	 */
-	public const LIST_COLUMN = 'pph-timeline';
+	public const LIST_COLUMN = 'wpmphub-timeline';
 
 	/**
 	 * Priority of the detail-page hook.
@@ -122,10 +122,10 @@ final class Renderer {
 			add_action( 'woocommerce_my_account_my_orders_column_' . self::LIST_COLUMN, array( $this, 'render_list_column' ) );
 		}
 
-		add_action( 'pph_render_timeline_partial', array( $this, 'render_prepared_timeline' ) );
-		add_action( 'pph_render_order_notes', array( $this, 'render_order_notes' ) );
-		add_action( 'pph_render_orders_list', array( $this, 'render_orders_list' ), 10, 2 );
-		add_action( 'pph_render_order_detail', array( $this, 'render_replacement_detail' ) );
+		add_action( 'wpmphub_render_timeline_partial', array( $this, 'render_prepared_timeline' ) );
+		add_action( 'wpmphub_render_order_notes', array( $this, 'render_order_notes' ) );
+		add_action( 'wpmphub_render_orders_list', array( $this, 'render_orders_list' ), 10, 2 );
+		add_action( 'wpmphub_render_order_detail', array( $this, 'render_replacement_detail' ) );
 	}
 
 	/**
@@ -364,6 +364,6 @@ final class Renderer {
 		 *
 		 * @param bool $enabled Whether to add the column.
 		 */
-		return (bool) apply_filters( 'pph_orders_list_column', true );
+		return (bool) apply_filters( 'wpmphub_orders_list_column', true );
 	}
 }

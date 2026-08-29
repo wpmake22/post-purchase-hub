@@ -10,11 +10,11 @@
 
 declare( strict_types = 1 );
 
-$pph_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
+$wpmphub_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
 
-if ( ! file_exists( $pph_autoload ) ) {
+if ( ! file_exists( $wpmphub_autoload ) ) {
 	echo "Composer autoloader missing. Run: composer install\n";
 	exit( 1 );
 }
 
-require_once $pph_autoload;
+require_once $wpmphub_autoload;

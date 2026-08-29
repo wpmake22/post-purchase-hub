@@ -55,7 +55,7 @@ final class HardExclusions {
 		 *
 		 * @param string[] $order_types Excluded `WC_Order::get_type()` values.
 		 */
-		return (array) apply_filters( 'pph_compat_excluded_order_types', array( 'shop_subscription' ) );
+		return (array) apply_filters( 'wpmphub_compat_excluded_order_types', array( 'shop_subscription' ) );
 	}
 
 	/**
@@ -77,7 +77,7 @@ final class HardExclusions {
 		 * @param string[] $product_types Excluded product type slugs.
 		 */
 		return (array) apply_filters(
-			'pph_compat_excluded_product_types',
+			'wpmphub_compat_excluded_product_types',
 			array( 'subscription', 'variable-subscription', 'booking' )
 		);
 	}

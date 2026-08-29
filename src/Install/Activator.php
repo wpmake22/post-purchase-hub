@@ -25,14 +25,14 @@ final class Activator {
 	 *
 	 * @var string
 	 */
-	public const TOKEN_SECRET_OPTION = 'pph_token_secret';
+	public const TOKEN_SECRET_OPTION = 'wpmphub_token_secret';
 
 	/**
 	 * Non-autoloaded option holding the installed schema version.
 	 *
 	 * @var string
 	 */
-	public const SCHEMA_VERSION_OPTION = 'pph_schema_version';
+	public const SCHEMA_VERSION_OPTION = 'wpmphub_schema_version';
 
 	/**
 	 * Schema version before any migration has run.
@@ -53,7 +53,7 @@ final class Activator {
 	 *
 	 * @var string
 	 */
-	public const CLEANUP_HOOK = 'pph_daily_cleanup';
+	public const CLEANUP_HOOK = 'wpmphub_daily_cleanup';
 
 	/**
 	 * Cron hook for the opt-in admin digest.
@@ -66,7 +66,7 @@ final class Activator {
 	 *
 	 * @var string
 	 */
-	public const DIGEST_HOOK = 'pph_daily_digest';
+	public const DIGEST_HOOK = 'wpmphub_daily_digest';
 
 	/**
 	 * Runs on activation. Idempotent: re-activating changes nothing.

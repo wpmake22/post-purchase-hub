@@ -21,7 +21,7 @@ namespace PostPurchaseHub\Emails;
  * to switch to instead.
  *
  * Resolution order:
- * 1. `pph_email_locale` filter — the documented override for any integration
+ * 1. `wpmphub_email_locale` filter — the documented override for any integration
  *    that knows the order's language better than the two guesses below.
  * 2. The `wpml_language` order meta key WPML/WooCommerce Multilingual writes
  *    at checkout. This is this class's one unverified assumption — flagged in
@@ -75,7 +75,7 @@ final class LocaleResolver {
 		 * @param string    $locale Locale resolved so far.
 		 * @param \WC_Order $order  Order the email concerns.
 		 */
-		return (string) apply_filters( 'pph_email_locale', $locale, $order );
+		return (string) apply_filters( 'wpmphub_email_locale', $locale, $order );
 	}
 
 	/**

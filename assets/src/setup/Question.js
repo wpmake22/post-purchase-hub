@@ -17,10 +17,10 @@
  */
 export default function Question( { title, help, children } ) {
 	return (
-		<section className="pph-setup__question">
-			<h1 className="pph-setup__title">{ title }</h1>
-			{ help && <p className="pph-setup__help">{ help }</p> }
-			<div className="pph-setup__body">{ children }</div>
+		<section className="wpmphub-setup__question">
+			<h1 className="wpmphub-setup__title">{ title }</h1>
+			{ help && <p className="wpmphub-setup__help">{ help }</p> }
+			<div className="wpmphub-setup__body">{ children }</div>
 		</section>
 	);
 }

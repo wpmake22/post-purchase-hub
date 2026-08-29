@@ -146,7 +146,7 @@ final class PendingCancellationBranchTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_note_uses_hours_when_not_a_whole_number_of_days(): void {
-		FakeWordPress::$options['pph_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 6 );
+		FakeWordPress::$options['wpmphub_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 6 );
 
 		$history = new FakeRequestHistory();
 		$history->add( 1, Request::TYPE_CANCELLATION, '2026-01-01 12:00:00', Request::STATUS_PENDING );
@@ -162,7 +162,7 @@ final class PendingCancellationBranchTest extends TestCase {
 	 * @return void
 	 */
 	public function test_the_note_uses_days_when_configured_in_whole_days(): void {
-		FakeWordPress::$options['pph_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 48 );
+		FakeWordPress::$options['wpmphub_settings'] = array( Cancel::RESPONSE_TIME_SETTING => 48 );
 
 		$history = new FakeRequestHistory();
 		$history->add( 1, Request::TYPE_CANCELLATION, '2026-01-01 12:00:00', Request::STATUS_PENDING );

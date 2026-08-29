@@ -64,7 +64,7 @@ final class LookupFormTest extends TestCase {
 		);
 
 		add_filter(
-			'pph_lookup_time_floor_ms',
+			'wpmphub_lookup_time_floor_ms',
 			static function (): int {
 				return 0;
 			}
@@ -96,7 +96,7 @@ final class LookupFormTest extends TestCase {
 	 * @return void
 	 */
 	private function enable(): void {
-		FakeWordPress::$options['pph_settings'] = array(
+		FakeWordPress::$options['wpmphub_settings'] = array(
 			GuestAccess::ENABLED_SETTING      => true,
 			GuestAccess::ACKNOWLEDGED_SETTING => true,
 		);
@@ -126,7 +126,7 @@ final class LookupFormTest extends TestCase {
 	 * @return void
 	 */
 	public function test_it_renders_nothing_when_guest_lookup_is_off(): void {
-		FakeWordPress::$options['pph_settings'] = array();
+		FakeWordPress::$options['wpmphub_settings'] = array();
 
 		$this->assertSame( '', $this->form->render() );
 	}
@@ -139,9 +139,9 @@ final class LookupFormTest extends TestCase {
 	public function test_it_renders_the_form(): void {
 		$markup = $this->form->render();
 
-		$this->assertStringContainsString( 'data-pph-lookup-form', $markup );
-		$this->assertStringContainsString( 'data-pph-lookup-number', $markup );
-		$this->assertStringContainsString( 'data-pph-lookup-email', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-lookup-form', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-lookup-number', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-lookup-email', $markup );
 		$this->assertStringContainsString( 'method="post"', $markup );
 		$this->assertStringContainsString( LookupForm::NUMBER_FIELD, $markup );
 		$this->assertStringContainsString( LookupForm::EMAIL_FIELD, $markup );
@@ -239,7 +239,7 @@ final class LookupFormTest extends TestCase {
 	 * @return void
 	 */
 	public function test_a_submission_to_a_disabled_store_does_nothing(): void {
-		FakeWordPress::$options['pph_settings'] = array();
+		FakeWordPress::$options['wpmphub_settings'] = array();
 
 		$this->submit( '42', 'jane@example.com' );
 
@@ -259,7 +259,7 @@ final class LookupFormTest extends TestCase {
 		$markup = $this->form->render();
 
 		$this->assertStringNotContainsString( 'script', $markup );
-		$this->assertStringNotContainsString( 'data-pph-lookup-notice', $markup );
+		$this->assertStringNotContainsString( 'data-wpmphub-lookup-notice', $markup );
 	}
 
 	/**
@@ -272,7 +272,7 @@ final class LookupFormTest extends TestCase {
 
 		$markup = $this->form->render();
 
-		$this->assertStringContainsString( 'data-pph-lookup-notice', $markup );
+		$this->assertStringContainsString( 'data-wpmphub-lookup-notice', $markup );
 		$this->assertStringContainsString( esc_html( GuestLookupService::accepted_message() ), $markup );
 	}
 

@@ -18,43 +18,43 @@ if ( empty( $timeline['stages'] ) ) {
 	return;
 }
 
-$pph_heading_id = 'pph-timeline-heading-' . (int) $timeline['order_id'];
+$wpmphub_heading_id = 'wpmphub-timeline-heading-' . (int) $timeline['order_id'];
 ?>
 <section
-	class="pph-timeline"
-	data-pph-timeline
-	data-pph-order-id="<?php echo esc_attr( (string) $timeline['order_id'] ); ?>"
-	data-pph-order-status="<?php echo esc_attr( $timeline['status'] ); ?>"
-	aria-labelledby="<?php echo esc_attr( $pph_heading_id ); ?>"
+	class="wpmphub-timeline"
+	data-wpmphub-timeline
+	data-wpmphub-order-id="<?php echo esc_attr( (string) $timeline['order_id'] ); ?>"
+	data-wpmphub-order-status="<?php echo esc_attr( $timeline['status'] ); ?>"
+	aria-labelledby="<?php echo esc_attr( $wpmphub_heading_id ); ?>"
 >
-	<h2 class="pph-timeline__heading" id="<?php echo esc_attr( $pph_heading_id ); ?>">
+	<h2 class="wpmphub-timeline__heading" id="<?php echo esc_attr( $wpmphub_heading_id ); ?>">
 		<?php esc_html_e( 'Order progress', 'wpmake-post-purchase-hub' ); ?>
 	</h2>
 
-	<ol class="pph-timeline__stages" data-pph-timeline-stages>
-		<?php foreach ( $timeline['stages'] as $pph_stage ) : ?>
+	<ol class="wpmphub-timeline__stages" data-wpmphub-timeline-stages>
+		<?php foreach ( $timeline['stages'] as $wpmphub_stage ) : ?>
 			<li
-				class="pph-timeline__stage pph-timeline__stage--<?php echo esc_attr( $pph_stage['state'] ); ?>"
-				data-pph-stage="<?php echo esc_attr( $pph_stage['key'] ); ?>"
-				data-pph-stage-state="<?php echo esc_attr( $pph_stage['state'] ); ?>"
+				class="wpmphub-timeline__stage wpmphub-timeline__stage--<?php echo esc_attr( $wpmphub_stage['state'] ); ?>"
+				data-wpmphub-stage="<?php echo esc_attr( $wpmphub_stage['key'] ); ?>"
+				data-wpmphub-stage-state="<?php echo esc_attr( $wpmphub_stage['state'] ); ?>"
 			>
-				<span class="pph-timeline__marker" aria-hidden="true"></span>
+				<span class="wpmphub-timeline__marker" aria-hidden="true"></span>
 
-				<span class="pph-timeline__label" data-pph-stage-label>
-					<?php echo esc_html( $pph_stage['label'] ); ?>
+				<span class="wpmphub-timeline__label" data-wpmphub-stage-label>
+					<?php echo esc_html( $wpmphub_stage['label'] ); ?>
 				</span>
 
-				<span class="pph-timeline__state" data-pph-stage-state-label>
-					<?php echo esc_html( $pph_stage['state_label'] ); ?>
+				<span class="wpmphub-timeline__state" data-wpmphub-stage-state-label>
+					<?php echo esc_html( $wpmphub_stage['state_label'] ); ?>
 				</span>
 
-				<?php if ( '' !== $pph_stage['datetime'] ) : ?>
+				<?php if ( '' !== $wpmphub_stage['datetime'] ) : ?>
 					<time
-						class="pph-timeline__time"
-						datetime="<?php echo esc_attr( $pph_stage['datetime'] ); ?>"
-						data-pph-stage-time
+						class="wpmphub-timeline__time"
+						datetime="<?php echo esc_attr( $wpmphub_stage['datetime'] ); ?>"
+						data-wpmphub-stage-time
 					>
-						<?php echo esc_html( $pph_stage['date_label'] ); ?>
+						<?php echo esc_html( $wpmphub_stage['date_label'] ); ?>
 					</time>
 				<?php endif; ?>
 			</li>
@@ -63,25 +63,25 @@ $pph_heading_id = 'pph-timeline-heading-' . (int) $timeline['order_id'];
 
 	<?php if ( null !== $timeline['branch'] ) : ?>
 		<p
-			class="pph-timeline__branch pph-timeline__branch--<?php echo esc_attr( $timeline['branch']['key'] ); ?>"
-			data-pph-branch="<?php echo esc_attr( $timeline['branch']['key'] ); ?>"
+			class="wpmphub-timeline__branch wpmphub-timeline__branch--<?php echo esc_attr( $timeline['branch']['key'] ); ?>"
+			data-wpmphub-branch="<?php echo esc_attr( $timeline['branch']['key'] ); ?>"
 		>
-			<strong class="pph-timeline__branch-label" data-pph-branch-label>
+			<strong class="wpmphub-timeline__branch-label" data-wpmphub-branch-label>
 				<?php echo esc_html( $timeline['branch']['label'] ); ?>
 			</strong>
 
 			<?php if ( '' !== $timeline['branch']['datetime'] ) : ?>
 				<time
-					class="pph-timeline__time"
+					class="wpmphub-timeline__time"
 					datetime="<?php echo esc_attr( $timeline['branch']['datetime'] ); ?>"
-					data-pph-branch-time
+					data-wpmphub-branch-time
 				>
 					<?php echo esc_html( $timeline['branch']['date_label'] ); ?>
 				</time>
 			<?php endif; ?>
 
 			<?php if ( '' !== $timeline['branch_note'] ) : ?>
-				<span class="pph-timeline__branch-note" data-pph-branch-note>
+				<span class="wpmphub-timeline__branch-note" data-wpmphub-branch-note>
 					<?php echo esc_html( $timeline['branch_note'] ); ?>
 				</span>
 			<?php endif; ?>
@@ -89,7 +89,7 @@ $pph_heading_id = 'pph-timeline-heading-' . (int) $timeline['order_id'];
 	<?php endif; ?>
 
 	<?php if ( '' !== $timeline['notice'] ) : ?>
-		<p class="pph-timeline__notice" data-pph-timeline-notice>
+		<p class="wpmphub-timeline__notice" data-wpmphub-timeline-notice>
 			<?php echo esc_html( $timeline['notice'] ); ?>
 		</p>
 	<?php endif; ?>

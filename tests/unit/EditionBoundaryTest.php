@@ -91,13 +91,13 @@ final class EditionBoundaryTest extends TestCase {
 			}
 
 			$this->assertStringNotContainsString(
-				'pph_is_pro',
+				'wpmphub_is_pro',
 				$this->contents( $path ),
 				basename( $path ) . ' branches on edition. If Pro cannot be built on core\'s public surface, the surface is wrong.'
 			);
 		}
 
-		$this->assertStringNotContainsString( 'PPH_EDITION', $this->contents( $this->root() . '/src/Plugin.php' ) );
+		$this->assertStringNotContainsString( 'WPMPHUB_EDITION', $this->contents( $this->root() . '/src/Plugin.php' ) );
 	}
 
 	/**

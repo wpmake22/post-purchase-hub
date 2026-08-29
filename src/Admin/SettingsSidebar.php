@@ -37,11 +37,11 @@ final class SettingsSidebar {
 	 * @return void
 	 */
 	public function render( string $tab ): void {
-		echo '<div class="pph-settings__sidebar" data-pph-settings-sidebar>';
+		echo '<div class="wpmphub-settings__sidebar" data-wpmphub-settings-sidebar>';
 
 		self::render_search();
 
-		echo '<nav class="pph-settings__nav" data-pph-settings-tabs>';
+		echo '<nav class="wpmphub-settings__nav" data-wpmphub-settings-tabs>';
 
 		foreach ( SettingsFields::tab_labels() as $slug => $label ) {
 			self::render_nav_item( (string) $slug, (string) $label, $slug === $tab );
@@ -57,15 +57,15 @@ final class SettingsSidebar {
 	 * @return void
 	 */
 	private static function render_search(): void {
-		echo '<div class="pph-settings__search">';
+		echo '<div class="wpmphub-settings__search">';
 
 		printf(
-			'<label class="screen-reader-text" for="pph-settings-search">%s</label>',
+			'<label class="screen-reader-text" for="wpmphub-settings-search">%s</label>',
 			esc_html__( 'Search settings on this tab', 'wpmake-post-purchase-hub' )
 		);
 
 		printf(
-			'<input type="search" id="pph-settings-search" placeholder="%s" autocomplete="off" data-pph-settings-search />',
+			'<input type="search" id="wpmphub-settings-search" placeholder="%s" autocomplete="off" data-wpmphub-settings-search />',
 			esc_attr__( 'Search settings…', 'wpmake-post-purchase-hub' )
 		);
 
@@ -89,10 +89,10 @@ final class SettingsSidebar {
 	 * @return void
 	 */
 	private static function render_nav_item( string $slug, string $label, bool $current ): void {
-		echo '<div class="pph-settings__nav-item">';
+		echo '<div class="wpmphub-settings__nav-item">';
 
 		printf(
-			'<a href="%1$s" class="pph-settings__nav-link nav-tab%2$s" data-pph-settings-tab="%3$s"%4$s>%5$s<span class="pph-settings__nav-label">%6$s</span>%7$s</a>',
+			'<a href="%1$s" class="wpmphub-settings__nav-link nav-tab%2$s" data-wpmphub-settings-tab="%3$s"%4$s>%5$s<span class="wpmphub-settings__nav-label">%6$s</span>%7$s</a>',
 			esc_url( SettingsPage::tab_url( $slug ) ),
 			$current ? ' nav-tab-active is-active' : '',
 			esc_attr( $slug ),

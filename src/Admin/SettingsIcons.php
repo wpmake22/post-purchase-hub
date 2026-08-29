@@ -57,7 +57,7 @@ final class SettingsIcons {
 		}
 
 		return sprintf(
-			'<svg class="pph-settings__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="%s"/></svg>',
+			'<svg class="wpmphub-settings__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="%s"/></svg>',
 			esc_attr( self::PATHS[ $tab ] )
 		);
 	}
@@ -69,7 +69,7 @@ final class SettingsIcons {
 	 * @return string
 	 */
 	public static function chevron(): string {
-		return '<svg class="pph-settings__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6"/></svg>';
+		return '<svg class="wpmphub-settings__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6"/></svg>';
 	}
 
 	/**
@@ -79,7 +79,7 @@ final class SettingsIcons {
 	 * @return string
 	 */
 	public static function search(): string {
-		return '<svg class="pph-settings__search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>';
+		return '<svg class="wpmphub-settings__search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>';
 	}
 
 	/**

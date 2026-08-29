@@ -10,9 +10,10 @@ declare( strict_types = 1 );
 namespace PostPurchaseHub\Frontend;
 
 use PostPurchaseHub\Install\SetupState;
+use PostPurchaseHub\Security\Kses;
 
 /**
- * Registers `[pph_orders]`.
+ * Registers `[wpmphub_orders]`.
  *
  * The shortcode lists the orders belonging to whoever is looking at the page
  * and takes no order identifier of any kind. That is deliberate: WooCommerce
@@ -30,7 +31,7 @@ final class Shortcodes {
 	 *
 	 * @var string
 	 */
-	public const TAG = 'pph_orders';
+	public const TAG = 'wpmphub_orders';
 
 	/**
 	 * Most orders one embed will ever list.
@@ -89,7 +90,10 @@ final class Shortcodes {
 			self::TAG
 		);
 
-		return $this->render_for_current_user( (int) $atts['limit'] );
+		// Escaped here rather than in render_for_current_user(), so the block
+		// callback that shares the producer does not filter the same markup
+		// twice. See Security\Kses for why the boundary escapes at all.
+		return Kses::filter( $this->render_for_current_user( (int) $atts['limit'] ) );
 	}
 
 	/**
@@ -115,7 +119,7 @@ final class Shortcodes {
 		$customer_id = get_current_user_id();
 
 		if ( 0 === $customer_id ) {
-			return '<p class="pph-orders__empty" data-pph-orders-empty>'
+			return '<p class="wpmphub-orders__empty" data-wpmphub-orders-empty>'
 				. esc_html__( 'Sign in to see your orders.', 'wpmake-post-purchase-hub' )
 				. '</p>';
 		}

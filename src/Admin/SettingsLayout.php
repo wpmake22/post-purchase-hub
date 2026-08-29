@@ -52,7 +52,7 @@ final class SettingsLayout {
 	 * @return void
 	 */
 	public function open( string $tab ): void {
-		echo '<div class="wrap pph-settings" data-pph-settings>';
+		echo '<div class="wrap wpmphub-settings" data-wpmphub-settings>';
 
 		printf(
 			'<h1 class="screen-reader-text">%s</h1>',
@@ -61,11 +61,11 @@ final class SettingsLayout {
 
 		settings_errors();
 
-		echo '<div class="pph-settings__shell">';
+		echo '<div class="wpmphub-settings__shell">';
 
 		$this->sidebar->render( $tab );
 
-		echo '<div class="pph-settings__main">';
+		echo '<div class="wpmphub-settings__main">';
 
 		$this->render_header( $tab );
 	}
@@ -91,15 +91,15 @@ final class SettingsLayout {
 	private function render_header( string $tab ): void {
 		$labels = SettingsFields::tab_labels();
 
-		echo '<header class="pph-settings__header">';
+		echo '<header class="wpmphub-settings__header">';
 
 		printf(
-			'<button type="button" class="pph-settings__burger" data-pph-settings-burger aria-expanded="false"><span class="screen-reader-text">%1$s</span>%2$s</button>',
+			'<button type="button" class="wpmphub-settings__burger" data-wpmphub-settings-burger aria-expanded="false"><span class="screen-reader-text">%1$s</span>%2$s</button>',
 			esc_html__( 'Show settings navigation', 'wpmake-post-purchase-hub' ),
 			wp_kses( SettingsIcons::menu(), SettingsIcons::allowed_tags() )
 		);
 
-		echo '<div class="pph-settings__heading">';
+		echo '<div class="wpmphub-settings__heading">';
 
 		printf(
 			'<h2>%1$s%2$s</h2>',
@@ -126,7 +126,7 @@ final class SettingsLayout {
 	 * @return void
 	 */
 	public function render_sections( string $tab, SettingsRenderer $renderer ): void {
-		echo '<div class="pph-settings__cards" data-pph-settings-cards>';
+		echo '<div class="wpmphub-settings__cards" data-wpmphub-settings-cards>';
 
 		if ( 'general' === $tab ) {
 			$this->health->render( self::anchor( $tab, 'status' ) );
@@ -147,7 +147,7 @@ final class SettingsLayout {
 		}
 
 		printf(
-			'<p class="pph-settings__empty" data-pph-settings-empty hidden>%s</p>',
+			'<p class="wpmphub-settings__empty" data-wpmphub-settings-empty hidden>%s</p>',
 			esc_html__( 'No settings on this tab match your search.', 'wpmake-post-purchase-hub' )
 		);
 
@@ -167,19 +167,19 @@ final class SettingsLayout {
 	 */
 	public function open_card( string $anchor, string $title, string $desc = '', string $section = '' ): void {
 		printf(
-			'<section class="pph-settings__card" id="%1$s" data-pph-settings-section="%2$s">',
+			'<section class="wpmphub-settings__card" id="%1$s" data-wpmphub-settings-section="%2$s">',
 			esc_attr( $anchor ),
 			esc_attr( '' !== $section ? $section : $anchor )
 		);
 
-		echo '<div class="pph-settings__card-header">';
+		echo '<div class="wpmphub-settings__card-header">';
 		printf( '<h3>%s</h3>', esc_html( $title ) );
 
 		if ( '' !== $desc ) {
 			printf( '<p>%s</p>', esc_html( $desc ) );
 		}
 
-		echo '</div><div class="pph-settings__card-body">';
+		echo '</div><div class="wpmphub-settings__card-body">';
 	}
 
 	/**
@@ -202,6 +202,6 @@ final class SettingsLayout {
 	 * @return string
 	 */
 	public static function anchor( string $tab, string $section ): string {
-		return 'pph-' . sanitize_key( $tab ) . '-' . sanitize_key( $section );
+		return 'wpmphub-' . sanitize_key( $tab ) . '-' . sanitize_key( $section );
 	}
 }
