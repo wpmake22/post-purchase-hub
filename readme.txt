@@ -295,14 +295,9 @@ uninstalling** under **Settings → Advanced** first.
 8. Choose what customers can do for themselves, and the rules around cancellation requests.
 9. Guest order lookup: customers without an account reach their order through a secure link emailed to the address already on it.
 
-== Upgrade Notice ==
-
-= 1.0.0 =
-First public release.
-
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.0    - 31/08/2026 =
 * First public release.
 * Order progress timeline on My Account and single order pages, built from status changes recorded as they happen.
 * Timeline stages mapped from the order statuses your store actually uses, with any status hideable from customers.

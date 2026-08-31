@@ -115,19 +115,51 @@ jobs:
 
       # Installing the built zip, not the source tree. A build that passes static
       # checks can still fatal on activation because of a stripped class reference.
+      #
+      # A generated config is used instead of .wp-env.json for two reasons: it maps
+      # ./dist into the container so the downloaded artifact is reachable, and it
+      # omits the "." plugin entry so the source checkout is not mounted and
+      # activated alongside the zip. With both active the main file's
+      # `defined( 'WPMPHUB_VERSION' )` guard makes the alphabetically-first copy
+      # (the source tree) win, and the assertions below would pass without ever
+      # loading the built code.
+      #
+      # It is written at runtime under the gitignored .wp-env.ci.json name, the
+      # same convention ci.yml uses. A tracked dotfile in the repository root
+      # would be copied into both zips by bin/build.php, whose dev_excludes()
+      # names each wp-env config individually, and WP.org's Plugin Check rejects
+      # a plugin containing hidden files.
+      #
+      # wp-env keys each environment by an md5 of the config file path, so every
+      # nested run below has to repeat the same --config.
       - name: Activate the built free plugin
         run: |
           npm ci
-          npx wp-env start
-          npx wp-env run cli wp plugin install /var/www/html/wp-content/uploads/dist/wpmake-post-purchase-hub-${{ needs.build.outputs.version }}.zip --activate || \
-            npx wp-env run --env-cwd=/var/www/html cli bash -c "wp plugin install \$(ls /var/www/html/*.zip | head -1) --activate"
-        continue-on-error: false
+          cat > .wp-env.ci.json <<'JSON'
+          {
+          	"core": null,
+          	"phpVersion": "8.1",
+          	"plugins": [ "https://downloads.wordpress.org/plugin/woocommerce.zip" ],
+          	"mappings": { "wp-content/uploads/dist": "./dist" },
+          	"config": {
+          		"WP_DEBUG": true,
+          		"WP_DEBUG_LOG": true,
+          		"WP_DEBUG_DISPLAY": false,
+          		"SCRIPT_DEBUG": true,
+          		"WP_DISABLE_FATAL_ERROR_HANDLER": true
+          	}
+          }
+          JSON
+          npx wp-env start --config .wp-env.ci.json
+          npx wp-env run cli --config .wp-env.ci.json \
+            wp plugin install /var/www/html/wp-content/uploads/dist/wpmake-post-purchase-hub-${{ needs.build.outputs.version }}.zip --activate
 
       - name: Assert no fatals and free edition reported
         run: |
-          npx wp-env run cli wp eval 'echo defined("WPMPHUB_EDITION") ? WPMPHUB_EDITION : "UNDEFINED";' | tee edition.txt
+          npx wp-env run cli --config .wp-env.ci.json \
+            wp eval 'echo ( defined( "WPMPHUB_EDITION" ) ? WPMPHUB_EDITION : "UNDEFINED" ) . PHP_EOL;' | tee edition.txt
           grep -q '^free$' edition.txt || { echo "::error::WPMPHUB_EDITION was not 'free' in the built zip"; exit 1; }
-          npx wp-env run cli wp plugin list --status=active --field=name | grep -qx wpmake-post-purchase-hub
+          npx wp-env run cli --config .wp-env.ci.json wp plugin list --status=active --field=name | grep -qx wpmake-post-purchase-hub
 
   publish:
     name: Attach to release

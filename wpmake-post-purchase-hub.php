@@ -6,7 +6,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:          WPMake Post-Purchase Hub for WooCommerce
- * Plugin URI: 			 https://www.wpmake.net/post-purchase-hub/
+ * Plugin URI:           https://www.wpmake.net/post-purchase-hub/
  * Description:          Order timeline, self-service post-purchase actions and a merchant request queue for WooCommerce stores.
  * Version:              1.0.0
  * Requires at least:    6.5
