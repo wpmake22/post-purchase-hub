@@ -171,11 +171,15 @@ final class Menu {
 	/**
 	 * The menu title, with a pending-count bubble when there is one to show.
 	 *
+	 * The product name rather than the name of one screen: this is the plugin's
+	 * only entry under WooCommerce since 1.1.0, and the navigation bar inside it is
+	 * what names the individual screens.
+	 *
 	 * @since 0.9.0
 	 * @return string
 	 */
 	public static function menu_title(): string {
-		return __( 'Requests', 'wpmake-post-purchase-hub' );
+		return __( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' );
 	}
 
 	/**
