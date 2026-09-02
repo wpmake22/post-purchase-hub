@@ -255,13 +255,19 @@ final class RequestListTable extends \WP_List_Table {
 	 * @return void
 	 */
 	public function render_page(): void {
-		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ) . '</h1>';
+		echo '<div class="wrap wpmphub-screen">';
+
+		Menu::render_nav( Menu::REQUESTS_PAGE );
+		Menu::panel_open( esc_html__( 'Requests', 'wpmake-post-purchase-hub' ) );
 		$this->render_filters();
+		Menu::panel_head_close();
+
 		echo '<form method="get">';
 		printf( '<input type="hidden" name="page" value="%s">', esc_attr( Menu::REQUESTS_PAGE ) );
 		$this->display();
 		echo '</form>';
+
+		Menu::panel_close();
 		echo '</div>';
 	}
 

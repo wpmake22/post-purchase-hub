@@ -87,20 +87,76 @@ final class SettingsPage {
 	}
 
 	/**
-	 * Adds the submenu entry beneath WooCommerce, next to the request queue.
+	 * Registers the settings screen without a menu entry of its own.
+	 *
+	 * It had one until 1.1.0, which put two sibling entries under WooCommerce for
+	 * one plugin. The screen is now reached from the navigation bar instead, and
+	 * `submenu_file` below keeps the remaining entry highlighted while it is open.
 	 *
 	 * @since 0.14.0
 	 * @return void
 	 */
 	public function add_menu(): void {
 		add_submenu_page(
-			'woocommerce',
+			'',
 			__( 'Post-Purchase Hub settings', 'wpmake-post-purchase-hub' ),
-			__( 'Post-Purchase Hub', 'wpmake-post-purchase-hub' ),
+			__( 'Settings', 'wpmake-post-purchase-hub' ),
 			self::CAPABILITY,
 			self::PAGE,
 			array( $this, 'render' )
 		);
+
+		// Late: WooCommerce filters this itself, and the last word wins.
+		add_filter( 'submenu_file', array( $this, 'keep_menu_highlighted' ), PHP_INT_MAX );
+		add_filter( 'admin_title', array( $this, 'admin_title' ), 10, 2 );
+	}
+
+	/**
+	 * Whether the settings screen is the one being rendered.
+	 *
+	 * @since 1.1.0
+	 * @return bool
+	 */
+	private function is_current_screen(): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading which screen is open, nothing is written.
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+		return self::PAGE === $page;
+	}
+
+	/**
+	 * Keeps the plugin's one menu entry highlighted on this screen.
+	 *
+	 * A page registered with no parent highlights nothing, so without this the
+	 * WooCommerce entry loses its highlight while the settings screen is open.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string|null $submenu_file Submenu file WordPress is about to highlight.
+	 * @return string|null
+	 */
+	public function keep_menu_highlighted( $submenu_file ) {
+		return $this->is_current_screen() ? Menu::REQUESTS_PAGE : $submenu_file;
+	}
+
+	/**
+	 * Restores the document title on this screen.
+	 *
+	 * A page with no parent contributes nothing to the title WordPress builds, so
+	 * the browser tab would otherwise read as the site name alone.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string $admin_title Title WordPress assembled.
+	 * @param string $title       Title of the current screen, empty for an orphan page.
+	 * @return string
+	 */
+	public function admin_title( $admin_title, $title ) {
+		if ( ! $this->is_current_screen() || '' !== $title ) {
+			return $admin_title;
+		}
+
+		return __( 'Post-Purchase Hub settings', 'wpmake-post-purchase-hub' ) . $admin_title;
 	}
 
 	/**
@@ -172,6 +228,8 @@ final class SettingsPage {
 		}
 
 		$tab = self::current_tab();
+
+		Menu::render_nav( self::PAGE );
 
 		$this->layout->open( $tab );
 
